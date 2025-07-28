@@ -1,0 +1,6 @@
+{
+    "eslint.workingDirectories": [
+        "./packages/frontend",
+        "./packages/backend",
+    ]
+}
