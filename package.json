@@ -1,7 +1,7 @@
 {
-  "name": "dtrw-app-helloworld",
-  "version": "1.4.1",
-  "repository": "git@github.com:burtek/dtrw-app-helloworld.git",
+  "name": "dtrw-app-services",
+  "version": "1.0.0",
+  "repository": "git@github.com:burtek/dtrw-app-services.git",
   "author": "Bartosz <burtekdotryw@gmail.com>",
   "license": "MIT",
   "private": true,
