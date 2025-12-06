@@ -1,7 +1,7 @@
 {
-  "name": "dtrw-app-helloworld",
-  "version": "1.6.3",
-  "repository": "git@github.com:burtek/dtrw-app-helloworld.git",
+  "name": "dtrw-app-services",
+  "version": "1.0.0",
+  "repository": "git@github.com:burtek/dtrw-app-services.git",
   "author": "Bartosz <burtekdotryw@gmail.com>",
   "license": "MIT",
   "private": true,
@@ -23,7 +23,10 @@
     "lint": "lerna run lint",
     "test": "vitest test",
     "prepare": "husky",
-    "release": "standard-version"
+    "release": "standard-version",
+    "generate": "yarn workspace backend generate",
+    "migrate": "yarn workspace backend migrate",
+    "check-db": "yarn workspace backend check"
   },
   "standard-version": {
     "bumpFiles": [

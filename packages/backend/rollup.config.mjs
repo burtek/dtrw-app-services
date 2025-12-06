@@ -10,8 +10,8 @@ import typescript2 from 'rollup-plugin-typescript2';
 
 export default defineConfig({
     input: {
-        index: 'index.ts'
-        // 'drizzle.config': 'drizzle.config.ts'
+        index: 'index.ts',
+        'drizzle.config': 'drizzle.config.ts'
     },
     output: {
         dir: 'dist',
@@ -25,10 +25,9 @@ export default defineConfig({
     },
     plugins: [
         alias({
-            entries: [
-                // pdf-lib esm version get transpilled to cjs with breaking circular dependency tree
-                // { find: 'pdf-lib', replacement: 'pdf-lib/cjs' }
-            ]
+            // pdf-lib esm version get transpilled to cjs with breaking circular dependency tree
+            // { find: 'pdf-lib', replacement: 'pdf-lib/cjs' }
+            entries: []
         }),
         sourcemaps(),
         resolve({
@@ -48,7 +47,8 @@ export default defineConfig({
         }),
         copy({
             targets: [
-                // { src: 'src/assets/*', dest: 'dist/src/assets' },
+                { src: 'src/assets/*', dest: 'dist/src/assets' },
+                { src: 'drizzle/*', dest: 'dist/drizzle' },
                 {
                     src: 'package.json',
                     dest: 'dist',

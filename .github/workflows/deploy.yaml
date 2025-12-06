@@ -9,8 +9,8 @@ on:
       - 'v*'
 
 env:
-  APP_NAME: helloworld
-  KUMA_APP: helloworld
+  APP_NAME: services
+  KUMA_APP: services
 
 jobs:
   deploy:
@@ -94,6 +94,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           script: |
+            set -e
+            touch /apps/data/${{ env.APP_NAME }}_db/db.db
             cd /apps/${{ env.APP_NAME }}
             docker compose up -d --build
             docker exec nginx-proxy-manager nginx -s reload

@@ -1,8 +1,11 @@
 import { createApp } from './app';
 import { env } from './config';
+import { runMigrations } from './database';
 
 
 const { app, shutdown } = createApp({ logger: true });
+
+runMigrations(app.log);
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));

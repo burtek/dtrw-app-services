@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.6.3",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
@@ -13,10 +13,16 @@
     "start:dev": "nodemon --watch src --delay 200ms --ext ts --exec \"yarn dev\"",
     "lint": "eslint .",
     "test": "NODE_ENV=test vitest run",
-    "test:watch": "NODE_ENV=test vitest watch"
+    "test:watch": "NODE_ENV=test vitest watch",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "check-db": "drizzle-kit check"
   },
   "dependencies": {
+    "better-sqlite3": "12.2.0",
     "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "drizzle-zod": "^0.8.3",
     "fastify": "^5.6.2",
     "fastify-type-provider-zod": "^6.1.0",
     "validator": "^13.15.23",
@@ -28,8 +34,10 @@
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.10.1",
     "@types/validator": "^13.15.10",
+    "drizzle-kit": "^0.31.7",
     "eslint": "^9.39.1",
     "nodemon": "^3.1.11",
     "rollup": "^4.53.3",

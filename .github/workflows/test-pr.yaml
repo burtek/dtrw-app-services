@@ -7,16 +7,12 @@ on:
 
 jobs:
   test:
-    name: test (${{ matrix.mode }})
+    name: test
 
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
-
-    strategy:
-      matrix:
-        mode: [standard, sqlite]
 
     steps:
       - name: Checkout repo
@@ -29,15 +25,6 @@ jobs:
         with:
           node-version: '24'
           cache: 'yarn'
-
-      - name: Apply sqlite 
-        if: matrix.mode == 'sqlite'
-        run: |
-          mkdir -p packages/backend/development
-          mkdir -p packages/backend/src/assets
-          touch packages/backend/development/db.db
-          mv init-sqlite/*.node packages/backend/src/assets/
-          git apply init-sqlite/patch.patch
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

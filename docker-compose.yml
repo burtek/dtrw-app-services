@@ -1,7 +1,7 @@
 services:
   frontend:
     image: nginx:alpine
-    container_name: helloworld_frontend
+    container_name: services_frontend
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
       - ./docker/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
@@ -16,7 +16,7 @@ services:
 
   backend:
     image: node:24-alpine
-    container_name: helloworld_backend
+    container_name: services_backend
     working_dir: /app
     volumes:
       - ./backend:/app:ro

@@ -2,6 +2,7 @@ import type { FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
+import { getDb } from './database';
 import { decorateRequestUser } from './decorators/auth.decorator';
 import { decorateErrorHandler } from './decorators/error.decorator';
 import { healthController } from './health/health.controller';
@@ -21,6 +22,12 @@ export function createApp(opts: FastifyServerOptions = {}) {
     decorateRequestUser(app);
 
     app.register(helloWorldController, { prefix: '/hello' });
+
+    app.addHook('onClose', instance => {
+        instance.log.info('Closing database...');
+        getDb(instance.log).$client.close();
+        instance.log.info('Database closed');
+    });
 
     return {
         app,
