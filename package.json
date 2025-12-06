@@ -1,0 +1,35 @@
+{
+  "name": "dtrw-app-helloworld",
+  "version": "1.6.3",
+  "repository": "git@github.com:burtek/dtrw-app-helloworld.git",
+  "author": "Bartosz <burtekdotryw@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "lerna": "^9.0.1",
+    "standard-version": "^9.5.0",
+    "vitest": "^4.0.12"
+  },
+  "scripts": {
+    "dev": "lerna run start:dev",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
+    "test": "vitest test",
+    "prepare": "husky",
+    "release": "standard-version"
+  },
+  "standard-version": {
+    "bumpFiles": [
+      "package.json",
+      "packages/backend/package.json",
+      "packages/frontend/package.json"
+    ]
+  }
+}

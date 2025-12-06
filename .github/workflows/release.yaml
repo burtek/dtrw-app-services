@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: test (${{ matrix.mode }})
+
+    runs-on: ubuntu-latest
+
+    if: ${{ !contains(github.event.head_commit.message, 'chore(release)') }}
+
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        mode: [standard, sqlite]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'yarn'
+
+      - name: Apply sqlite 
+        if: matrix.mode == 'sqlite'
+        run: |
+          mkdir -p packages/backend/development
+          mkdir -p packages/backend/src/assets
+          touch packages/backend/development/db.db
+          mv init-sqlite/*.node packages/backend/src/assets/
+          git apply init-sqlite/patch.patch
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests and build
+        run: |
+          yarn test
+          yarn build
+
+  release:
+    runs-on: ubuntu-latest
+
+    if: ${{ !contains(github.event.head_commit.message, 'chore(release)') }}
+
+    permissions:
+      contents: write
+
+    needs: test
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0  # Needed for standard-version to access tags
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Bump version and generate changelog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          yarn release
+
+      - name: Push release commit and tags
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PAT }} # without PAT deploy job will not run
+          branch: master
+          tags: true
