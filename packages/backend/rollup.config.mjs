@@ -1,12 +1,20 @@
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import { defineConfig } from 'rollup';
+import { cleandir } from 'rollup-plugin-cleandir';
 import copy from 'rollup-plugin-copy';
 import sourcemaps from 'rollup-plugin-sourcemaps2';
 import typescript2 from 'rollup-plugin-typescript2';
 
+import { nodeBinaryResolver } from './node-binary-resolver.mjs';
+
+
+const OUT_DIR = 'dist';
 
 export default defineConfig({
     input: {
@@ -14,7 +22,7 @@ export default defineConfig({
         'drizzle.config': 'drizzle.config.ts'
     },
     output: {
-        dir: 'dist',
+        dir: OUT_DIR,
         format: 'cjs',
         sourcemap: true,
         entryFileNames: '[name].js',
@@ -23,7 +31,16 @@ export default defineConfig({
         preserveModules: true,
         preserveModulesRoot: '.'
     },
+    // external: (id, importer) => {
+    //     if (!id.endsWith('.node')) {
+    //         return false;
+    //     }
+    //     const binaryPath = pathResolve(importer, id);
+    //     console.log(binaryPath);
+    //     return true;
+    // },
     plugins: [
+        cleandir(OUT_DIR),
         alias({
             // pdf-lib esm version get transpilled to cjs with breaking circular dependency tree
             // { find: 'pdf-lib', replacement: 'pdf-lib/cjs' }
@@ -31,14 +48,16 @@ export default defineConfig({
         }),
         sourcemaps(),
         resolve({
-            extensions: ['.mjs', '.js', '.json', '.ts', '.node'],
+            extensions: ['.mjs', '.js', '.json', '.ts'],
             moduleDirectories: ['node_modules'],
             browser: false,
             preferBuiltins: true
         }),
+        nodeBinaryResolver(),
         commonjs({
             include: /node_modules/,
-            requireReturnsDefault: 'auto'
+            requireReturnsDefault: 'auto',
+            ignoreDynamicRequires: true
         }),
         json(),
         typescript2({
@@ -56,8 +75,22 @@ export default defineConfig({
                         const pkg = JSON.parse(contents.toString());
                         return JSON.stringify({ ...pkg, type: 'commonjs' }, null, 2);
                     }
-                }
+                },
+                ...copyFilesForLibrary('better-sqlite3', ['build', 'package.json']),
+                ...copyFilesForLibrary('bindings', ['package.json'])
             ]
         })
     ]
 });
+
+function copyFilesForLibrary(library, files) {
+    let libraryPath = import.meta.resolve(library).replace('file://', '');
+    do {
+        libraryPath = dirname(libraryPath);
+    } while (!existsSync(join(libraryPath, 'package.json')));
+
+    return files.map(file => ({
+        src: join(libraryPath, file),
+        dest: join('dist', 'node_modules', file && library)
+    }));
+}

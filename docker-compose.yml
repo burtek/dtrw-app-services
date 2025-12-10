@@ -20,12 +20,15 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app:ro
+      - /apps/main-apps/data/authelia/config/:/configs/authelia/
     command: node --enable-source-maps index.js
     env_file:
       - docker/backend/env
     environment:
       NODE_ENV: production
       PORT: 4000
+      DOCKER_PROXY: tcp://services_docker_proxy:2375
+      DOCKER_AUTHELIA_NAME: authelia
     expose:
       - 4000
     restart: on-failure:5
@@ -36,8 +39,26 @@ services:
       retries: 2
       start_period: 25s
       start_interval: 10s
+    networks:
+      - apps
+      - services_docker
+
+  docker_proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: services_dproxy
+    expose: 2375
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - services_docker
+    env:
+      ALLOW_RESTARTS: 1
+      CONTAINER: 1
+      EXEC: 1
 
 networks:
   default:
     external: true
     name: apps
+  services_docker:

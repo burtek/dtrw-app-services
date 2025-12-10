@@ -1,0 +1,3 @@
+CREATE TABLE `empty` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL
+);

@@ -5,7 +5,7 @@ import { HealthService } from './health.service';
 
 
 export const healthController: FastifyPluginCallback = (instance, options, done) => {
-    const healthService = new HealthService();
+    const healthService = new HealthService(instance);
 
     const f = instance.withTypeProvider<ZodTypeProvider>();
 

@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { z } from 'zod/v4';
 
+import { filePath, refineOptionalCondition } from './config.utils';
+
 
 const DEFAULT_PORT = 4000;
 
@@ -10,14 +12,31 @@ const envSchema = z.object({
     PORT: z.coerce.number().default(DEFAULT_PORT),
     DB_FILE_NAME: z.string().nonempty(),
     DB_MIGRATIONS_FOLDER: z.string().nonempty(),
+    AUTHELIA_CONFIG: filePath(),
+    AUTHELIA_USERS: filePath(),
     LOGS_FILE: z.string().optional(),
-    USE_BS3_BIN: z.coerce.boolean().optional()
-});
+    DOCKER_PROXY: z.url({ protocol: /^(tcp|http)&/ }).optional(),
+    DOCKER_AUTHELIA_NAME: z.string().nonempty().optional()
+})
+    .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_AUTHELIA_NAME'));
 /* eslint-enable @typescript-eslint/naming-convention */
 
 const parsedEnv = envSchema.safeParse(process.env);
 if (!parsedEnv.success) {
-    throw new Error('Environment validation failed', { cause: parsedEnv.error });
+    throw new Error(`Environment validation failed\n${z.prettifyError(parsedEnv.error)}`);
 }
 
-export const env = parsedEnv.data;
+type Identity<T> = T extends object ? {} & {
+    [P in keyof T]: T[P]
+} : T;
+type DockerKeys = Extract<keyof typeof parsedEnv.data, `DOCKER_${string}`>;
+type RefinedEnv = Identity<(
+    Omit<typeof parsedEnv.data, DockerKeys>
+    & Partial<Record<DockerKeys, undefined>>
+)> | Identity<(
+    Omit<typeof parsedEnv.data, DockerKeys>
+    & Required<Pick<typeof parsedEnv.data, DockerKeys>>
+)>;
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+export const env = parsedEnv.data as RefinedEnv;

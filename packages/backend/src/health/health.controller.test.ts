@@ -6,6 +6,8 @@ import packageJson from '../../package.json';
 import { healthController } from './health.controller';
 
 
+vitest.mock('../database/index', () => ({ getDb() {} }));
+
 describe('HealthController', () => {
     const app = fastify();
     app.register(healthController, { prefix: '/health' });

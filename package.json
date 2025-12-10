@@ -13,9 +13,9 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "husky": "^9.1.7",
-    "lerna": "^9.0.1",
+    "lerna": "^9.0.3",
     "standard-version": "^9.5.0",
-    "vitest": "^4.0.12"
+    "vitest": "^4.0.15"
   },
   "scripts": {
     "dev": "lerna run start:dev",
