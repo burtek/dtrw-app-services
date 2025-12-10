@@ -2,34 +2,54 @@ import { useEffect, useState } from 'react';
 
 
 function App() {
-    const [response, setResponse] = useState('Idle');
+    const [users, setUsers] = useState<Record<string, Record<string, unknown>>>({});
+    const [acl, setACL] = useState<Array<Record<string, unknown>>>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            setResponse('Loading');
+        const fetchUsers = async () => {
             try {
-                const res = await fetch('/api/hello');
-                if (!res.ok) {
-                    setResponse('Error: Network response was not ok');
-                    throw new Error('Network response was not ok');
-                }
-                const data = await res.text();
-                setResponse(data);
+                const res = await fetch('/api/users');
+                setUsers(await res.json());
             } catch (error) {
-                setResponse('Error');
+                // eslint-disable-next-line no-console
+                console.error('Error fetching data:', error);
+            }
+        };
+        const fetchACL = async () => {
+            try {
+                const res = await fetch('/api/access-control');
+                setACL(await res.json());
+            } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error('Error fetching data:', error);
             }
         };
 
-        void fetchData();
+        void fetchUsers();
+        void fetchACL();
     }, []);
 
     return (
         <>
-            <div>Test</div>
+            <h2>Użytkownicy</h2>
             <p>
-                {`Response: ${response}`}
+                {Object.keys(users)
+                    .map(id => ({ id, ...users[id] }))
+                    .map(datum => (
+                        <li key={datum.id}>
+                            <pre>{JSON.stringify(datum, undefined, 4)}</pre>
+                        </li>
+                    ))}
+            </p>
+            <h2>ACL</h2>
+            <p>
+                {acl
+                    .map((datum, index) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={index}>
+                            <pre>{JSON.stringify(datum, undefined, 4)}</pre>
+                        </li>
+                    ))}
             </p>
         </>
     );
