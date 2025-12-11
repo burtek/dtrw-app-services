@@ -94,7 +94,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
-          script: docker stop z15a_backend || 'services_backend does not exist'
+          script: docker stop ${{ env.APP_NAME }}_backend || '${{ env.APP_NAME }}_backend does not exist'
 
       - name: Deploy backend
         uses: appleboy/scp-action@v1
