@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.8](https://github.com/burtek/dtrw-app-services/compare/v1.1.7...v1.1.8) (2025-12-11)
+
+
+### Bug Fixes
+
+* **deployment:** correct docker-compose config file ([1517b32](https://github.com/burtek/dtrw-app-services/commit/1517b32c4d8e733c72c313ac6556fc1c97c9ab4c))
+* **deployment:** correct docker-proxy container config ([8a9bf26](https://github.com/burtek/dtrw-app-services/commit/8a9bf26347a6fc69af4dbca5a1c410b55766d01a))
+
 ### [1.1.7](https://github.com/burtek/dtrw-app-services/compare/v1.1.6...v1.1.7) (2025-12-11)
 
 
