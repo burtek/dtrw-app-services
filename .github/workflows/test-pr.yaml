@@ -20,6 +20,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Validate docker-compose.yml
+        run: docker compose -f docker-compose.yml config
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

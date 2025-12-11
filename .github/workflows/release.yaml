@@ -33,6 +33,7 @@ jobs:
 
       - name: Run tests and build
         run: |
+          docker compose -f docker-compose.yml config 
           yarn test
           yarn build
 

@@ -43,7 +43,7 @@ services:
       start_period: 25s
       start_interval: 10s
     networks:
-      - apps
+      - default
       - services_docker
 
   docker_proxy:
@@ -55,7 +55,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - services_docker
+      - services_dproxy
     environment:
       ALLOW_RESTARTS: 1
       CONTAINER: 1
@@ -65,4 +65,4 @@ networks:
   default:
     external: true
     name: apps
-  services_docker:
+  services_dproxy:
