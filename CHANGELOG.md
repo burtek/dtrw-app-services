@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/burtek/dtrw-app-services/compare/v1.1.3...v1.1.4) (2025-12-11)
+
+
+### Bug Fixes
+
+* **backend:** remove ensurepip ([94d2e17](https://github.com/burtek/dtrw-app-services/commit/94d2e17fd3e3d8b9d11d12485446ab17b682aac9))
+
 ### [1.1.3](https://github.com/burtek/dtrw-app-services/compare/v1.1.2...v1.1.3) (2025-12-11)
 
 
