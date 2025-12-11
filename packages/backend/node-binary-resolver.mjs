@@ -18,6 +18,7 @@ export function nodeBinaryResolver() {
 
             const resolved = importer ? resolve(dirname(importer), source) : resolve(source);
             // Mark with a null-prefixed ID so Rollup won't try to load from FS directly
+            console.log({ importer, source, resolved });
             return PREFIX + resolved;
         },
 
@@ -27,8 +28,8 @@ export function nodeBinaryResolver() {
             }
 
             const resolved = id.slice(PREFIX.length);
+            console.log({ id, resolved, 'import.meta.dirname': import.meta.dirname });
             await access(resolved); // throw if not accessible
-            const buf = await readFile(resolved);
             const base = basename(resolved);
 
             // Emit into `bin/` under the output directory (e.g. dist/bin/<name>)
@@ -36,7 +37,7 @@ export function nodeBinaryResolver() {
             this.emitFile({
                 type: 'asset',
                 fileName: `bin/${base}`,
-                source: buf
+                source: await readFile(resolved)
             });
 
             // Return a small CommonJS module that, at runtime, searches upward
