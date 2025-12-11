@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/burtek/dtrw-app-services/compare/v1.1.2...v1.1.3) (2025-12-11)
+
+
+### Bug Fixes
+
+* **backend:** add python to alpine tooling ([60ec8c9](https://github.com/burtek/dtrw-app-services/commit/60ec8c97103c33b7233cba5af170415075935ce1))
+
 ### [1.1.2](https://github.com/burtek/dtrw-app-services/compare/v1.1.1...v1.1.2) (2025-12-11)
 
 
