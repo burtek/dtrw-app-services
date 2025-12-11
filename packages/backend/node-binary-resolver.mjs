@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
 
@@ -29,7 +30,14 @@ export function nodeBinaryResolver() {
 
             const resolved = id.slice(PREFIX.length);
             console.log({ id, resolved, 'import.meta.dirname': import.meta.dirname });
-            await access(resolved); // throw if not accessible
+            try {
+                await access(resolved); // throw if not accessible
+            } catch (err) {
+                for (let i = 0, path = dirname(resolved); i < 5; i++, path = dirname(path)) {
+                    console.log({ path, exists: existsSync(path) });
+                }
+                throw err;
+            }
             const base = basename(resolved);
 
             // Emit into `bin/` under the output directory (e.g. dist/bin/<name>)
