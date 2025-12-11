@@ -15,7 +15,7 @@ const envSchema = z.object({
     AUTHELIA_CONFIG: filePath(),
     AUTHELIA_USERS: filePath(),
     LOGS_FILE: z.string().optional(),
-    DOCKER_PROXY: z.url({ protocol: /^(tcp|http)&/ }).optional(),
+    DOCKER_PROXY: z.url({ protocol: /^(tcp|http)$/ }).optional(),
     DOCKER_AUTHELIA_NAME: z.string().nonempty().optional()
 })
     .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_AUTHELIA_NAME'));

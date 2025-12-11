@@ -1,2 +1,0 @@
-AUTHELIA_CONFIG=/configs/authelia/configuration.yml
-AUTHELIA_USERS=/configs/authelia/users.yml

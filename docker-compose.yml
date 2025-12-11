@@ -28,10 +28,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      DOCKER_PROXY: tcp://services_dproxy:2375
+      DOCKER_PROXY: 'tcp://services_dproxy:2375'
       DOCKER_AUTHELIA_NAME: authelia
       DB_FILE_NAME: '/db/db.db'
       DB_MIGRATIONS_FOLDER: '/app/drizzle'
+      AUTHELIA_CONFIG: '/configs/authelia/configuration.yml'
+      AUTHELIA_USERS: '/configs/authelia/users.yml'
     expose:
       - 4000
     restart: on-failure:5
