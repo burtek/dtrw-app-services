@@ -20,6 +20,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app:ro
+      - /apps/data/services_db/:/db
       - /apps/main-apps/data/authelia/config/:/configs/authelia/
     command: node --enable-source-maps index.js
     env_file:
@@ -29,6 +30,8 @@ services:
       PORT: 4000
       DOCKER_PROXY: tcp://services_docker_proxy:2375
       DOCKER_AUTHELIA_NAME: authelia
+      DB_FILE_NAME: '/db/db.db'
+      DB_MIGRATIONS_FOLDER: '/app/drizzle'
     expose:
       - 4000
     restart: on-failure:5
