@@ -49,7 +49,7 @@ const { existsSync } = require('fs');
 
 function findBin(filename) {
   let dir = __dirname;
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     const candidate = join(dir, 'bin', filename);
     if (existsSync(candidate)) return candidate;
     const parent = join(dir, '..');

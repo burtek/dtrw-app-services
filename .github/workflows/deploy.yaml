@@ -22,8 +22,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Add tar for caching
-        run: apk add --no-cache tar
+      - name: Add tar for caching and build essentials for binary building
+        run: apk add --no-cache tar gcc g++ make
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
