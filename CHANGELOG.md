@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.9](https://github.com/burtek/dtrw-app-services/compare/v1.1.8...v1.1.9) (2025-12-11)
+
+
+### Bug Fixes
+
+* **backend:** fix env value validation ([a7cd8f3](https://github.com/burtek/dtrw-app-services/commit/a7cd8f3411f0b9f8fc4db948534c9011fdc49df8))
+
 ### [1.1.8](https://github.com/burtek/dtrw-app-services/compare/v1.1.7...v1.1.8) (2025-12-11)
 
 
