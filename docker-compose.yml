@@ -28,7 +28,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      DOCKER_PROXY: tcp://services_docker_proxy:2375
+      DOCKER_PROXY: tcp://services_dproxy:2375
       DOCKER_AUTHELIA_NAME: authelia
       DB_FILE_NAME: '/db/db.db'
       DB_MIGRATIONS_FOLDER: '/app/drizzle'
@@ -44,7 +44,7 @@ services:
       start_interval: 10s
     networks:
       - default
-      - services_docker
+      - services_dproxy
 
   docker_proxy:
     image: tecnativa/docker-socket-proxy
