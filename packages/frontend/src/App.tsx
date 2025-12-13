@@ -1,38 +1,38 @@
 import { useEffect, useState } from 'react';
 
 
-function App() {
-    const [users, setUsers] = useState<Record<string, Record<string, unknown>>>({});
-    const [acl, setACL] = useState<Array<Record<string, unknown>>>([]);
+type Obj = Record<string, unknown>;
+
+const useApi = <T,>(path: string, defaultValue: T) => {
+    const [data, setData] = useState<T>(defaultValue);
 
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchData = async () => {
             try {
-                const res = await fetch('/api/users');
-                setUsers(await res.json());
+                const res = await fetch(path);
+                setData(await res.json());
             } catch (error) {
                 // eslint-disable-next-line no-console
-                console.error('Error fetching data:', error);
-            }
-        };
-        const fetchACL = async () => {
-            try {
-                const res = await fetch('/api/access-control');
-                setACL(await res.json());
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Error fetching data:', error);
+                console.error(`Error fetching data from ${path}:`, error);
             }
         };
 
-        void fetchUsers();
-        void fetchACL();
+        void fetchData();
     }, []);
+
+    return data;
+};
+
+function App() {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const acl = useApi<{ default_policy?: string; rules: Obj[] }>('/api/access-control', { rules: [] });
+    const users = useApi<Record<string, Obj>>('/api/users', {});
+    const containers = useApi<Obj[]>('/docker/containers', []);
 
     return (
         <>
             <h2>Użytkownicy</h2>
-            <p>
+            <ul>
                 {Object.keys(users)
                     .map(id => ({ id, ...users[id] }))
                     .map(datum => (
@@ -40,17 +40,29 @@ function App() {
                             <pre>{JSON.stringify(datum, undefined, 4)}</pre>
                         </li>
                     ))}
-            </p>
-            <h2>ACL</h2>
-            <p>
-                {acl
+            </ul>
+            <h2>
+                {`ACL (default: ${acl.default_policy ?? '?'})`}
+            </h2>
+            <ul>
+                {acl.rules
                     .map((datum, index) => (
                         // eslint-disable-next-line react/no-array-index-key
                         <li key={index}>
                             <pre>{JSON.stringify(datum, undefined, 4)}</pre>
                         </li>
                     ))}
-            </p>
+            </ul>
+            <h2>Kontenery</h2>
+            <ul>
+                {containers
+                    .map((datum, index) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={index}>
+                            <pre>{JSON.stringify(datum, undefined, 4)}</pre>
+                        </li>
+                    ))}
+            </ul>
         </>
     );
 }

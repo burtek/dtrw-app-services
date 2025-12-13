@@ -4,7 +4,7 @@ import { getDb } from '.';
 
 
 export abstract class BaseRepo {
-    constructor(private readonly fastifyContext: FastifyInstance) {
+    constructor(protected readonly fastifyContext: FastifyInstance) {
     }
 
     protected get db() {

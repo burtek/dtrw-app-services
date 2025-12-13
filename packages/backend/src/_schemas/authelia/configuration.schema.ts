@@ -2,13 +2,13 @@
 import { z } from 'zod/v4';
 
 
-export const AccessControlPolicy = z.enum(['deny', 'bypass', 'one_factor', 'two_factor']);
+export const AccessControlPolicySchema = z.enum(['deny', 'bypass', 'one_factor', 'two_factor']);
 export const AccessControlSubject = z.templateLiteral([z.enum(['user', 'group', 'oauth2:client']), ':', z.string()]);
 export const AccessControlMethod = z.enum(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK']);
 export const AccessControlRule = z.object({
     domain: z.union([z.string().nonempty(), z.array(z.string().nonempty()).nonempty()]).optional(),
     domain_regex: z.union([z.string().nonempty(), z.array(z.string().nonempty()).nonempty()]).optional(),
-    policy: AccessControlPolicy,
+    policy: AccessControlPolicySchema,
     subject: z.union([
         AccessControlSubject,
         z.array(
@@ -34,7 +34,7 @@ export const AccessControlRule = z.object({
 );
 export const AccessControlRulesSchema = z.array(AccessControlRule);
 export const AccessControlSchema = z.looseObject({
-    default_policy: AccessControlPolicy.optional(),
+    default_policy: AccessControlPolicySchema.optional(),
     rules: AccessControlRulesSchema
 });
 
@@ -45,5 +45,6 @@ export const AutheliaConfigSchema = z.looseObject({
 });
 
 export type AccessControl = z.infer<typeof AccessControlSchema>;
+export type AccessControlPolicy = z.infer<typeof AccessControlPolicySchema>;
 export type AccessControlRules = z.infer<typeof AccessControlRulesSchema>;
 export type AutheliaConfig = z.infer<typeof AutheliaConfigSchema>;

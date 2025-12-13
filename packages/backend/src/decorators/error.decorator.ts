@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { AppError } from 'src/errors';
+
+import { AppError } from '../errors';
 
 
 function errorHandler(error: Error, request: FastifyRequest, reply: FastifyReply) {

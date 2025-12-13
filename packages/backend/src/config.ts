@@ -30,13 +30,17 @@ type Identity<T> = T extends object ? {} & {
     [P in keyof T]: T[P]
 } : T;
 type DockerKeys = Extract<keyof typeof parsedEnv.data, `DOCKER_${string}`>;
-type RefinedEnv = Identity<(
+
+export type DockerlessEnv = Identity<(
     Omit<typeof parsedEnv.data, DockerKeys>
     & Partial<Record<DockerKeys, undefined>>
-)> | Identity<(
+)>;
+export type DockeredEnv = Identity<(
     Omit<typeof parsedEnv.data, DockerKeys>
     & Required<Pick<typeof parsedEnv.data, DockerKeys>>
 )>;
+
+type RefinedEnv = DockerlessEnv | DockeredEnv;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const env = parsedEnv.data as RefinedEnv;
