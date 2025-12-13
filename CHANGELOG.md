@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/burtek/dtrw-app-services/compare/v1.1.9...v1.2.0) (2025-12-13)
+
+
+### Features
+
+* add docker containers list, refactor backend ([5bada3a](https://github.com/burtek/dtrw-app-services/commit/5bada3aaf192e023bb1172d1c1506096d1c6115f))
+
+
+### Bug Fixes
+
+* **frontend:** tests ([a27e088](https://github.com/burtek/dtrw-app-services/commit/a27e08884fd7ba674c20032bc623d6039862c222))
+
 ### [1.1.9](https://github.com/burtek/dtrw-app-services/compare/v1.1.8...v1.1.9) (2025-12-11)
 
 
