@@ -1,8 +1,59 @@
+import type { ContainerInfo, NetworkInfo } from 'dockerode';
+
 import { BaseRepo } from '../database/repo';
 
 
 export class DockerService extends BaseRepo {
     async getContainers() {
-        return await this.fastifyContext.dockerProxy?.containers;
+        const containers = await this.fastifyContext.dockerProxy?.containers;
+
+        return containers?.map(this.mapContainer);
+    }
+
+    private mapContainer(container: ContainerInfo) {
+        return {
+            id: container.Id,
+            names: container.Names,
+            image: container.Image,
+            command: container.Command,
+            ports: container.Ports,
+            labels: container.Labels,
+            state: container.State,
+            status: container.Status,
+            networks: this.mapNetworks(container.NetworkSettings.Networks),
+            mounts: container.Mounts.map(this.mapMount)
+        };
+    }
+
+    private mapMount(mount: ContainerInfo['Mounts'][number]) {
+        return {
+            type: mount.Type,
+            source: mount.Source,
+            destination: mount.Destination,
+            mode: mount.Mode,
+            rw: mount.RW
+        };
+    }
+
+    private mapNetwork(network: NetworkInfo, networkName: string) {
+        return {
+            name: networkName,
+            mac: network.MacAddress,
+            networkID: network.NetworkID,
+            endpointID: network.EndpointID,
+            gateway: network.Gateway,
+            ipAddress: network.IPAddress
+        };
+    }
+
+    private mapNetworks(networks: Record<string, NetworkInfo>) {
+        return Object.keys(networks)
+            .reduce<Record<string, ReturnType<typeof this.mapNetwork>>>(
+                (acc, network) => ({
+                    ...acc,
+                    [network]: this.mapNetwork(networks[network], network)
+                }),
+                {}
+            );
     }
 }
