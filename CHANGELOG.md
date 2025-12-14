@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/burtek/dtrw-app-services/compare/v1.2.0...v1.2.1) (2025-12-14)
+
+
+### Bug Fixes
+
+* **backend:** docker proxy API whitelist ([e44cfad](https://github.com/burtek/dtrw-app-services/commit/e44cfadf317a851b4ee32afaabb228df008c6e4b))
+
 ## [1.2.0](https://github.com/burtek/dtrw-app-services/compare/v1.1.9...v1.2.0) (2025-12-13)
 
 
