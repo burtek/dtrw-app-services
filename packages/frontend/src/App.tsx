@@ -27,7 +27,7 @@ function App() {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const acl = useApi<{ default_policy?: string; rules: Obj[] }>('/api/access-control', { rules: [] });
     const users = useApi<Record<string, Obj>>('/api/users', {});
-    const containers = useApi<Obj[]>('/docker/containers', []);
+    const containers = useApi<Obj[]>('/api/docker/containers', []);
 
     return (
         <>
