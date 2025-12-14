@@ -60,7 +60,7 @@ services:
       - services_dproxy
     environment:
       ALLOW_RESTARTS: 1
-      CONTAINER: 1
+      CONTAINERS: 1
       EXEC: 1
 
 networks:
