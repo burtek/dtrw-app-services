@@ -7,7 +7,7 @@ export class DockerService extends BaseRepo {
     async getContainers() {
         const containers = await this.fastifyContext.dockerProxy?.containers;
 
-        return containers?.map(this.mapContainer);
+        return containers?.map(container => this.mapContainer(container));
     }
 
     private mapContainer(container: ContainerInfo) {
@@ -21,7 +21,7 @@ export class DockerService extends BaseRepo {
             state: container.State,
             status: container.Status,
             networks: this.mapNetworks(container.NetworkSettings.Networks),
-            mounts: container.Mounts.map(this.mapMount)
+            mounts: container.Mounts.map(mount => this.mapMount(mount))
         };
     }
 
