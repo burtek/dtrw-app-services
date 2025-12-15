@@ -10,6 +10,11 @@ const useApi = <T,>(path: string, defaultValue: T) => {
         const fetchData = async () => {
             try {
                 const res = await fetch(path);
+                if (!res.ok) {
+                    // eslint-disable-next-line no-console
+                    console.error(res);
+                    throw new Error(`Request failed with ${res.status} - ${res.statusText}`);
+                }
                 setData(await res.json());
             } catch (error) {
                 // eslint-disable-next-line no-console
