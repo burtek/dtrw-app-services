@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/burtek/dtrw-app-services/compare/v1.3.0...v1.3.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **backend:** fix mapping data ([3cbc5cb](https://github.com/burtek/dtrw-app-services/commit/3cbc5cb99a041b0142d4e73d5878a746a679426e))
+* **ui:** don't crash on http 500 error ([ec5e449](https://github.com/burtek/dtrw-app-services/commit/ec5e449689d40f1fcb5c1a255dff3d5729f8b708))
+
 ## [1.3.0](https://github.com/burtek/dtrw-app-services/compare/v1.2.2...v1.3.0) (2025-12-15)
 
 
