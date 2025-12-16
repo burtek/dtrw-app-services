@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/burtek/dtrw-app-services/compare/v1.4.1...v1.4.2) (2025-12-16)
+
+
+### Bug Fixes
+
+* **backend:** caddy API path ([6e49e69](https://github.com/burtek/dtrw-app-services/commit/6e49e69f8b59d18c2de24ea72acc6c02abd1e40f))
+
 ### [1.4.1](https://github.com/burtek/dtrw-app-services/compare/v1.4.0...v1.4.1) (2025-12-16)
 
 
