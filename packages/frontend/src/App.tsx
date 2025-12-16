@@ -33,6 +33,7 @@ function App() {
     const acl = useApi<{ default_policy?: string; rules: Obj[] }>('/api/access-control', { rules: [] });
     const users = useApi<Record<string, Obj>>('/api/users', {});
     const containers = useApi<Obj[]>('/api/docker/containers', []);
+    const caddyRoutes = useApi<Obj[]>('/api/caddy/routes', []);
 
     return (
         <>
@@ -61,6 +62,16 @@ function App() {
             <h2>Kontenery</h2>
             <ul>
                 {containers
+                    .map((datum, index) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={index}>
+                            <pre>{JSON.stringify(datum, undefined, 4)}</pre>
+                        </li>
+                    ))}
+            </ul>
+            <h2>Routing</h2>
+            <ul>
+                {caddyRoutes
                     .map((datum, index) => (
                         // eslint-disable-next-line react/no-array-index-key
                         <li key={index}>

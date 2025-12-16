@@ -3,6 +3,7 @@ import { fastify } from 'fastify';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
 import { accessControlController } from './access-control/access-control.controller';
+import { caddyController } from './caddy/caddy.controller';
 import { getDb } from './database';
 import { decorateRequestUser } from './decorators/auth.decorator';
 import { decorateDockerProvider } from './decorators/docker.decorator';
@@ -28,6 +29,7 @@ export function createApp(opts: FastifyServerOptions = {}) {
     app.register(usersController, { prefix: '/users' });
     app.register(accessControlController, { prefix: '/access-control' });
     app.register(dockerController, { prefix: '/docker' });
+    app.register(caddyController, { prefix: '/caddy' });
 
     app.addHook('onClose', instance => {
         instance.log.info('Closing database...');
