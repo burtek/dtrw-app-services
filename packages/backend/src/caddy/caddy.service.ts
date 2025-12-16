@@ -35,7 +35,7 @@ export class CaddyService extends BaseRepo {
 
         try {
             const url = new URL(
-                '/apps/http/servers/srv0/routes/',
+                '/config/apps/http/servers/srv0/routes/',
                 env.DOCKER_CADDY_ADMIN_HOST
             );
             const response = await fetch(url, { signal: this.abortController.signal });

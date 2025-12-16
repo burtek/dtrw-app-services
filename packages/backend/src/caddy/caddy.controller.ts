@@ -10,7 +10,7 @@ export const caddyController: FastifyPluginCallback = (instance, options, done) 
     const f = instance.withTypeProvider<ZodTypeProvider>();
 
     f.get(
-        '/',
+        '/routes',
         () => caddyService.getRoutes()
     );
 
