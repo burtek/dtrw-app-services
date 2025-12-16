@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/burtek/dtrw-app-services/compare/v1.4.0...v1.4.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* **backend:** coerce env ([b101286](https://github.com/burtek/dtrw-app-services/commit/b1012864b2dae608d3b263f5ceb1ee3240cb67d7))
+* **deploy:** update docker deployment step ([d9068f7](https://github.com/burtek/dtrw-app-services/commit/d9068f780768c2385b111a7b8280b4d33772a5b1))
+
 ## [1.4.0](https://github.com/burtek/dtrw-app-services/compare/v1.3.1...v1.4.0) (2025-12-16)
 
 
