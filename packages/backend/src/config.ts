@@ -15,12 +15,13 @@ const envSchema = z.object({
     AUTHELIA_CONFIG: filePath(),
     AUTHELIA_USERS: filePath(),
     CADDY_FETCH_INTERVAL: z.number().positive(),
+    CF_TOKEN: z.string().optional(),
     LOGS_FILE: z.string().optional(),
     DOCKER_PROXY: z.url({ protocol: /^(tcp|http)$/ }).optional(),
-    DOCKER_AUTHELIA_NAME: z.string().nonempty().optional(),
+    DOCKER_AUTHELIA_CONTAINER_NAME: z.string().nonempty().optional(),
     DOCKER_CADDY_ADMIN_HOST: z.url({ protocol: /^(http|https)$/ }).optional()
 })
-    .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_AUTHELIA_NAME'))
+    .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_AUTHELIA_CONTAINER_NAME'))
     .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_CADDY_ADMIN_HOST'));
 /* eslint-enable @typescript-eslint/naming-convention */
 

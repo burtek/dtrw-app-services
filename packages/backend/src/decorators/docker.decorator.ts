@@ -18,7 +18,7 @@ class DockerProxyProvider {
     }
 
     get authelia() {
-        return this.instance.getContainer(this.verifiedEnv.DOCKER_AUTHELIA_NAME);
+        return this.instance.getContainer(this.verifiedEnv.DOCKER_AUTHELIA_CONTAINER_NAME);
     }
 
     get containers() {

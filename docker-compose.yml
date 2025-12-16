@@ -27,11 +27,12 @@ services:
     command: node --enable-source-maps index.js
     env_file:
       - docker/backend/env
+      - .env.backend
     environment:
       NODE_ENV: production
       PORT: 4000
       DOCKER_PROXY: 'tcp://services_dproxy:2375'
-      DOCKER_AUTHELIA_NAME: authelia
+      DOCKER_AUTHELIA_CONTAINER_NAME: authelia
       DOCKER_CADDY_ADMIN_HOST: 'http://caddy-proxy:2019'
       DB_FILE_NAME: '/db/db.db'
       DB_MIGRATIONS_FOLDER: '/app/drizzle'
