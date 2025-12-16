@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/burtek/dtrw-app-services/compare/v1.3.1...v1.4.0) (2025-12-16)
+
+
+### Features
+
+* add caddy reverse proxy API ([0755ccf](https://github.com/burtek/dtrw-app-services/commit/0755ccfd667d482998f1ac537987a771eedbd515))
+* **ui:** update page title ([8d3f4cc](https://github.com/burtek/dtrw-app-services/commit/8d3f4cc0fcae035bbea63aeccb719fc0bbd1be82))
+
+
+### Bug Fixes
+
+* **deploy:** fix CI tests ([6d1bb24](https://github.com/burtek/dtrw-app-services/commit/6d1bb24cf2339542b3f647b0cb6f8a1368549ff5))
+
 ### [1.3.1](https://github.com/burtek/dtrw-app-services/compare/v1.3.0...v1.3.1) (2025-12-15)
 
 
