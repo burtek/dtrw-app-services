@@ -1,4 +1,4 @@
-import { Button, Flex, Heading } from '@radix-ui/themes';
+import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
 import { createSelector } from '@reduxjs/toolkit';
 import { memo, useCallback } from 'react';
 
@@ -23,7 +23,7 @@ const selectContainersCombined = createSelector(
 
         dockerContainers.forEach(dockerContainer => {
             for (const knownContainer of knownDockerContainers) {
-                if (dockerContainer.names.some(name => knownContainer[1].name === name)) {
+                if (dockerContainer.names.some(name => knownContainer[1].name === name.replace(/^\/+/, ''))) {
                     knownContainer[0].push(dockerContainer);
                     return; // goto next forEach
                 }
@@ -69,7 +69,18 @@ const Component = () => {
                     openEdit={openEditDialog}
                 />
             ))}
-            <hr />
+            <Button
+                size="1"
+                variant="soft"
+                style={{ width: '100%' }}
+                onClick={handleCreateNew}
+            >
+                New Container
+            </Button>
+            <Separator
+                my="3"
+                size="4"
+            />
             {unknownDockerContainers.map(dockerContainer => (
                 <UnknownContainerCard
                     key={dockerContainer.id}
@@ -77,14 +88,6 @@ const Component = () => {
                     openAdd={openNewDialog}
                 />
             ))}
-            <Button
-                size="1"
-                variant="soft"
-                style={{ width: '100%' }}
-                onClick={handleCreateNew}
-            >
-                New Known Container
-            </Button>
             {dialogId !== false && (
                 <ContainerFormDialog
                     id={dialogId}

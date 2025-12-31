@@ -18,11 +18,22 @@ const Component = ({ close, id, newContainerName }: { close: () => void; id: num
     const { data: containers = [] } = useGetContainersState();
     const { data: containerTypes } = useGetContainerTypesQuery();
 
+    const getDefaults = useCallback((name: string): Partial<Container> => {
+        const parts = name.split('_');
+        if (parts.length !== 2) {
+            return {};
+        }
+        const project = projects.find(p => p.slug === parts[0]);
+        const type = containerTypes?.find(t => containerTypeByPrefix(parts[1]) === t);
+
+        return { projectId: project?.id, type };
+    }, [containerTypes, projects]);
+
     const [saveContainer, { isLoading }] = useSaveContainerMutation();
 
     const { control, handleSubmit, setError, setValue } = useForm<Partial<Container>>({
         defaultValues: useMemo(
-            () => containers.find(container => container.id === id) ?? { name: newContainerName },
+            () => containers.find(container => container.id === id) ?? { name: newContainerName, ...getDefaults(newContainerName) },
             []
         )
     });
@@ -66,21 +77,16 @@ const Component = ({ close, id, newContainerName }: { close: () => void; id: num
 
     const handleContainerNameChange = useCallback(
         (value: string) => {
-            const parts = value.split('_');
-            if (parts.length !== 2) {
-                return;
-            }
-            const project = projects.find(p => p.slug === parts[0]);
-            const type = containerTypes?.find(t => containerTypeByPrefix(parts[1]) === t);
+            const { projectId, type } = getDefaults(value);
 
-            if (project) {
-                setValue('projectId', project.id);
+            if (projectId) {
+                setValue('projectId', projectId);
             }
             if (type) {
                 setValue('type', type);
             }
         },
-        [containerTypes, projects, setValue]
+        [getDefaults, setValue]
     );
 
     return (

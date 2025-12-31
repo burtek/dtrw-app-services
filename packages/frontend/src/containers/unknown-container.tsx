@@ -11,7 +11,7 @@ const Component = ({ dockerContainer, openAdd }: Props) => {
     const [mainName] = dockerContainer.names;
     const handleAdd = useCallback(
         () => {
-            openAdd(mainName);
+            openAdd(mainName.replace(/^\/+/, ''));
         },
         [openAdd, mainName]
     );
