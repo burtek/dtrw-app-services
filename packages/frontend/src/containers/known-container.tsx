@@ -1,6 +1,6 @@
 import { Cross1Icon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Badge, Box, Button, Card, Flex, Grid, Text } from '@radix-ui/themes';
-import { memo, useCallback } from 'react';
+import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
@@ -77,16 +77,29 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                     >
                         {container.type}
                     </Badge>
-                </Flex>
-                <Text>
-                    {'Docker containers: '}
                     {renderDockerContainersBadge()}
-                </Text>
+                </Flex>
                 <Grid
-                    columns="repeat(4, min-content)"
-                    ml="1"
+                    columns="repeat(3, min-content)"
+                    gap="1"
+                    ml="2"
                 >
-                    {dockerContainers.flatMap(c => [c.id, c.names[0], c.status, c.state])}
+                    {dockerContainers.map(c => {
+                        const color = { running: 'green' as const, exited: 'red' as const, dead: 'red' as const }[c.state] ?? 'yellow' as const;
+
+                        return (
+                            <Fragment key={c.id}>
+                                <Text as="div">{c.image}</Text>
+                                <Text as="div">{c.status}</Text>
+                                <Badge
+                                    variant="surface"
+                                    color={color}
+                                >
+                                    {c.state}
+                                </Badge>
+                            </Fragment>
+                        );
+                    })}
                 </Grid>
                 <Flex
                     m="2"
