@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/burtek/dtrw-app-services/compare/v1.4.2...v1.5.0) (2025-12-31)
+
+
+### Features
+
+* projects and containers MVP ([db3fef4](https://github.com/burtek/dtrw-app-services/commit/db3fef4774b777494e75cffc9a522ecaeb8f0e25))
+
 ### [1.4.2](https://github.com/burtek/dtrw-app-services/compare/v1.4.1...v1.4.2) (2025-12-16)
 
 
