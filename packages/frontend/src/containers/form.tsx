@@ -1,0 +1,160 @@
+import { Button, Dialog, Flex, Select } from '@radix-ui/themes';
+import { memo, useCallback, useMemo } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+
+import { SelectField } from '../components/form/fields/selectField';
+import { TextField } from '../components/form/fields/textField';
+import { withErrorBoundary } from '../components/withErrorBoundary';
+import { useGetProjectsState } from '../projects/api';
+import type { Container, Project, WithId } from '../types';
+
+import { useGetContainersState, useGetContainerTypesQuery, useSaveContainerMutation } from './api-containers';
+import { containerTypeByPrefix } from './containers-types';
+
+
+const Component = ({ close, id, newContainerName }: { close: () => void; id: number | null; newContainerName?: string }) => {
+    const { data: projects = [] } = useGetProjectsState();
+    const { data: containers = [] } = useGetContainersState();
+    const { data: containerTypes } = useGetContainerTypesQuery();
+
+    const [saveContainer, { isLoading }] = useSaveContainerMutation();
+
+    const { control, handleSubmit, setError, setValue } = useForm<Partial<Container>>({
+        defaultValues: useMemo(
+            () => containers.find(container => container.id === id) ?? { name: newContainerName },
+            []
+        )
+    });
+
+    const onSubmit: SubmitHandler<Partial<Container>> = async data => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        const response = await saveContainer({ id, ...data as Container });
+
+        if (response.data) {
+            close();
+        } else if ('status' in response.error) {
+            setError('name', { message: JSON.stringify(response.error.data) });
+        } else {
+            setError('name', { message: String(response.error.message ?? response.error.name) });
+        }
+    };
+
+    const handleClose = useCallback((newState: boolean) => {
+        if (!newState) {
+            close();
+        }
+    }, [close]);
+
+    const renderProjectSelectItem = useCallback((project: WithId<Project>) => (
+        <Select.Item
+            key={project.id}
+            value={project.id.toString()}
+        >
+            {`${project.name} (${project.slug})`}
+        </Select.Item>
+    ), []);
+
+    const renderTypeSelectItem = useCallback((type: string) => (
+        <Select.Item
+            key={type}
+            value={type}
+        >
+            {type}
+        </Select.Item>
+    ), []);
+
+    const handleContainerNameChange = useCallback(
+        (value: string) => {
+            const parts = value.split('_');
+            if (parts.length !== 2) {
+                return;
+            }
+            const project = projects.find(p => p.slug === parts[0]);
+            const type = containerTypes?.find(t => containerTypeByPrefix(parts[1]) === t);
+
+            if (project) {
+                setValue('projectId', project.id);
+            }
+            if (type) {
+                setValue('type', type);
+            }
+        },
+        [containerTypes, projects, setValue]
+    );
+
+    return (
+        <Dialog.Root
+            open
+            onOpenChange={handleClose}
+        >
+            <Dialog.Content maxWidth="450px">
+                <Dialog.Title>{id === null ? 'New container' : 'Edit container'}</Dialog.Title>
+
+                <Dialog.Description mb="4">Enter container&apos;s data.</Dialog.Description>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Flex
+                        direction="column"
+                        gap="3"
+                    >
+                        <TextField
+                            label="Name"
+                            control={control}
+                            name="name"
+                            rules={{ required: true, minLength: 3 }}
+                            onChange={handleContainerNameChange}
+                        />
+
+                        <SelectField
+                            label="Project"
+                            control={control}
+                            name="projectId"
+                            rules={{ required: true }}
+                            items={projects}
+                            renderItem={renderProjectSelectItem}
+                            placeholder="Choose project"
+                            parseIntValue
+                        />
+
+                        <SelectField
+                            label="Container type"
+                            control={control}
+                            name="type"
+                            rules={{ required: true }}
+                            items={containerTypes ?? []}
+                            renderItem={renderTypeSelectItem}
+                            placeholder="Choose project"
+                            disabled={!containerTypes}
+                        />
+
+                        <Flex
+                            gap="3"
+                            justify="end"
+                        >
+                            <Button
+                                loading={isLoading}
+                                type="submit"
+                                disabled={!containerTypes}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                onClick={close}
+                                type="button"
+                                variant="soft"
+                                disabled={isLoading}
+                            >
+                                Cancel
+                            </Button>
+                        </Flex>
+                    </Flex>
+                </form>
+
+            </Dialog.Content>
+        </Dialog.Root>
+    );
+};
+Component.displayName = 'ContainerFormDialog';
+
+export const ContainerFormDialog = memo(withErrorBoundary(Component));

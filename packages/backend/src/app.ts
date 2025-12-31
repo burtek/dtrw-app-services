@@ -4,12 +4,14 @@ import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod
 
 import { accessControlController } from './access-control/access-control.controller';
 import { caddyController } from './caddy/caddy.controller';
+import { containersController } from './containers/containers.controller';
 import { getDb } from './database';
 import { decorateRequestUser } from './decorators/auth.decorator';
 import { decorateDockerProvider } from './decorators/docker.decorator';
 import { decorateErrorHandler } from './decorators/error.decorator';
 import { dockerController } from './docker/docker.controller';
 import { healthController } from './health/health.controller';
+import { projectsController } from './projects/projects.controller';
 import { usersController } from './users/users.controller';
 
 
@@ -26,9 +28,12 @@ export function createApp(opts: FastifyServerOptions = {}) {
     decorateRequestUser(app);
     decorateDockerProvider(app);
 
+    app.register(projectsController, { prefix: '/projects' });
+    app.register(containersController, { prefix: '/containers' });
+    app.register(dockerController, { prefix: '/docker' });
+
     app.register(usersController, { prefix: '/users' });
     app.register(accessControlController, { prefix: '/access-control' });
-    app.register(dockerController, { prefix: '/docker' });
     app.register(caddyController, { prefix: '/caddy' });
 
     app.addHook('onClose', instance => {

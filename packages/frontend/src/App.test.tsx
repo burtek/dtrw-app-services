@@ -1,12 +1,13 @@
 import { act, render, screen } from '@testing-library/react';
 
 import App from './App';
+import { Wrapper } from './wrapper';
 
 
 test('App renders', async () => {
-    vitest.stubGlobal('fetch', vitest.fn().mockRejectedValue({})); // will render defaults, but need proper tests here
+    vitest.stubGlobal('fetch', vitest.fn().mockRejectedValue([])); // will render defaults, but need proper tests here
 
-    const { container } = render(<App />);
+    const { container } = render(<App />, { wrapper: Wrapper });
 
     await act(async () => {
         await Promise.resolve();
@@ -14,5 +15,5 @@ test('App renders', async () => {
 
     expect(container).not.toBeEmptyDOMElement();
 
-    expect(screen.getByText(/Użytkownicy/)).toBeInTheDocument();
+    expect(screen.getByText('Projects', { selector: 'h2' })).toBeInTheDocument();
 });

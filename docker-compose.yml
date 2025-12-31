@@ -24,6 +24,7 @@ services:
       - ./backend:/app:ro
       - /apps/data/services_db/:/db
       - /apps/main-apps/data/authelia/config/:/configs/authelia/
+      - /apps/main-apps/data/caddy/config/:/configs/caddy/
     command: node --enable-source-maps index.js
     env_file:
       - docker/backend/env

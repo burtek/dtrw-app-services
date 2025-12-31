@@ -12,8 +12,16 @@ import { AppError, ErrorType } from '../errors';
 
 
 export class AccessControlService extends BaseRepo {
-    async getConfig() {
+    async getActualConfig() {
         return (await this.getAutheliaConfig()).access_control;
+    }
+
+    async getExpectedConfigRules() {
+        return await this.db.query.autheliaConfigs.findMany({
+            orderBy(autheliaConfig, { asc }) {
+                return [asc(autheliaConfig.order)];
+            }
+        });
     }
 
     async saveDefaultPolicy(policy: AccessControlPolicy) {

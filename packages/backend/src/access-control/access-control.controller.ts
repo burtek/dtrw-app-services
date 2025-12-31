@@ -14,7 +14,7 @@ export const accessControlController: FastifyPluginCallback = (instance, options
 
     f.get(
         '/',
-        async () => await accessControlService.getConfig()
+        async () => await accessControlService.getActualConfig()
     );
 
     f.post(

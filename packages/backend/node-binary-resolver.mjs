@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+// import { existsSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
 
@@ -19,7 +19,7 @@ export function nodeBinaryResolver() {
 
             const resolved = importer ? resolve(dirname(importer), source) : resolve(source);
             // Mark with a null-prefixed ID so Rollup won't try to load from FS directly
-            console.log({ importer, source, resolved });
+            // console.log({ importer, source, resolved });
             return PREFIX + resolved;
         },
 
@@ -29,12 +29,12 @@ export function nodeBinaryResolver() {
             }
 
             const resolved = id.slice(PREFIX.length);
-            console.log({ id, resolved, 'import.meta.dirname': import.meta.dirname });
+            // console.log({ id, resolved, 'import.meta.dirname': import.meta.dirname });
             try {
                 await access(resolved); // throw if not accessible
             } catch (err) {
                 for (let i = 0, path = dirname(resolved); i < 5; i++, path = dirname(path)) {
-                    console.log({ path, exists: existsSync(path) });
+                    // console.log({ path, exists: existsSync(path) });
                 }
                 throw err;
             }

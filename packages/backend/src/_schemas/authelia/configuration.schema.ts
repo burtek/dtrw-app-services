@@ -28,7 +28,7 @@ export const AccessControlRule = z.object({
 ).refine(
     data => !(data.policy === 'bypass' && !!data.subject),
     {
-        error: 'bypass policy can\'t be used with subject filter. Subject must be present for any other policy',
+        error: 'bypass policy can\'t be used with subject filter',
         path: ['policy']
     }
 );

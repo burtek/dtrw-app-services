@@ -1,4 +1,4 @@
-import type { ContainerInfo, NetworkInfo } from 'dockerode';
+import type { ContainerInfo, NetworkInfo, Port } from 'dockerode';
 
 import { BaseRepo } from '../database/repo';
 
@@ -7,7 +7,7 @@ export class DockerService extends BaseRepo {
     async getContainers() {
         const containers = await this.fastifyContext.dockerProxy?.containers;
 
-        return containers?.map(container => this.mapContainer(container));
+        return containers?.map(container => this.mapContainer(container)) ?? [];
     }
 
     private mapContainer(container: ContainerInfo) {
@@ -16,7 +16,7 @@ export class DockerService extends BaseRepo {
             names: container.Names,
             image: container.Image,
             command: container.Command,
-            ports: container.Ports,
+            ports: container.Ports.map(port => this.mapPort(port)),
             labels: container.Labels,
             state: container.State,
             status: container.Status,
@@ -55,5 +55,14 @@ export class DockerService extends BaseRepo {
                 }),
                 {}
             );
+    }
+
+    private mapPort(port: Port) {
+        return {
+            ip: port.IP,
+            privatePort: port.PrivatePort,
+            publicPort: port.PublicPort,
+            type: port.Type
+        };
     }
 }

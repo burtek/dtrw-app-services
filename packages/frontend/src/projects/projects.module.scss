@@ -1,0 +1,12 @@
+.actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.project .actions {
+    visibility: hidden;
+}
+.project:hover .actions {
+    visibility: visible;
+}
