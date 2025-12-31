@@ -17,9 +17,9 @@ const selectContainersCombined = createSelector(
     selectContainers,
     selectDockerContainers,
     (containers = [], dockerContainers = []) => {
-        const knownDockerContainers: [WithId<DockerContainer>[], WithId<Container>][]
+        const knownDockerContainers: [WithId<DockerContainer, string>[], WithId<Container>][]
             = containers.map(container => [[], container]);
-        const unknownDockerContainers: WithId<DockerContainer>[] = [];
+        const unknownDockerContainers: WithId<DockerContainer, string>[] = [];
 
         dockerContainers.forEach(dockerContainer => {
             for (const knownContainer of knownDockerContainers) {

@@ -56,7 +56,7 @@ const Component = ({ dockerContainer, openAdd }: Props) => {
 Component.displayName = 'UnknownContainerCard';
 
 interface Props {
-    dockerContainer: WithId<DockerContainer>;
+    dockerContainer: WithId<DockerContainer, string>;
     openAdd: (name: string) => void;
 }
 

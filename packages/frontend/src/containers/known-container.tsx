@@ -1,4 +1,4 @@
-import { Cross1Icon, Pencil2Icon } from '@radix-ui/react-icons';
+import { Cross1Icon, Pencil2Icon, ReloadIcon } from '@radix-ui/react-icons';
 import { Badge, Box, Button, Card, Flex, Grid, Text } from '@radix-ui/themes';
 import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import { useAppSelector } from '../redux/store';
 import type { Container, DockerContainer, WithId } from '../types';
 
 import { useDeleteContainerMutation } from './api-containers';
+import { useRequestRestartMutation } from './api-docker';
 import { containerConfigByType } from './containers-types';
 import styles from './containers.module.scss';
 
@@ -23,7 +24,7 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
         [openEdit, container.id]
     );
 
-    const [deleteContainer, { isLoading }] = useDeleteContainerMutation();
+    const [deleteContainer, { isLoading: isDeleting }] = useDeleteContainerMutation();
     const handleDelete = useCallback(
         async () => {
             const response = await deleteContainer({ id: container.id });
@@ -40,6 +41,23 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
         [deleteContainer, container.id]
     );
 
+    const [requestRestart, { isLoading: isRequestingRestart }] = useRequestRestartMutation();
+    const handleRequestRestart = useCallback(
+        async (id: string) => {
+            const response = await requestRestart({ id });
+
+            if (typeof response.data === 'boolean') {
+                return;
+            }
+            if ('status' in response.error) {
+                toast.error(String(response.error.data));
+            } else {
+                toast.error(String(response.error.message ?? response.error.name));
+            }
+        },
+        [requestRestart]
+    );
+
     const renderDockerContainersBadge = () => {
         const color = { 0: 'red' as const, 1: 'green' as const }[dockerContainers.length] ?? 'orange' as const;
         return (
@@ -53,7 +71,7 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
     };
 
     return (
-        <Box style={{ opacity: isLoading ? 0.4 : 1 }}>
+        <Box style={{ opacity: isDeleting ? 0.4 : 1 }}>
             <Card className={styles.container}>
                 <Flex
                     gap="2"
@@ -80,12 +98,13 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                     {renderDockerContainersBadge()}
                 </Flex>
                 <Grid
-                    columns="repeat(3, min-content)"
+                    columns="1fr 1fr min-content min-content"
                     gap="1"
                     ml="2"
                 >
                     {dockerContainers.map(c => {
                         const color = { running: 'green' as const, exited: 'red' as const, dead: 'red' as const }[c.state] ?? 'yellow' as const;
+                        const onRequestRestart = () => handleRequestRestart(c.id);
 
                         return (
                             <Fragment key={c.id}>
@@ -97,6 +116,14 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                                 >
                                     {c.state}
                                 </Badge>
+                                <Button
+                                    // eslint-disable-next-line react/jsx-no-bind
+                                    onClick={onRequestRestart}
+                                    variant="ghost"
+                                    loading={isRequestingRestart}
+                                >
+                                    <ReloadIcon />
+                                </Button>
                             </Fragment>
                         );
                     })}
@@ -131,7 +158,7 @@ Component.displayName = 'KnownContainerCard';
 
 interface Props {
     container: WithId<Container>;
-    dockerContainers: WithId<DockerContainer>[];
+    dockerContainers: WithId<DockerContainer, string>[];
     openEdit: (id: number) => void;
 }
 

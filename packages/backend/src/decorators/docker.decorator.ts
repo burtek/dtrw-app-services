@@ -25,6 +25,11 @@ class DockerProxyProvider {
         return this.instance.listContainers();
     }
 
+    async restartContainer(id: string) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return await this.instance.getContainer(id).restart();
+    }
+
     get modem() {
         return this.instance.modem;
     }

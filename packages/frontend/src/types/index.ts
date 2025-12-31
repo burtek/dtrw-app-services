@@ -42,5 +42,5 @@ export interface DockerContainer {
     }[];
 }
 
-export type WithId<T> = T & { id: number };
-export type MaybeWithId<T> = T & { id?: number | null };
+export type WithId<T, ID = number> = T & { id: ID };
+export type MaybeWithId<T, ID = number> = T & { id?: ID | null };

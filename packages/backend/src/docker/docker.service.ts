@@ -10,6 +10,17 @@ export class DockerService extends BaseRepo {
         return containers?.map(container => this.mapContainer(container)) ?? [];
     }
 
+    async requestRestart(id: string) {
+        try {
+            await this.fastifyContext.dockerProxy?.restartContainer(id);
+            return true;
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            this.fastifyContext.log.error('Error restarting container: %o', error as Error);
+            return false;
+        }
+    }
+
     private mapContainer(container: ContainerInfo) {
         return {
             id: container.Id,

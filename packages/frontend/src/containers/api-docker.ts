@@ -12,7 +12,7 @@ export const dockerApi = createApi({
     tagTypes: [TYPE],
     endpoints: builder => ({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        getDockerContainers: builder.query<WithId<DockerContainer>[], void>({
+        getDockerContainers: builder.query<WithId<DockerContainer, string>[], void>({
             query: () => 'docker/containers',
             providesTags: result =>
                 (result
@@ -28,6 +28,13 @@ export const dockerApi = createApi({
                     toast.error('Docker containers fetch failed');
                 }
             }
+        }),
+        requestRestart: builder.mutation<boolean, { id: string }>({
+            query: ({ id }) => ({
+                url: `docker/restart/${id}`,
+                method: 'POST'
+            }),
+            invalidatesTags: (_result, _, { id }) => [{ type: TYPE, id: 'LIST' }, { type: TYPE, id }]
         })
     })
 });
@@ -36,7 +43,8 @@ export const {
     getDockerContainers: {
         useQuery: useGetDockerContainersQuery,
         useQueryState: useGetDockerContainersState
-    }
+    },
+    requestRestart: { useMutation: useRequestRestartMutation }
 } = dockerApi.endpoints;
 
 export const selectDockerContainers = createSelector(
