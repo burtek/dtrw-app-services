@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/burtek/dtrw-app-services/compare/v1.5.1...v1.5.2) (2025-12-31)
+
+
+### Bug Fixes
+
+* **ui:** hide container id ([f461ca6](https://github.com/burtek/dtrw-app-services/commit/f461ca650f46ca71a039d4ebc0414a8f9275cb95))
+
 ### [1.5.1](https://github.com/burtek/dtrw-app-services/compare/v1.5.0...v1.5.1) (2025-12-31)
 
 
