@@ -13,7 +13,7 @@ import { useGetContainersState, useGetContainerTypesQuery, useSaveContainerMutat
 import { containerTypeByPrefix } from './containers-types';
 
 
-const Component = ({ close, id, newContainerName }: { close: () => void; id: number | null; newContainerName?: string }) => {
+const Component = ({ close, id, newContainerName = '' }: { close: () => void; id: number | null; newContainerName?: string }) => {
     const { data: projects = [] } = useGetProjectsState();
     const { data: containers = [] } = useGetContainersState();
     const { data: containerTypes } = useGetContainerTypesQuery();
