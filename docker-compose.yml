@@ -68,6 +68,7 @@ services:
       ALLOW_RESTARTS: 1
       CONTAINERS: 1
       EXEC: 1
+      POST: 1
 
 networks:
   default:

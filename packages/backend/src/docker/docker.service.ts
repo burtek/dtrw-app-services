@@ -12,7 +12,9 @@ export class DockerService extends BaseRepo {
 
     async requestRestart(id: string) {
         try {
-            await this.fastifyContext.dockerProxy?.restartContainer(id);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const answer = await this.fastifyContext.dockerProxy?.restartContainer(id);
+            this.fastifyContext.log.info('Docker restart answer: %o', answer);
             return true;
         } catch (error) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
