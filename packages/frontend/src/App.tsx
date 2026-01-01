@@ -1,24 +1,25 @@
-import { Grid } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes';
 
+import styles from './App.module.scss';
 import { Containers } from './containers';
 import { Projects } from './projects';
 
 
 function App() {
     return (
-        <Grid
-            columns="repeat(3, 1fr)"
-            rows="1"
-            gap="3"
-            width="auto"
+        <Flex
+            direction="row"
             height="100%"
+            width="auto"
+            gap="3"
+            className={styles.app}
         >
             <Projects />
             <Containers />
             {/* <Users /> */}
             {/* <ACL /> */}
             {/* <Routing /> */}
-        </Grid>
+        </Flex>
     );
 }
 App.displayName = 'App';

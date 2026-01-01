@@ -32,17 +32,18 @@ const selectContainersCombined = createSelector(
             unknownDockerContainers.push(dockerContainer);
         });
 
-        knownDockerContainers.sort((a, b) => {
+        knownDockerContainers.sort(([dockersA, defA], [dockersB, defB]) => {
             // move non-running to the beginning
-            const aRunning = a[0].some(dc => dc.state === 'running');
-            const bRunning = b[0].some(dc => dc.state === 'running');
-            if (aRunning && !bRunning) {
+            const aIssue = dockersA.length !== 1 || dockersA.some(dc => dc.state !== 'running');
+            const bIssue = dockersB.length !== 1 || dockersB.some(dc => dc.state !== 'running');
+            if (aIssue && !bIssue) {
                 return -1;
-            } else if (!aRunning && bRunning) {
+            }
+            if (!aIssue && bIssue) {
                 return 1;
             }
             // both running or both not running - sort by name
-            return a[1].name.localeCompare(b[1].name);
+            return defA.name.localeCompare(defB.name);
         });
         unknownDockerContainers.sort((a, b) => a.names[0].localeCompare(b.names[0]));
 
