@@ -39,6 +39,14 @@ const Component = ({ close, id, newContainerName = '' }: { close: () => void; id
     });
 
     const onSubmit: SubmitHandler<Partial<Container>> = async data => {
+        if (!data.projectId && data.type !== 'standalone') {
+            setError('projectId', { message: 'Project is required for this container type' });
+            return;
+        } else if (data.projectId && data.type === 'standalone') {
+            setError('type', { message: 'Standalone containers cannot be assigned to a project' });
+            return;
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const response = await saveContainer({ id, ...data as Container });
 
@@ -116,7 +124,6 @@ const Component = ({ close, id, newContainerName = '' }: { close: () => void; id
                             label="Project"
                             control={control}
                             name="projectId"
-                            rules={{ required: true }}
                             items={projects}
                             renderItem={renderProjectSelectItem}
                             placeholder="Choose project"

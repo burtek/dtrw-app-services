@@ -8,6 +8,13 @@
       "when": 1766858131577,
       "tag": "0000_same_inhumans",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1767255588558,
+      "tag": "0001_motionless_calypso",
+      "breakpoints": true
     }
   ]
 }

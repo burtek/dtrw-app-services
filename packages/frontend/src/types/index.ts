@@ -9,7 +9,7 @@ export interface Project {
 export interface Container {
     name: string;
     projectId: number;
-    type: 'frontend' | 'backend' | 'database' | 'docker-proxy';
+    type: 'frontend' | 'backend' | 'database' | 'docker-proxy' | 'standalone';
 }
 
 export interface DockerContainer {

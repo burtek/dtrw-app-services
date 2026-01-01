@@ -7,7 +7,8 @@ export enum ContainerType {
     FRONTEND = 'frontend',
     BACKEND = 'backend',
     DATABASE = 'database',
-    DOCKER_PROXY = 'docker-proxy'
+    DOCKER_PROXY = 'docker-proxy',
+    STANDALONE = 'standalone'
 }
 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const containerTypes = Object.values(ContainerType) as [ContainerType, ...ContainerType[]];
@@ -17,7 +18,7 @@ export const containers = table('containers', {
     projectId: integer('project_id').references(() => projects.id, {
         onDelete: 'cascade', // just unbinding it from a project
         onUpdate: 'cascade'
-    }).notNull(),
+    }), // null means unassigned to any project - main apps like caddy, authelia, uptime kuma
     name: text('name').unique().notNull(),
     type: text('type', { enum: containerTypes })
         .notNull() // default calculated by UI based on container name
