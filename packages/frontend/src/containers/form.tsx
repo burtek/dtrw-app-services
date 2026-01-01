@@ -53,7 +53,14 @@ const Component = ({ close, id, newContainerName = '' }: { close: () => void; id
         if (response.data) {
             close();
         } else if ('status' in response.error) {
-            setError('name', { message: JSON.stringify(response.error.data) });
+            let message: string;
+            if (typeof response.error.data === 'object' && response.error.data !== null && 'message' in response.error.data && typeof response.error.data.message === 'string') {
+                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
+                message = response.error.data.message;
+            } else {
+                message = JSON.stringify(response.error.data);
+            }
+            setError('name', { message });
         } else {
             setError('name', { message: String(response.error.message ?? response.error.name) });
         }
