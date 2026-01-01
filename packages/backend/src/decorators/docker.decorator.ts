@@ -22,7 +22,7 @@ class DockerProxyProvider {
     }
 
     get containers() {
-        return this.instance.listContainers();
+        return this.instance.listContainers({ all: true });
     }
 
     async restartContainer(id: string) {
