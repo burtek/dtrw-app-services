@@ -84,10 +84,10 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                         {container.name}
                     </Text>
                     <Badge
-                        color="orange"
+                        color="blue"
                         variant="surface"
                     >
-                        {containerProject?.slug}
+                        {`/${containerProject?.slug}`}
                     </Badge>
                     <Badge
                         color={containerConfigByType(container.type)?.color ?? 'gray'}

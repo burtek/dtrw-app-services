@@ -57,7 +57,7 @@ const Component = ({ project, openEdit }: Props) => {
                         color="blue"
                         variant="surface"
                     >
-                        {project.slug}
+                        {`/${project.slug}`}
                     </Badge>
                     <Link
                         href={project.url}
