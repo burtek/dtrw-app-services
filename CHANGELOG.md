@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/burtek/dtrw-app-services/compare/v1.6.0...v1.7.0) (2026-01-01)
+
+
+### Features
+
+* allow standalone containers ([1d39e7c](https://github.com/burtek/dtrw-app-services/commit/1d39e7c8d01c29aa1b930a2e139614a810b5ddfc))
+* sort containers and highlight with wrong status ([1ffda9b](https://github.com/burtek/dtrw-app-services/commit/1ffda9bccb688566546b8b6d043196d7ef6832f8))
+
+
+### Bug Fixes
+
+* fix slug badges ([613dc7b](https://github.com/burtek/dtrw-app-services/commit/613dc7b47872ba0dd501ee4ad9e7f2f8110c07c8))
+* **ui:** layout / z-index ([83f18bf](https://github.com/burtek/dtrw-app-services/commit/83f18bf2f50856873999299d575362cb490f3957))
+
 ## [1.6.0](https://github.com/burtek/dtrw-app-services/compare/v1.5.2...v1.6.0) (2025-12-31)
 
 
