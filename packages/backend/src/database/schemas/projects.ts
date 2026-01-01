@@ -10,7 +10,8 @@ export const projects = table('projects', {
     additionalUrls: text('more_urls', { mode: 'json' })
         .$type<string[]>()
         .default([])
-        .notNull()
+        .notNull(),
+    planned: integer('planned', { mode: 'boolean' }).default(false).notNull()
 });
 
 export type Project = typeof projects.$inferSelect;

@@ -3,6 +3,7 @@ import { memo, useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import { CheckboxField } from '../components/form/fields/checkboxField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
 import type { Project } from '../types';
@@ -17,7 +18,7 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
 
     const { control, handleSubmit, setError } = useForm<Partial<Project>>({
         defaultValues: useMemo(
-            () => projects.find(project => project.id === id) ?? { additionalUrls: [] },
+            () => projects.find(project => project.id === id) ?? { additionalUrls: [], planned: false },
             []
         )
     });
@@ -89,6 +90,12 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
                             control={control}
                             name="url"
                             rules={{ required: true }}
+                        />
+
+                        <CheckboxField
+                            label="Planned"
+                            control={control}
+                            name="planned"
                         />
 
                         <Flex

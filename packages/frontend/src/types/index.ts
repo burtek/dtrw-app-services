@@ -4,6 +4,7 @@ export interface Project {
     github: string;
     url: string;
     additionalUrls: string[];
+    planned: boolean;
 }
 
 export interface Container {

@@ -15,6 +15,13 @@
       "when": 1767255588558,
       "tag": "0001_motionless_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1767299231302,
+      "tag": "0002_late_speedball",
+      "breakpoints": true
     }
   ]
 }

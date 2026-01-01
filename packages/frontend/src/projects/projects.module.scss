@@ -10,3 +10,10 @@
 .project:hover .actions {
     visibility: visible;
 }
+
+.project.planned {
+    color: grey;
+    a {
+        color: grey;
+    }
+}

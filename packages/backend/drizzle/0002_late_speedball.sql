@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `planned` integer DEFAULT false NOT NULL;

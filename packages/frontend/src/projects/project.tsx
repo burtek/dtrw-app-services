@@ -1,5 +1,6 @@
 import { Cross1Icon, ExternalLinkIcon, GitHubLogoIcon, Link1Icon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Badge, Box, Button, Card, Flex, Link, Text } from '@radix-ui/themes';
+import classNames from 'classnames';
 import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
@@ -43,7 +44,7 @@ const Component = ({ project, openEdit }: Props) => {
 
     return (
         <Box style={{ opacity: isLoading ? 0.4 : 1 }}>
-            <Card className={styles.project}>
+            <Card className={classNames(styles.project, project.planned && styles.planned)}>
                 <Flex
                     gap="2"
                     align="center"
@@ -55,7 +56,7 @@ const Component = ({ project, openEdit }: Props) => {
                         {project.name}
                     </Text>
                     <Badge
-                        color="blue"
+                        color={project.planned ? 'gray' : 'blue'}
                         variant="surface"
                     >
                         {`/${project.slug}`}
@@ -90,23 +91,25 @@ const Component = ({ project, openEdit }: Props) => {
                     <GitHubLogoIcon />
                     <Text>{project.github.replace('https://github.com/', '').replace(/\/$/, '')}</Text>
                 </Flex>
-                <Flex
-                    gap="1"
-                    wrap="wrap"
-                    align="center"
-                >
-                    <Text as="div">Containers:</Text>
-                    {containersForProject.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
-                    {containersForProject.map(container => (
-                        <Badge
-                            key={container.id}
-                            variant="surface"
-                            color={containerConfigByType(container.type)?.color ?? 'gray'}
-                        >
-                            {container.name}
-                        </Badge>
-                    ))}
-                </Flex>
+                {!project.planned && (
+                    <Flex
+                        gap="1"
+                        wrap="wrap"
+                        align="center"
+                    >
+                        <Text as="div">Containers:</Text>
+                        {containersForProject.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
+                        {containersForProject.map(container => (
+                            <Badge
+                                key={container.id}
+                                variant="surface"
+                                color={containerConfigByType(container.type)?.color ?? 'gray'}
+                            >
+                                {container.name}
+                            </Badge>
+                        ))}
+                    </Flex>
+                )}
                 <Flex
                     m="2"
                     gap="2"
