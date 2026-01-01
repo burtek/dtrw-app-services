@@ -10,3 +10,7 @@
 .container:hover .actions {
     visibility: visible;
 }
+
+.container.warning {
+    background-color: #ffdeb0;
+}

@@ -1,5 +1,6 @@
 import { Cross1Icon, Pencil2Icon, ReloadIcon } from '@radix-ui/react-icons';
 import { Badge, Box, Button, Card, Flex, Grid, Text } from '@radix-ui/themes';
+import classNames from 'classnames';
 import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
@@ -72,7 +73,7 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
 
     return (
         <Box style={{ opacity: isDeleting ? 0.4 : 1 }}>
-            <Card className={styles.container}>
+            <Card className={classNames(styles.container, (dockerContainers.length !== 1 || dockerContainers[0].state !== 'running') && styles.warning)}>
                 <Flex
                     gap="2"
                     align="center"
