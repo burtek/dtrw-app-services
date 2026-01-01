@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
 import { useGetContainersState } from '../containers/api-containers';
+import { containerConfigByType } from '../containers/containers-types';
 import type { Project, WithId } from '../types';
 
 import { useDeleteProjectMutation } from './api';
@@ -38,7 +39,7 @@ const Component = ({ project, openEdit }: Props) => {
         [deleteProject, project.id]
     );
 
-    const containersForProject = containers?.filter(c => c.projectId === project.id).map(c => c.name) ?? [];
+    const containersForProject = containers?.filter(c => c.projectId === project.id) ?? [];
 
     return (
         <Box style={{ opacity: isLoading ? 0.4 : 1 }}>
@@ -89,10 +90,23 @@ const Component = ({ project, openEdit }: Props) => {
                     <GitHubLogoIcon />
                     <Text>{project.github.replace('https://github.com/', '').replace(/\/$/, '')}</Text>
                 </Flex>
-                <Text as="div">
-                    {'Containers: '}
-                    {containersForProject.length > 0 ? containersForProject.join(', ') : <i>None</i>}
-                </Text>
+                <Flex
+                    gap="1"
+                    wrap="wrap"
+                    align="center"
+                >
+                    <Text as="div">Containers:</Text>
+                    {containersForProject.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
+                    {containersForProject.map(container => (
+                        <Badge
+                            key={container.id}
+                            variant="surface"
+                            color={containerConfigByType(container.type)?.color ?? 'gray'}
+                        >
+                            {container.name}
+                        </Badge>
+                    ))}
+                </Flex>
                 <Flex
                     m="2"
                     gap="2"
