@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/burtek/dtrw-app-services/compare/v1.7.0...v1.7.1) (2026-01-01)
+
+
+### Bug Fixes
+
+* **backend:** allow container restart ([9a8522c](https://github.com/burtek/dtrw-app-services/commit/9a8522cbb2336420d3bab039d39e4829f639aba8))
+
 ## [1.7.0](https://github.com/burtek/dtrw-app-services/compare/v1.6.0...v1.7.0) (2026-01-01)
 
 
