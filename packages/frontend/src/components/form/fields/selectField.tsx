@@ -75,7 +75,10 @@ const Component = <T, C extends Control>(
                     variant="soft"
                     color={error ? 'red' : undefined}
                 />
-                <Select.Content container={container.current}>
+                <Select.Content
+                    container={container.current}
+                    style={{ zIndex: 1 }}
+                >
                     <Select.Group>
                         {items.map(renderItem)}
                     </Select.Group>
