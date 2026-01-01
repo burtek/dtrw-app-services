@@ -84,17 +84,19 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                     >
                         {container.name}
                     </Text>
-                    <Badge
-                        color="blue"
-                        variant="surface"
-                    >
-                        {`/${containerProject?.slug}`}
-                    </Badge>
+                    {containerProject?.slug !== undefined && (
+                        <Badge
+                            color="blue"
+                            variant="surface"
+                        >
+                            {`/${containerProject.slug}`}
+                        </Badge>
+                    )}
                     <Badge
                         color={containerConfigByType(container.type)?.color ?? 'gray'}
-                        variant="surface"
+                        variant={container.type === 'standalone' ? 'soft' : 'surface'}
                     >
-                        {container.type}
+                        {`#${container.type}`}
                     </Badge>
                     {renderDockerContainersBadge()}
                 </Flex>
