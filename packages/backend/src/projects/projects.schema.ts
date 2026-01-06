@@ -10,6 +10,10 @@ export const ProjectSchema = createInsertSchema(projects, {
         protocol: /^https$/,
         hostname: /^github\.com$/
     }),
+    jira: z.url({
+        protocol: /^https$/,
+        hostname: /^dtrw\.atlassian\.net$/
+    }).refine(url => /^\/browse\/DTRW-\d+$/.test(new URL(url).pathname)).optional(),
     url: z.url({ protocol: /^https?$/ }),
     additionalUrls: z.array(z.url({ protocol: /^https?$/ }))
 }).omit({ id: true }).strict();

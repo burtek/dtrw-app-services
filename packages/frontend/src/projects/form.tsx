@@ -86,6 +86,12 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
                         />
 
                         <TextField
+                            label="Jira URL"
+                            control={control}
+                            name="jira"
+                        />
+
+                        <TextField
                             label="Project URL"
                             control={control}
                             name="url"

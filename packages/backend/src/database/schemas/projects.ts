@@ -7,6 +7,7 @@ export const projects = table('projects', {
     name: text('name').unique().notNull(), // name or description
     github: text('github').notNull(),
     url: text('main_url').notNull(),
+    jira: text('jira'),
     additionalUrls: text('more_urls', { mode: 'json' })
         .$type<string[]>()
         .default([])

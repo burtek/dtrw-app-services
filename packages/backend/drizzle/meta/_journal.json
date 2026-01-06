@@ -22,6 +22,13 @@
       "when": 1767299231302,
       "tag": "0002_late_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1767736644875,
+      "tag": "0003_dear_amazoness",
+      "breakpoints": true
     }
   ]
 }

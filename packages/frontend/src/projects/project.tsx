@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
 import { useGetContainersState } from '../containers/api-containers';
 import { containerConfigByType } from '../containers/containers-types';
+import { JiraIcon } from '../icons/jira.svg';
 import type { Project, WithId } from '../types';
 
 import { useDeleteProjectMutation } from './api';
@@ -73,6 +74,14 @@ const Component = ({ project, openEdit }: Props) => {
                     >
                         <GitHubLogoIcon />
                     </Link>
+                    {!!project.jira && (
+                        <Link
+                            href={project.jira}
+                            title={project.jira}
+                        >
+                            <JiraIcon />
+                        </Link>
+                    )}
                 </Flex>
                 {[project.url, ...project.additionalUrls].map(url => (
                     <Flex

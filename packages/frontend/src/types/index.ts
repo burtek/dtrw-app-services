@@ -2,6 +2,7 @@ export interface Project {
     slug: string;
     name: string;
     github: string;
+    jira: string;
     url: string;
     additionalUrls: string[];
     planned: boolean;
