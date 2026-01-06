@@ -1,66 +1,28 @@
 import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
-import { createSelector } from '@reduxjs/toolkit';
 import { memo, useCallback } from 'react';
 
 import { useDialogId } from '../hooks/useDialogId';
 import { useAppSelector } from '../redux/store';
-import type { Container, DockerContainer, WithId } from '../types';
+import { useSearchContext } from '../search/context';
 
-import { selectContainers, useGetContainersQuery } from './api-containers';
-import { selectDockerContainers, useGetDockerContainersQuery } from './api-docker';
+import { useGetContainersQuery } from './api-containers';
+import { useGetDockerContainersQuery } from './api-docker';
 import { ContainerFormDialog } from './form';
 import { KnownContainerCard } from './known-container';
+import { selectContainersCombined } from './selectors';
 import { UnknownContainerCard } from './unknown-container';
 
-
-const selectContainersCombined = createSelector(
-    selectContainers,
-    selectDockerContainers,
-    (containers = [], dockerContainers = []) => {
-        const knownDockerContainers: [WithId<DockerContainer, string>[], WithId<Container>][]
-            = containers.map(container => [[], container]);
-        const unknownDockerContainers: WithId<DockerContainer, string>[] = [];
-
-        dockerContainers.forEach(dockerContainer => {
-            for (const knownContainer of knownDockerContainers) {
-                if (dockerContainer.names.some(name => knownContainer[1].name === name.replace(/^\/+/, ''))) {
-                    knownContainer[0].push(dockerContainer);
-                    return; // goto next forEach
-                }
-            }
-            // definition not found (return not called)
-            unknownDockerContainers.push(dockerContainer);
-        });
-
-        knownDockerContainers.sort(([dockersA, defA], [dockersB, defB]) => {
-            // move non-running to the beginning
-            const aIssue = dockersA.length !== 1 || dockersA.some(dc => dc.state !== 'running');
-            const bIssue = dockersB.length !== 1 || dockersB.some(dc => dc.state !== 'running');
-            if (aIssue && !bIssue) {
-                return -1;
-            }
-            if (!aIssue && bIssue) {
-                return 1;
-            }
-            // both running or both not running - sort by name
-            return defA.name.localeCompare(defB.name);
-        });
-        unknownDockerContainers.sort((a, b) => a.names[0].localeCompare(b.names[0]));
-
-        return {
-            knownDockerContainers,
-            unknownDockerContainers
-        };
-    }
-);
 
 const Component = () => {
     useGetContainersQuery();
     useGetDockerContainersQuery(undefined, { pollingInterval: 10_000 });
+
+    const searchParams = useSearchContext();
+
     const {
         knownDockerContainers,
         unknownDockerContainers
-    } = useAppSelector(selectContainersCombined);
+    } = useAppSelector(state => selectContainersCombined(state, searchParams));
 
     const [dialogId, openEditDialog, openNewDialog, closeDialog, newContainerName] = useDialogId<string>({ withNewParam: true });
 

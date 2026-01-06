@@ -1,25 +1,28 @@
-import { Flex } from '@radix-ui/themes';
+import { Grid } from '@radix-ui/themes';
 
 import styles from './App.module.scss';
 import { Containers } from './containers';
 import { Projects } from './projects';
+import { SearchWrapper } from './search/context';
 
 
 function App() {
     return (
-        <Flex
-            direction="row"
-            height="100%"
+        <Grid
+            columns="600px 600px 1fr"
+            rows="min-content 1fr"
             width="auto"
+            height="100%"
             gap="3"
-            className={styles.app}
         >
-            <Projects />
-            <Containers />
-            {/* <Users /> */}
-            {/* <ACL /> */}
-            {/* <Routing /> */}
-        </Flex>
+            <SearchWrapper classNames={{ fieldWrapper: styles.fieldWrapper }}>
+                <Projects />
+                <Containers />
+                {/* <Users /> */}
+                {/* <ACL /> */}
+                {/* <Routing /> */}
+            </SearchWrapper>
+        </Grid>
     );
 }
 App.displayName = 'App';
