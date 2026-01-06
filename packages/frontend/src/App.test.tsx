@@ -15,5 +15,6 @@ test('App renders', async () => {
 
     expect(container).not.toBeEmptyDOMElement();
 
-    expect(screen.getByText('Projects', { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByText(/Projects/, { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByText(/Containers/, { selector: 'h2' })).toBeInTheDocument();
 });
