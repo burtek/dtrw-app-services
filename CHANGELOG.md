@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/burtek/dtrw-app-services/compare/v1.8.0...v1.9.0) (2026-01-06)
+
+
+### Features
+
+* add jira field to projects ([8703b68](https://github.com/burtek/dtrw-app-services/commit/8703b6857c96b3d72fe2438a16fe1a5abee806da))
+* planned projects ([1a2c7cc](https://github.com/burtek/dtrw-app-services/commit/1a2c7ccfd726f26b9ea24499dbb1fe35eb15065b))
+* **ui:** add search field ([880986d](https://github.com/burtek/dtrw-app-services/commit/880986ddd4c880c13d4254ff56f92c0111f3afce))
+
+
+### Bug Fixes
+
+* showing error message from serverside validation ([91b2066](https://github.com/burtek/dtrw-app-services/commit/91b2066a4f5fa81f0bb17c2551deb30ab3de4226))
+* standalone container type badge ([bf79d1c](https://github.com/burtek/dtrw-app-services/commit/bf79d1cb647bf5734636615afcac1a0c791d2676))
+
 ## [1.8.0](https://github.com/burtek/dtrw-app-services/compare/v1.7.1...v1.8.0) (2026-01-01)
 
 
