@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/burtek/dtrw-app-services/compare/v1.10.0...v1.10.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* **ui:** add target=_blank to links ([7e456d4](https://github.com/burtek/dtrw-app-services/commit/7e456d4d107e25971a79d3d9804d20fa002b337a))
+* **ui:** layout ([712abe5](https://github.com/burtek/dtrw-app-services/commit/712abe5aa306b8b02a0461c7bf4571754ce61cb8))
+
 ## [1.10.0](https://github.com/burtek/dtrw-app-services/compare/v1.9.0...v1.10.0) (2026-01-07)
 
 
