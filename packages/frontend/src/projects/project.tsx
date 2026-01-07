@@ -66,12 +66,16 @@ const Component = ({ project, openEdit }: Props) => {
                     <Link
                         href={project.url}
                         title={project.url}
+                        target="_blank"
+                        rel="noreferrer"
                     >
                         <ExternalLinkIcon />
                     </Link>
                     <Link
                         href={project.github}
                         title={project.github}
+                        target="_blank"
+                        rel="noreferrer"
                     >
                         <GitHubLogoIcon />
                     </Link>
@@ -79,6 +83,8 @@ const Component = ({ project, openEdit }: Props) => {
                         <Link
                             href={project.jira}
                             title={project.jira}
+                            target="_blank"
+                            rel="noreferrer"
                         >
                             <JiraIcon />
                         </Link>
