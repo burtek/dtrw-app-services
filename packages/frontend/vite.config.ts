@@ -18,6 +18,7 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
-        setupFiles: './setup-tests.ts'
+        setupFiles: './setup-tests.ts',
+        environmentOptions: { jsdom: { url: 'http://localhost/' } }
     }
 });

@@ -1,14 +1,15 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { toast } from 'react-toastify';
 
+import { baseQuery } from '../consts';
 import type { MaybeWithId, Project, WithId } from '../types';
 
 
 const TYPE = 'PROJECT';
 export const projectsApi = createApi({
     reducerPath: 'projects',
-    baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+    baseQuery,
     tagTypes: [TYPE],
     endpoints: builder => ({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type

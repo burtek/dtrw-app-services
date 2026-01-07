@@ -1,15 +1,16 @@
 import type { WritableDraft } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { toast } from 'react-toastify';
 
+import { baseQuery } from '../consts';
 import type { CreateUser, GetUser, UpdateUser } from '../types';
 
 
 const TYPE = 'USER';
 export const usersApi = createApi({
     reducerPath: 'users',
-    baseQuery: fetchBaseQuery({ baseUrl: new URL('/api', location.origin).href }),
+    baseQuery,
     tagTypes: [TYPE],
     endpoints: builder => ({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
