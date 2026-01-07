@@ -5,6 +5,7 @@ import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
+import { Prefix } from '../consts';
 import { selectProjects } from '../projects/api';
 import { useAppSelector } from '../redux/store';
 import type { Container, DockerContainer, WithId } from '../types';
@@ -89,14 +90,14 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                             color="blue"
                             variant="surface"
                         >
-                            {`/${containerProject.slug}`}
+                            {`${Prefix.PROJECT_SLUG}${containerProject.slug}`}
                         </Badge>
                     )}
                     <Badge
                         color={containerConfigByType(container.type)?.color ?? 'gray'}
                         variant={container.type === 'standalone' ? 'soft' : 'surface'}
                     >
-                        {`#${container.type}`}
+                        {`${Prefix.CONTAINER_TYPE}${container.type}`}
                     </Badge>
                     {renderDockerContainersBadge()}
                 </Flex>

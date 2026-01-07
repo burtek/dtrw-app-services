@@ -5,6 +5,7 @@ import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
+import { Prefix } from '../consts';
 import { useGetContainersState } from '../containers/api-containers';
 import { containerConfigByType } from '../containers/containers-types';
 import { JiraIcon } from '../icons/jira.svg';
@@ -60,7 +61,7 @@ const Component = ({ project, openEdit }: Props) => {
                         color={project.planned ? 'gray' : 'blue'}
                         variant="surface"
                     >
-                        {`/${project.slug}`}
+                        {`${Prefix.PROJECT_SLUG}${project.slug}`}
                     </Badge>
                     <Link
                         href={project.url}

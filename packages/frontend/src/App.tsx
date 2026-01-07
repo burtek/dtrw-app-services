@@ -4,12 +4,13 @@ import styles from './App.module.scss';
 import { Containers } from './containers';
 import { Projects } from './projects';
 import { SearchWrapper } from './search/context';
+import { Users } from './users';
 
 
 function App() {
     return (
         <Grid
-            columns="600px 600px 1fr"
+            columns="repeat(3, max-content)"
             rows="min-content 1fr"
             width="auto"
             height="100%"
@@ -18,7 +19,7 @@ function App() {
             <SearchWrapper classNames={{ fieldWrapper: styles.fieldWrapper }}>
                 <Projects />
                 <Containers />
-                {/* <Users /> */}
+                <Users />
                 {/* <ACL /> */}
                 {/* <Routing /> */}
             </SearchWrapper>

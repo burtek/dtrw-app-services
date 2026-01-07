@@ -31,8 +31,8 @@ export function createApp(opts: FastifyServerOptions = {}) {
     app.register(projectsController, { prefix: '/projects' });
     app.register(containersController, { prefix: '/containers' });
     app.register(dockerController, { prefix: '/docker' });
-
     app.register(usersController, { prefix: '/users' });
+
     app.register(accessControlController, { prefix: '/access-control' });
     app.register(caddyController, { prefix: '/caddy' });
 

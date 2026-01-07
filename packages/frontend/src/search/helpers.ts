@@ -1,4 +1,4 @@
-import type { Container, DockerContainer, Project, WithId } from '../types';
+import type { Container, DockerContainer, GetUser, Project, WithId } from '../types';
 
 
 export const projectMatchesStringSearch = (project: WithId<Project> | undefined, query: string) => {
@@ -39,4 +39,10 @@ export const dockerContainerMatchesStringSearch = (container: WithId<DockerConta
         container.status,
         container.command
     ].some(field => field.toLowerCase().includes(queryLower));
+};
+
+export const userMatchesStringSearch = (user: GetUser, username: string, query: string) => {
+    const queryLower = query.toLowerCase();
+
+    return [username, user.displayname, user.email, ...user.groups].some(field => field?.toLowerCase().includes(queryLower));
 };

@@ -2,5 +2,7 @@
 
 export const Prefix = Object.freeze({
     CONTAINER_TYPE: '#',
-    PROJECT_SLUG: '/'
+    PROJECT_SLUG: '/',
+    USERNAME: '@',
+    USERGROUP: '$'
 });

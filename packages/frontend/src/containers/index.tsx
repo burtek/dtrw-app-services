@@ -37,7 +37,12 @@ const Component = () => {
             overflowY="auto"
             height="100%"
         >
-            <Heading as="h2">Containers</Heading>
+            <Heading as="h2">
+                Containers (
+                {knownDockerContainers.length}
+                {unknownDockerContainers.length > 0 ? ` + ${unknownDockerContainers.length}` : ''}
+                )
+            </Heading>
             {knownDockerContainers.map(([dockerContainers, container]) => (
                 <KnownContainerCard
                     key={container.id}
@@ -54,17 +59,21 @@ const Component = () => {
             >
                 New Container
             </Button>
-            <Separator
-                my="3"
-                size="4"
-            />
-            {unknownDockerContainers.map(dockerContainer => (
-                <UnknownContainerCard
-                    key={dockerContainer.id}
-                    dockerContainer={dockerContainer}
-                    openAdd={openNewDialog}
-                />
-            ))}
+            {unknownDockerContainers.length > 0 && (
+                <>
+                    <Separator
+                        my="3"
+                        size="4"
+                    />
+                    {unknownDockerContainers.map(dockerContainer => (
+                        <UnknownContainerCard
+                            key={dockerContainer.id}
+                            dockerContainer={dockerContainer}
+                            openAdd={openNewDialog}
+                        />
+                    ))}
+                </>
+            )}
             {dialogId !== false && (
                 <ContainerFormDialog
                     id={dialogId}

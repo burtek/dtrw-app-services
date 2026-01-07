@@ -1,3 +1,4 @@
+/* eslint no-warning-comments: 1 */
 import { createSelector } from '@reduxjs/toolkit';
 
 import { selectProjects } from '../projects/api';
@@ -60,6 +61,9 @@ export const selectContainersCombined = createSelector(
                         return projectMatchesStringSearch(project, param.query)
                             || containerMatchesStringSearch(container, param.query)
                             || dockerCnts.some(dc => dockerContainerMatchesStringSearch(dc, param.query));
+                    case 'username':
+                    case 'usergroup':
+                        return false; // TODO: implement based on project's ACL
                 }
                 return true;
             });
@@ -72,6 +76,8 @@ export const selectContainersCombined = createSelector(
                 switch (param.queryType) {
                     case 'container_type':
                     case 'project_slug':
+                    case 'username':
+                    case 'usergroup':
                         return false;
                     case 'string':
                         return dockerContainerMatchesStringSearch(dockerContainer, param.query);

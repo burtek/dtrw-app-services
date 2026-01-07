@@ -1,3 +1,4 @@
+/* eslint no-warning-comments: 1 */
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useMemo } from 'react';
 
@@ -29,6 +30,9 @@ const Component = () => {
                 case 'string':
                     return projectMatchesStringSearch(project, param.query)
                         || containers?.some(c => c.projectId === project.id && containerMatchesStringSearch(c, param.query));
+                case 'username':
+                case 'usergroup':
+                    return false; // TODO: implement based on ACL
             }
             return true;
         });

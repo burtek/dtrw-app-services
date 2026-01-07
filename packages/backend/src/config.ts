@@ -14,6 +14,7 @@ const envSchema = z.object({
     DB_MIGRATIONS_FOLDER: z.string().nonempty(),
     AUTHELIA_CONFIG: filePath(),
     AUTHELIA_USERS: filePath(),
+    AUTHELIA_USERS_SCHEMA_URL: z.url(),
     CADDY_FETCH_INTERVAL: z.coerce.number().positive(),
     CF_TOKEN: z.string().optional(),
     LOGS_FILE: z.string().optional(),

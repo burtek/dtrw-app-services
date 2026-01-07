@@ -5,6 +5,7 @@ import { createLogger } from 'redux-logger';
 import { containersApi } from '../containers/api-containers';
 import { dockerApi } from '../containers/api-docker';
 import { projectsApi } from '../projects/api';
+import { usersApi } from '../users/api';
 
 
 declare global {
@@ -13,14 +14,17 @@ declare global {
     }
 }
 
+const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi);
+
 export const store = configureStore({
     devTools: true,
-    reducer: combineSlices(projectsApi, containersApi, dockerApi),
+    reducer: rootReducer,
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(
             projectsApi.middleware,
             containersApi.middleware,
             dockerApi.middleware,
+            usersApi.middleware,
             createLogger({
                 predicate() {
                     return (import.meta.env.DEV && !import.meta.env.TEST) || !!window.forceLog;
@@ -29,7 +33,7 @@ export const store = configureStore({
         )
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();

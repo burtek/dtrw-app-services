@@ -44,5 +44,17 @@ export interface DockerContainer {
     }[];
 }
 
+export interface GetUser {
+    displayname: string;
+    groups: string[];
+    disabled: boolean;
+    email?: string | null;
+}
+export interface CreateUser extends GetUser {
+    password?: string;
+    username: string;
+}
+export type UpdateUser = Partial<CreateUser>;
+
 export type WithId<T, ID = number> = T & { id: ID };
 export type MaybeWithId<T, ID = number> = T & { id?: ID | null };

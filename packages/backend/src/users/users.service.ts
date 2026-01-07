@@ -4,23 +4,32 @@ import { readFile, rename, writeFile } from 'node:fs/promises';
 
 import { dump, load } from 'js-yaml';
 
-import type { User, UsersConfig } from '../_schemas/authelia/user.schema';
+import type { User, UsersConfig, UserWithUsername } from '../_schemas/authelia/user.schema';
 import { UsersConfigSchema } from '../_schemas/authelia/user.schema';
 import { env } from '../config';
 import { BaseRepo } from '../database/repo';
 import { AppError, ErrorType } from '../errors';
 
 
+type CreateUser = { [K in keyof UserWithUsername]: K extends 'password' ? string | undefined : UserWithUsername[K] };
+
 export class UsersService extends BaseRepo {
-    async createUser(username: string, body: User) {
+    async createUser({ username, ...user }: CreateUser) {
+        const password = user.password ?? this.generateRandomPassword();
+        const hashedPassword = await this.generatePasswordHash(password);
+
         const config = await this.getUsersRaw();
         if (username in config.users) {
             throw new AppError(ErrorType.BAD_REQUEST, 'Another user exists with that username');
         }
 
-        config.users[username] = body;
+        config.users[username] = { ...user, password: hashedPassword };
 
         await this.writeUsersConfig(config);
+
+        if (!user.password) {
+            // TODO: email the password?
+        }
     }
 
     async deleteUser(username: string) {
@@ -45,30 +54,29 @@ export class UsersService extends BaseRepo {
         }, {});
     }
 
-    async getUsersRaw() {
-        const yaml = await readFile(env.AUTHELIA_USERS, { encoding: 'utf8', flag: 'r' });
-        return UsersConfigSchema.parse(load(yaml));
-    }
-
     async resetUserPassword(username: string) {
+        const newPassword = this.generateRandomPassword();
+        const hashedPassword = await this.generatePasswordHash(newPassword);
+
         const config = await this.getUsersRaw();
         if (!(username in config.users)) {
             throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
         }
         // TODO: verify user has email
 
-        const newPassword = this.generateRandomPassword();
+        config.users[username].password = hashedPassword;
+        await this.writeUsersConfig(config);
 
         // TODO: email the password?
-
-        config.users[username].password = await this.generatePasswordHash(newPassword);
-        await this.writeUsersConfig(config);
     }
 
-    async updateUser(username: string, body: Partial<User>) {
+    async updateUser(username: string, body: Partial<UserWithUsername>) {
         const config = await this.getUsersRaw();
         if (!(username in config.users)) {
             throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
+        }
+        if (!!body.username && body.username !== username && body.username in config.users) {
+            throw new AppError(ErrorType.BAD_REQUEST, 'Username in use');
         }
 
         if (body.disabled !== undefined) {
@@ -85,6 +93,10 @@ export class UsersService extends BaseRepo {
         }
         if (body.password !== undefined) {
             config.users[username].password = await this.generatePasswordHash(body.password);
+        }
+        if (body.username !== undefined && username !== body.username) {
+            config.users[body.username] = config.users[username];
+            delete config.users[username];
         }
 
         await this.writeUsersConfig(config);
@@ -146,12 +158,17 @@ export class UsersService extends BaseRepo {
         return newPasswordArray.join('');
     }
 
+    private async getUsersRaw() {
+        const yaml = await readFile(env.AUTHELIA_USERS, { encoding: 'utf8', flag: 'r' });
+        return UsersConfigSchema.parse(load(yaml));
+    }
+
     private async writeUsersConfig(config: UsersConfig) {
         const tmp = `${env.AUTHELIA_USERS}.tmp`;
-        await writeFile(tmp, dump(config));
+        await writeFile(tmp, dump(config, { lineWidth: 300, quotingType: '"' }));
         await rename(tmp, env.AUTHELIA_USERS);
 
-        // validate schema manually?
+        // validate schema manually using AUTHELIA_USERS_SCHEMA_URL
         // no authelia CLI to validate
         // authelia in watch mode - no need to reload
     }

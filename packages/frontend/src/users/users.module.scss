@@ -1,0 +1,19 @@
+.actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.user .actions {
+    visibility: hidden;
+}
+.user:hover .actions {
+    visibility: visible;
+}
+
+.user.disabled {
+    color: grey;
+    a {
+        color: grey;
+    }
+}

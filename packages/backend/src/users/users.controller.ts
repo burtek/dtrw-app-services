@@ -2,7 +2,7 @@ import type { FastifyPluginCallback } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod/v4';
 
-import { UserSchema } from '../_schemas/authelia/user.schema';
+import { UserWithUsernameSchema } from '../_schemas/authelia/user.schema';
 
 import { UsersService } from './users.service';
 
@@ -18,15 +18,10 @@ export const usersController: FastifyPluginCallback = (instance, options, done) 
     );
 
     f.post(
-        '/:username/create',
-        {
-            schema: {
-                body: UserSchema,
-                params: z.object({ username: z.string().nonempty() })
-            }
-        },
+        '/',
+        { schema: { body: UserWithUsernameSchema.partial({ password: true }) } },
         async request => {
-            await usersService.createUser(request.params.username, request.body);
+            await usersService.createUser({ password: undefined, ...request.body });
         }
     );
 
@@ -34,7 +29,7 @@ export const usersController: FastifyPluginCallback = (instance, options, done) 
         '/:username',
         {
             schema: {
-                body: UserSchema.partial(),
+                body: UserWithUsernameSchema.partial(),
                 params: z.object({ username: z.string().nonempty() })
             }
         },
@@ -52,10 +47,11 @@ export const usersController: FastifyPluginCallback = (instance, options, done) 
     );
 
     f.delete(
-        '/:username/delete',
+        '/:username',
         { schema: { params: z.object({ username: z.string().nonempty() }) } },
         async request => {
             await usersService.deleteUser(request.params.username);
+            return true;
         }
     );
 

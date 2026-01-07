@@ -14,7 +14,7 @@ function checkValueType(value: unknown): asserts value is string | undefined | n
     }
 }
 
-const Component = <C extends Control>({ label, control, name, rules, onChange: onChangeProp }: Props<C>) => {
+const Component = <C extends Control>({ label, control, name, rules, onChange: onChangeProp, type = 'text' }: Props<C>) => {
     const {
         field: { value: v, onChange, onBlur, disabled, ref },
         fieldState: { error },
@@ -42,6 +42,7 @@ const Component = <C extends Control>({ label, control, name, rules, onChange: o
                 disabled={isSubmitting || disabled}
                 variant="soft"
                 color={error ? 'red' : undefined}
+                type={type}
             />
         </FieldWrapper>
     );
@@ -66,6 +67,7 @@ interface Props<C extends Control> {
         maxLength?: number;
         validate?: C extends Control<infer Values> ? Validate<string | undefined, Values> : never;
     };
+    type?: 'text' | 'password' | 'email';
 
     onChange?: (value: string) => void;
 }

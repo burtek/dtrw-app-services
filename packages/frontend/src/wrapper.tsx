@@ -15,7 +15,11 @@ export const Wrapper: FC<PropsWithChildren> = ({ children }) => (
                 {children}
             </Provider>
         </Theme>
-        <ToastContainer style={{ marginTop: 32 }} />
+        <ToastContainer
+            position="bottom-right"
+            newestOnTop
+            style={{ marginTop: 32 }}
+        />
     </StrictMode>
 );
 Wrapper.displayName = 'RootWrapper';
