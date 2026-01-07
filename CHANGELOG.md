@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/burtek/dtrw-app-services/compare/v1.9.0...v1.10.0) (2026-01-07)
+
+
+### Features
+
+* users management ([7bde19c](https://github.com/burtek/dtrw-app-services/commit/7bde19cc78f0f7caa0cf17efde07c39b7f62f76d))
+
 ## [1.9.0](https://github.com/burtek/dtrw-app-services/compare/v1.8.0...v1.9.0) (2026-01-06)
 
 
