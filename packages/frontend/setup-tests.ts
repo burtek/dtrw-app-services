@@ -2,7 +2,8 @@ import '@testing-library/jest-dom/vitest';
 
 
 // Mock the ResizeObserver
-const ResizeObserverMock = vitest.fn((roCallback: ResizeObserverCallback) => {
+// eslint-disable-next-line prefer-arrow-callback
+const ResizeObserverMock = vitest.fn(function ResizeObserverMock(roCallback: ResizeObserverCallback) {
     const ro = {
         observe: vitest.fn(_target => {
             roCallback([], ro);
