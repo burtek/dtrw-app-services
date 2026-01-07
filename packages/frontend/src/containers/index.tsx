@@ -2,6 +2,7 @@ import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
 import { memo, useCallback } from 'react';
 
 import { useDialogId } from '../hooks/useDialogId';
+import { useMinDivWidth } from '../hooks/useMinDivWidth';
 import { useAppSelector } from '../redux/store';
 import { useSearchContext } from '../search/context';
 
@@ -36,6 +37,7 @@ const Component = () => {
             direction="column"
             overflowY="auto"
             height="100%"
+            {...useMinDivWidth()}
         >
             <Heading as="h2">
                 Containers (

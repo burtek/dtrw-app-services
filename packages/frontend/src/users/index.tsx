@@ -2,6 +2,7 @@ import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useMemo } from 'react';
 
 import { useDialogId } from '../hooks/useDialogId';
+import { useMinDivWidth } from '../hooks/useMinDivWidth';
 import { useSearchContext } from '../search/context';
 import { userMatchesStringSearch } from '../search/helpers';
 
@@ -43,6 +44,7 @@ const Component = () => {
             direction="column"
             overflowY="auto"
             height="100%"
+            {...useMinDivWidth()}
         >
             <Heading as="h2">
                 Users (

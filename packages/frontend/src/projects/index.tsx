@@ -4,6 +4,7 @@ import { memo, useMemo } from 'react';
 
 import { useGetContainersState } from '../containers/api-containers';
 import { useDialogId } from '../hooks/useDialogId';
+import { useMinDivWidth } from '../hooks/useMinDivWidth';
 import { useSearchContext } from '../search/context';
 import { containerMatchesStringSearch, projectMatchesStringSearch } from '../search/helpers';
 
@@ -47,6 +48,7 @@ const Component = () => {
             direction="column"
             overflowY="auto"
             height="100%"
+            {...useMinDivWidth()}
         >
             <Heading as="h2">
                 Projects (

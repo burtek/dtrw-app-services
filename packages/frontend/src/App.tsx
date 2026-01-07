@@ -10,7 +10,7 @@ import { Users } from './users';
 function App() {
     return (
         <Grid
-            columns="repeat(3, max-content)"
+            columns="repeat(3, max-content) 1fr"
             rows="min-content 1fr"
             width="auto"
             height="100%"
