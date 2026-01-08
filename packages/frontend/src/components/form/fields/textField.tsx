@@ -55,11 +55,20 @@ export const TextField = memo(
     (prevProps, nextProps) => deepEqual(prevProps, nextProps)
 ) as typeof Component;
 
+type NestedKeys<Values>
+    = Values extends Array<infer R>
+        ? `${number}` | `${number}.${NestedKeys<R>}`
+        : Values extends object
+            ? {
+                [K in keyof Values & (string | number)]: K | `${K}.${NestedKeys<Values[K]>}`;
+            }[keyof Values & (string | number)]
+            : never;
+
 interface Props<C extends Control> {
-    label: string;
+    label?: string;
 
     control: C;
-    name: C extends Control<infer Values> ? keyof Values : string;
+    name: C extends Control<infer Values> ? NestedKeys<Values> : string;
     rules?: {
         pattern?: RegExp;
         required?: boolean;

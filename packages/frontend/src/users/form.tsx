@@ -4,6 +4,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
 import { CheckboxField } from '../components/form/fields/checkboxField';
+import { TagsField } from '../components/form/fields/tagsField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
 import { useAppSelector } from '../redux/store';
@@ -27,6 +28,18 @@ const Component = ({ close, id }: { close: () => void; id: string | null }) => {
     });
 
     const onSubmit: SubmitHandler<Partial<CreateUser>> = async data => {
+        const allGroups = data.groups?.filter(g => !!g) ?? [];
+        let groupError = false;
+        allGroups.forEach((group, index) => {
+            if (allGroups.indexOf(group) !== index) {
+                setError(`groups.${index}`, { message: 'Duplicate group' });
+                groupError = true;
+            }
+        });
+        if (groupError as boolean) { // required because TS thinks groupError is always false here
+            return;
+        }
+
         const response = id
             ? await updateUser({ username: id, data })
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -88,6 +101,13 @@ const Component = ({ close, id }: { close: () => void; id: string | null }) => {
                             control={control}
                             name="email"
                             type="email"
+                        />
+
+                        <TagsField
+                            label="User groups"
+                            control={control}
+                            name="groups"
+                            type="text"
                         />
 
                         <TextField

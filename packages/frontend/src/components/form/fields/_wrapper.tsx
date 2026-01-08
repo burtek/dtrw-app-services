@@ -19,12 +19,14 @@ export const FieldWrapper = forwardRef<HTMLLabelElement & HTMLDivElement, PropsW
             direction={row ? 'row' : 'column'}
             gap={row ? '4' : '1'}
         >
-            <Text
-                size="2"
-                weight="bold"
-            >
-                {label}
-            </Text>
+            {label !== undefined && (
+                <Text
+                    size="2"
+                    weight="bold"
+                >
+                    {label}
+                </Text>
+            )}
             {children}
             {error
                 ? (
@@ -43,7 +45,7 @@ FieldWrapper.displayName = 'FieldWrapper';
 
 export interface FieldWrapperProps {
     error?: FieldError;
-    label: string;
+    label?: string;
     as?: 'div' | 'label';
     row?: boolean;
 }

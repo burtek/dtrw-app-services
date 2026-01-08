@@ -56,15 +56,14 @@ const Component = ({ username, user, openEdit }: Props) => {
                     >
                         {`${Prefix.USERNAME}${username}`}
                     </Badge>
-                    {user.groups.length <= 1 && user.groups.map(group => (
+                    {user.groups.length === 1 && (
                         <Badge
-                            key={group}
                             color={user.disabled ? 'gray' : 'gold'}
                             variant="surface"
                         >
-                            {`${Prefix.USERGROUP}${group}`}
+                            {`${Prefix.USERGROUP}${user.groups[0]}`}
                         </Badge>
-                    ))}
+                    )}
                 </Flex>
                 {user.groups.length > 1
                     && (
