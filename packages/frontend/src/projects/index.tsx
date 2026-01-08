@@ -1,4 +1,5 @@
 /* eslint no-warning-comments: 1 */
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useMemo } from 'react';
 
@@ -14,7 +15,7 @@ import { ProjectCard } from './project';
 
 
 const Component = () => {
-    const { data: projects } = useGetProjectsQuery();
+    const { data: projects, refetch, isFetching } = useGetProjectsQuery();
     const { data: containers } = useGetContainersState();
 
     const searchParams = useSearchContext();
@@ -50,11 +51,26 @@ const Component = () => {
             height="100%"
             {...useMinDivWidth()}
         >
-            <Heading as="h2">
-                Projects (
-                {projects?.length ?? 0}
-                )
-            </Heading>
+            <Flex
+                justify="between"
+                align="center"
+                px="2"
+            >
+                <Heading as="h2">
+                    Projects (
+                    {projects?.length ?? 0}
+                    )
+                </Heading>
+                <Button
+                    variant="ghost"
+                    onClick={refetch}
+                    loading={isFetching}
+                    mx="2"
+                    size="4"
+                >
+                    <ReloadIcon />
+                </Button>
+            </Flex>
             {filteredProjects?.map(project => (
                 <ProjectCard
                     key={project.id}

@@ -1,3 +1,4 @@
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
 import { memo, useCallback } from 'react';
 
@@ -15,7 +16,7 @@ import { UnknownContainerCard } from './unknown-container';
 
 
 const Component = () => {
-    useGetContainersQuery();
+    const { refetch, isFetching } = useGetContainersQuery();
     useGetDockerContainersQuery(undefined, { pollingInterval: 10_000 });
 
     const searchParams = useSearchContext();
@@ -39,12 +40,27 @@ const Component = () => {
             height="100%"
             {...useMinDivWidth()}
         >
-            <Heading as="h2">
-                Containers (
-                {knownDockerContainers.length}
-                {unknownDockerContainers.length > 0 ? ` + ${unknownDockerContainers.length}` : ''}
-                )
-            </Heading>
+            <Flex
+                justify="between"
+                align="center"
+                px="2"
+            >
+                <Heading as="h2">
+                    Containers (
+                    {knownDockerContainers.length}
+                    {unknownDockerContainers.length > 0 ? ` + ${unknownDockerContainers.length}` : ''}
+                    )
+                </Heading>
+                <Button
+                    variant="ghost"
+                    onClick={refetch}
+                    loading={isFetching}
+                    mx="2"
+                    size="4"
+                >
+                    <ReloadIcon />
+                </Button>
+            </Flex>
             {knownDockerContainers.map(([dockerContainers, container]) => (
                 <KnownContainerCard
                     key={container.id}

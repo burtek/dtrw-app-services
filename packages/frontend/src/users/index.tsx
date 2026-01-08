@@ -1,3 +1,4 @@
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useMemo } from 'react';
 
@@ -12,7 +13,7 @@ import { UserCard } from './user';
 
 
 const Component = () => {
-    const { data: users } = useGetUsersQuery();
+    const { data: users, refetch, isFetching } = useGetUsersQuery();
 
     const searchParams = useSearchContext();
     const filteredUsers = useMemo(() => Object.entries(users ?? {}).filter(([username, user]) => {
@@ -46,11 +47,26 @@ const Component = () => {
             height="100%"
             {...useMinDivWidth()}
         >
-            <Heading as="h2">
-                Users (
-                {Object.keys(users ?? {}).length}
-                )
-            </Heading>
+            <Flex
+                justify="between"
+                align="center"
+                px="2"
+            >
+                <Heading as="h2">
+                    Users (
+                    {Object.keys(users ?? {}).length}
+                    )
+                </Heading>
+                <Button
+                    variant="ghost"
+                    onClick={refetch}
+                    loading={isFetching}
+                    mx="2"
+                    size="4"
+                >
+                    <ReloadIcon />
+                </Button>
+            </Flex>
             {filteredUsers.map(([username, user]) => (
                 <UserCard
                     key={username}
