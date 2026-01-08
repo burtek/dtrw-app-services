@@ -4,6 +4,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
 import { CheckboxField } from '../components/form/fields/checkboxField';
+import { ListField } from '../components/form/fields/listField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
 import type { Project } from '../types';
@@ -96,6 +97,13 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
                             control={control}
                             name="url"
                             rules={{ required: true }}
+                        />
+
+                        <ListField
+                            label="Additional urls"
+                            control={control}
+                            name="additionalUrls"
+                            type="text"
                         />
 
                         <CheckboxField
