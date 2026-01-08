@@ -1,11 +1,11 @@
 import { Cross1Icon, EnvelopeClosedIcon, Pencil2Icon } from '@radix-ui/react-icons';
-import { Badge, Box, Button, Card, Flex, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Text } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
+import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
-import { Prefix } from '../consts';
 import type { GetUser } from '../types';
 
 import { useDeleteUserMutation } from './api';
@@ -50,19 +50,17 @@ const Component = ({ username, user, openEdit }: Props) => {
                     >
                         {user.displayname}
                     </Text>
-                    <Badge
-                        color={user.disabled ? 'gray' : 'orange'}
-                        variant="surface"
-                    >
-                        {`${Prefix.USERNAME}${username}`}
-                    </Badge>
+                    <ClickableBadge
+                        type="username"
+                        name={username}
+                        disabled={user.disabled}
+                    />
                     {user.groups.length === 1 && (
-                        <Badge
-                            color={user.disabled ? 'gray' : 'gold'}
-                            variant="surface"
-                        >
-                            {`${Prefix.USERGROUP}${user.groups[0]}`}
-                        </Badge>
+                        <ClickableBadge
+                            type="usergroup"
+                            group={user.groups[0]}
+                            userDisabled={user.disabled}
+                        />
                     )}
                 </Flex>
                 {user.groups.length > 1
@@ -72,13 +70,12 @@ const Component = ({ username, user, openEdit }: Props) => {
                             align="center"
                         >
                             {user.groups.map(group => (
-                                <Badge
+                                <ClickableBadge
                                     key={group}
-                                    color={user.disabled ? 'gray' : 'gold'}
-                                    variant="surface"
-                                >
-                                    {`${Prefix.USERGROUP}${group}`}
-                                </Badge>
+                                    type="usergroup"
+                                    group={user.groups[0]}
+                                    userDisabled={user.disabled}
+                                />
                             ))}
                         </Flex>
                     )}

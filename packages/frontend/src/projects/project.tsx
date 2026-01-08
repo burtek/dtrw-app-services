@@ -1,13 +1,12 @@
 import { Cross1Icon, ExternalLinkIcon, GitHubLogoIcon, Link1Icon, Pencil2Icon } from '@radix-ui/react-icons';
-import { Badge, Box, Button, Card, Flex, Link, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Link, Text } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
+import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
-import { Prefix } from '../consts';
 import { useGetContainersState } from '../containers/api-containers';
-import { containerConfigByType } from '../containers/containers-types';
 import { JiraIcon } from '../icons/jira.svg';
 import type { Project, WithId } from '../types';
 
@@ -57,12 +56,11 @@ const Component = ({ project, openEdit }: Props) => {
                     >
                         {project.name}
                     </Text>
-                    <Badge
-                        color={project.planned ? 'gray' : 'blue'}
-                        variant="surface"
-                    >
-                        {`${Prefix.PROJECT_SLUG}${project.slug}`}
-                    </Badge>
+                    <ClickableBadge
+                        type="project_slug"
+                        slug={project.slug}
+                        planned={project.planned}
+                    />
                     <Link
                         href={project.url}
                         title={project.url}
@@ -116,13 +114,12 @@ const Component = ({ project, openEdit }: Props) => {
                         <Text as="div">Containers:</Text>
                         {containersForProject.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
                         {containersForProject.map(container => (
-                            <Badge
+                            <ClickableBadge
                                 key={container.id}
-                                variant="surface"
-                                color={containerConfigByType(container.type)?.color ?? 'gray'}
-                            >
-                                {container.name}
-                            </Badge>
+                                type="container_type"
+                                containerType={container.type}
+                                label={container.name}
+                            />
                         ))}
                     </Flex>
                 )}

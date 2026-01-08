@@ -4,15 +4,14 @@ import classNames from 'classnames';
 import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
+import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
-import { Prefix } from '../consts';
 import { selectProjects } from '../projects/api';
 import { useAppSelector } from '../redux/store';
 import type { Container, DockerContainer, WithId } from '../types';
 
 import { useDeleteContainerMutation } from './api-containers';
 import { useRequestRestartMutation } from './api-docker';
-import { containerConfigByType } from './containers-types';
 import styles from './containers.module.scss';
 
 
@@ -86,19 +85,16 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                         {container.name}
                     </Text>
                     {containerProject?.slug !== undefined && (
-                        <Badge
-                            color="blue"
-                            variant="surface"
-                        >
-                            {`${Prefix.PROJECT_SLUG}${containerProject.slug}`}
-                        </Badge>
+                        <ClickableBadge
+                            type="project_slug"
+                            slug={containerProject.slug}
+                            planned={containerProject.planned}
+                        />
                     )}
-                    <Badge
-                        color={containerConfigByType(container.type)?.color ?? 'gray'}
-                        variant={container.type === 'standalone' ? 'soft' : 'surface'}
-                    >
-                        {`${Prefix.CONTAINER_TYPE}${container.type}`}
-                    </Badge>
+                    <ClickableBadge
+                        type="container_type"
+                        containerType={container.type}
+                    />
                     {renderDockerContainersBadge()}
                 </Flex>
                 <Grid
