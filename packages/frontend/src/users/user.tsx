@@ -73,7 +73,7 @@ const Component = ({ username, user, openEdit }: Props) => {
                                 <ClickableBadge
                                     key={group}
                                     type="usergroup"
-                                    group={user.groups[0]}
+                                    group={group}
                                     userDisabled={user.disabled}
                                 />
                             ))}
