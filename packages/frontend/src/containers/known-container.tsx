@@ -15,7 +15,7 @@ import { useRequestRestartMutation } from './api-docker';
 import styles from './containers.module.scss';
 
 
-const Component = ({ container, dockerContainers, openEdit }: Props) => {
+const Component = ({ container, dockerContainers, openEdit, widthProps }: Props) => {
     const containerProject = useAppSelector(state => selectProjects(state)?.find(p => p.id === container.projectId));
 
     const handleEdit = useCallback(
@@ -98,7 +98,7 @@ const Component = ({ container, dockerContainers, openEdit }: Props) => {
                     {renderDockerContainersBadge()}
                 </Flex>
                 <Grid
-                    columns="1fr 1fr min-content min-content"
+                    columns={`${widthProps?.maxImageWidth ?? 2}fr ${widthProps?.maxStatusWidth ?? 1}fr min-content min-content`}
                     gap="1"
                     ml="2"
                 >
@@ -160,6 +160,10 @@ interface Props {
     container: WithId<Container>;
     dockerContainers: WithId<DockerContainer, string>[];
     openEdit: (id: number) => void;
+    widthProps?: {
+        maxImageWidth: number;
+        maxStatusWidth: number;
+    };
 }
 
 export const KnownContainerCard = memo(Component);

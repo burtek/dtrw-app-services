@@ -1,6 +1,6 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
@@ -15,6 +15,20 @@ import { selectContainersCombined } from './selectors';
 import { UnknownContainerCard } from './unknown-container';
 
 
+const measureTextWidth = (text: string) => {
+    const el = document.createElement('span');
+    el.style.position = 'absolute';
+    el.style.visibility = 'hidden';
+    el.style.whiteSpace = 'nowrap';
+    el.style.left = '-9999px';
+    el.style.font = 'inherit';
+    el.textContent = text;
+    document.body.appendChild(el);
+    const w = el.offsetWidth;
+    document.body.removeChild(el);
+    return w;
+};
+
 const Component = () => {
     const { refetch, isFetching } = useGetContainersQuery();
 
@@ -24,6 +38,14 @@ const Component = () => {
         knownDockerContainers,
         unknownDockerContainers
     } = useAppSelector(state => selectContainersCombined(state, searchParams));
+
+    const widthProps = useMemo(() => knownDockerContainers
+        .flatMap(([dockerContainers]) => dockerContainers)
+        .reduce((acc, cur) => {
+            acc.maxImageWidth = Math.max(acc.maxImageWidth, measureTextWidth(cur.image));
+            acc.maxStatusWidth = Math.max(acc.maxStatusWidth, measureTextWidth(cur.status));
+            return acc;
+        }, { maxImageWidth: 0, maxStatusWidth: 0 }), [knownDockerContainers]);
 
     const [dialogId, openEditDialog, openNewDialog, closeDialog, newContainerName] = useDialogId<string>({ withNewParam: true });
 
@@ -67,6 +89,7 @@ const Component = () => {
                     container={container}
                     dockerContainers={dockerContainers}
                     openEdit={openEditDialog}
+                    widthProps={widthProps}
                 />
             ))}
             <Button
