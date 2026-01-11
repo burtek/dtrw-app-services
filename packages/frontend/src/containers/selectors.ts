@@ -7,12 +7,12 @@ import { containerMatchesStringSearch, dockerContainerMatchesStringSearch, proje
 import type { Container, DockerContainer, WithId } from '../types';
 
 import { selectContainers } from './api-containers';
-import { selectDockerContainers } from './api-docker';
+import { selectDockerContainers$Stable } from './api-docker';
 
 
 export const selectContainersCombined = createSelector(
     selectContainers,
-    selectDockerContainers,
+    selectDockerContainers$Stable,
     selectProjects,
     (_: unknown, searchParams: SearchContextValues) => searchParams,
     (containers = [], dockerContainers = [], projects = [], searchParams) => {

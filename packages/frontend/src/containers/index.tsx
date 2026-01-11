@@ -8,7 +8,7 @@ import { useAppSelector } from '../redux/store';
 import { useSearchContext } from '../search/context';
 
 import { useGetContainersQuery } from './api-containers';
-import { useGetDockerContainersQuery } from './api-docker';
+import { DockerRefetchController } from './docker-refetch-controller';
 import { ContainerFormDialog } from './form';
 import { KnownContainerCard } from './known-container';
 import { selectContainersCombined } from './selectors';
@@ -17,7 +17,6 @@ import { UnknownContainerCard } from './unknown-container';
 
 const Component = () => {
     const { refetch, isFetching } = useGetContainersQuery();
-    useGetDockerContainersQuery(undefined, { pollingInterval: 10_000 });
 
     const searchParams = useSearchContext();
 
@@ -40,6 +39,7 @@ const Component = () => {
             height="100%"
             {...useMinDivWidth()}
         >
+            <DockerRefetchController />
             <Flex
                 justify="between"
                 align="center"

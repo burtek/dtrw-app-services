@@ -6,7 +6,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
     plugins: [react()],
     server: {
+        // development only
         proxy: {
+            '/api/docker/containers': {
+                target: 'https://services.dtrw.ovh/',
+                changeOrigin: true
+            },
             '/api': {
                 target: 'http://localhost:4000',
                 changeOrigin: true,

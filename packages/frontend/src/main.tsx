@@ -2,8 +2,8 @@ import '@radix-ui/themes/styles.css';
 import { createRoot } from 'react-dom/client';
 
 import './main.scss';
-import App from './App.tsx';
-import { Wrapper } from './wrapper.tsx';
+import App from './App';
+import { Wrapper } from './wrapper';
 
 
 const root = document.getElementById('root');
