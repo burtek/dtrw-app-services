@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/burtek/dtrw-app-services/compare/v1.10.1...v1.11.0) (2026-01-12)
+
+
+### Features
+
+* **ui:** add reload buttons ([8de6549](https://github.com/burtek/dtrw-app-services/commit/8de6549528011f972d2c76b7d5f1bd6810cdb120))
+* **ui:** additional project urls in form ([1e30da3](https://github.com/burtek/dtrw-app-services/commit/1e30da336e72116512e7e9cbaaa78b21bd9f9416))
+* **ui:** don't rerender if docker data did not change ([1423651](https://github.com/burtek/dtrw-app-services/commit/1423651c0b74a89ce872ffb7017e9bced5ad39b8))
+* **ui:** search enhancements ([b59fb12](https://github.com/burtek/dtrw-app-services/commit/b59fb12ea3495d3c6af4b717cdc890fc45f90843))
+* **ui:** user groups in form ([b07edec](https://github.com/burtek/dtrw-app-services/commit/b07edec4e546a3a5df56ab52bcf9112eaca80590))
+
+
+### Bug Fixes
+
+* **ui:** containers layout ([d4f16c5](https://github.com/burtek/dtrw-app-services/commit/d4f16c5863fd47846066640b46f690c7130219a9))
+* **ui:** user group badges ([7932dad](https://github.com/burtek/dtrw-app-services/commit/7932dad524a7a600365324f754d4d393d87c5c8f))
+
 ### [1.10.1](https://github.com/burtek/dtrw-app-services/compare/v1.10.0...v1.10.1) (2026-01-07)
 
 
