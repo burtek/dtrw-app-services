@@ -38,5 +38,7 @@ export function useDialogId({ withNewParam = false }: { withNewParam?: boolean }
         setParam(undefined);
     }, []);
 
-    return [dialogId, openEditDialog, openNewDialog, closeDialog, param];
+    return withNewParam
+        ? [dialogId, openEditDialog, openNewDialog, closeDialog, param]
+        : [dialogId, openEditDialog, openNewDialog, closeDialog];
 }

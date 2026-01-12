@@ -1,5 +1,5 @@
 import { Cross1Icon, EnvelopeClosedIcon, Pencil2Icon } from '@radix-ui/react-icons';
-import { Box, Button, Card, Flex, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Heading, Text } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
@@ -44,12 +44,12 @@ const Component = ({ username, user, openEdit }: Props) => {
                     gap="2"
                     align="center"
                 >
-                    <Text
-                        as="div"
-                        weight="bold"
+                    <Heading
+                        as="h3"
+                        size="3"
                     >
                         {user.displayname}
-                    </Text>
+                    </Heading>
                     <ClickableBadge
                         type="username"
                         name={username}
@@ -97,7 +97,7 @@ const Component = ({ username, user, openEdit }: Props) => {
                         onClick={handleEdit}
                         variant="ghost"
                     >
-                        <Pencil2Icon />
+                        <Pencil2Icon aria-label={`Edit ${username}`} />
                     </Button>
                     <DeleteConfirmButton
                         // eslint-disable-next-line @stylistic/jsx-one-expression-per-line, react/jsx-one-expression-per-line
@@ -106,7 +106,7 @@ const Component = ({ username, user, openEdit }: Props) => {
                         onConfirm={handleDelete}
                     >
                         <Button variant="ghost">
-                            <Cross1Icon />
+                            <Cross1Icon aria-label={`Delete ${username}`} />
                         </Button>
                     </DeleteConfirmButton>
                 </Flex>

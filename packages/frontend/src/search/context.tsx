@@ -130,6 +130,7 @@ export const SearchWrapper = ({ children, classNames }: SearchWrapperProps) => {
                         onChange={onSearchChange}
                         className={classnames(styles['search-input'], classNames?.field)}
                         value={searchValue}
+                        role="searchbox"
                     >
                         <TextField.Slot>
                             <Tooltip content={renderTooltip()}>

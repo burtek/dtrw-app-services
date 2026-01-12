@@ -63,6 +63,7 @@ const Component = () => {
                     loading={isFetching}
                     mx="2"
                     size="4"
+                    aria-label="Reload users list"
                 >
                     <ReloadIcon />
                 </Button>
@@ -80,6 +81,7 @@ const Component = () => {
                 variant="soft"
                 style={{ width: '100%' }}
                 onClick={openNewDialog}
+                disabled={isFetching}
             >
                 New User
             </Button>

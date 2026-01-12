@@ -16,7 +16,7 @@ declare global {
 
 const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi);
 
-export const store = configureStore({
+export const createStore = () => configureStore({
     devTools: true,
     reducer: rootReducer,
     middleware: getDefaultMiddleware =>
@@ -34,7 +34,7 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = ReturnType<typeof createStore>['dispatch'];
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();

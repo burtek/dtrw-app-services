@@ -20,7 +20,7 @@ function checkValueType(value: unknown): asserts value is string[] | undefined |
 
 const Component = <C extends Control>({ label, control, name, rules, onChange: onChangeProp, type = 'text' }: Props<C>) => {
     const {
-        field: { value: v, onChange, disabled },
+        field: { ref, value: v, onChange, disabled },
         fieldState: { error },
         formState: { isSubmitting }
     } = useController({ control, name, rules });
@@ -78,6 +78,8 @@ const Component = <C extends Control>({ label, control, name, rules, onChange: o
             error={error}
         >
             <Input.Root
+                aria-label={label}
+                ref={ref}
                 value={inputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
@@ -104,6 +106,7 @@ const Component = <C extends Control>({ label, control, name, rules, onChange: o
                                     onClick={() => {
                                         removeTag(tag);
                                     }}
+                                    aria-label={`Remove tag ${tag}`}
                                 >
                                     <Cross2Icon />
                                 </Button>
