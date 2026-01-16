@@ -20,6 +20,7 @@ export const githubController: FastifyPluginCallback = (instance, options, done)
 
     f.post(
         '/webhook',
+        { config: { rawBody: true } },
         async (req, res) => {
             const sig = req.headers['x-hub-signature-256'];
 

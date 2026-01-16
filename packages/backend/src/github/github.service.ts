@@ -25,16 +25,29 @@ export class GithubService extends BaseRepo {
     }
 
     /** @throws never */
-    async processWebhook(type: string, _payload: unknown) {
+    async processWebhook(type: string, payload: unknown) {
         if (type === 'workflow_run' || type === 'workflow_job') {
-            await this.refetchProjectsGithubWorkflows();
+            const repositorySlug = typeof payload === 'object'
+                && payload !== null
+                && 'repository' in payload
+                && typeof payload.repository === 'object'
+                && payload.repository !== null
+                && 'full_name' in payload.repository
+                && typeof payload.repository.full_name === 'string'
+                ? payload.repository.full_name
+                : undefined;
+
+            await this.refetchProjectsGithubWorkflows(repositorySlug, false);
         }
     }
 
-    private async getProjectsGithubUrls() {
+    private async getProjectsGithubUrls(githubSlug?: string) {
         return await this.db.query.projects.findMany({
             columns: { id: true, github: true },
             where(fields, operators) {
+                if (githubSlug) {
+                    return operators.like(fields.github, `%${githubSlug}%`);
+                }
                 return operators.eq(fields.planned, false);
             }
         });
@@ -76,10 +89,10 @@ export class GithubService extends BaseRepo {
     }
 
     /** @throws never */
-    private async refetchProjectsGithubWorkflows() {
-        const projects = await this.getProjectsGithubUrls();
+    private async refetchProjectsGithubWorkflows(githubSlug?: string, setupRefetch = true) {
+        const projects = await this.getProjectsGithubUrls(githubSlug);
 
-        this.data = await Promise.all(
+        const data = await Promise.all(
             projects.map<Promise<WokflowItem>>(async project => {
                 try {
                     const statuses = await this.getWorkflowStatusesForProject(project.github);
@@ -98,7 +111,18 @@ export class GithubService extends BaseRepo {
             })
         );
 
-        this.setupRefetch();
+        data.forEach(item => {
+            const existingIndex = this.data.findIndex(d => d.projectId === item.projectId);
+            if (existingIndex >= 0) {
+                this.data[existingIndex] = item;
+            } else {
+                this.data.push(item);
+            }
+        });
+
+        if (setupRefetch) {
+            this.setupRefetch();
+        }
     }
 
     private setupRefetch() {
