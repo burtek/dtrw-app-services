@@ -1,11 +1,13 @@
 /* eslint no-warning-comments: 1 */
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 import { useGetContainersState } from '../containers/api-containers';
 import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
+import { handleQueryError } from '../query-error-handler';
 import { useSearchContext } from '../search/context';
 import { containerMatchesStringSearch, projectMatchesStringSearch } from '../search/helpers';
 
@@ -15,8 +17,14 @@ import { ProjectCard } from './project';
 
 
 const Component = () => {
-    const { data: projects, refetch, isFetching } = useGetProjectsQuery();
+    const { data: projects, refetch, isFetching, error } = useGetProjectsQuery();
     const { data: containers } = useGetContainersState();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(`Users fetch failed: ${handleQueryError(error)}`);
+        }
+    }, [error]);
 
     const searchParams = useSearchContext();
     const filteredProjects = useMemo(() => projects?.filter(project => {
@@ -50,13 +58,17 @@ const Component = () => {
             overflowY="auto"
             height="100%"
             {...useMinDivWidth()}
+            aria-labelledby="projects-heading"
         >
             <Flex
                 justify="between"
                 align="center"
                 px="2"
             >
-                <Heading as="h2">
+                <Heading
+                    as="h2"
+                    id="projects-heading"
+                >
                     Projects (
                     {projects?.length ?? 0}
                     )
@@ -83,6 +95,7 @@ const Component = () => {
                 variant="soft"
                 style={{ width: '100%' }}
                 onClick={openNewDialog}
+                disabled={isFetching}
             >
                 New Project
             </Button>

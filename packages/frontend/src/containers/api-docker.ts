@@ -1,6 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { deepEqual } from 'fast-equals';
-import { toast } from 'react-toastify';
 
 import { baseQuery } from '../consts';
 import type { DockerContainer, WithId } from '../types';
@@ -36,20 +35,10 @@ export const dockerApi = createApi({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         getDockerContainers: builder.query<WithId<DockerContainer, string>[], void>({
             query: () => 'docker/containers',
-            providesTags: result =>
-                (result
-                    ? [
-                        ...result.map(({ id }) => ({ type: TYPE, id } as const)),
-                        { type: TYPE, id: 'LIST' }
-                    ]
-                    : [{ type: TYPE, id: 'LIST' }]),
-            onQueryStarted: async (_arg, { queryFulfilled }) => {
-                try {
-                    await queryFulfilled;
-                } catch {
-                    toast.error('Docker containers fetch failed');
-                }
-            }
+            providesTags: (result = []) => [
+                ...result.map(({ id }) => ({ type: TYPE, id } as const)),
+                { type: TYPE, id: 'LIST' }
+            ]
         }),
         requestRestart: builder.mutation<boolean, { id: string }>({
             query: ({ id }) => ({

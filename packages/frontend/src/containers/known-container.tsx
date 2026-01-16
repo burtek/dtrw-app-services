@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
 import { selectProjects } from '../projects/api';
+import { handleQueryError } from '../query-error-handler';
 import { useAppSelector } from '../redux/store';
 import type { Container, DockerContainer, WithId } from '../types';
 
@@ -30,13 +31,10 @@ const Component = ({ container, dockerContainers, openEdit, widthProps }: Props)
         async () => {
             const response = await deleteContainer({ id: container.id });
 
-            if (typeof response.data === 'boolean') {
-                return;
-            }
-            if ('status' in response.error) {
-                toast.error(String(response.error.data));
+            if (response.error) {
+                toast.error(`Container could not be deleted: ${handleQueryError(response.error)}`);
             } else {
-                toast.error(String(response.error.message ?? response.error.name));
+                toast.success('Container deleted');
             }
         },
         [deleteContainer, container.id]
@@ -47,13 +45,10 @@ const Component = ({ container, dockerContainers, openEdit, widthProps }: Props)
         async (id: string) => {
             const response = await requestRestart({ id });
 
-            if (typeof response.data === 'boolean') {
-                return;
-            }
-            if ('status' in response.error) {
-                toast.error(String(response.error.data));
+            if (response.error) {
+                toast.error(`Restart request failed: ${handleQueryError(response.error)}`);
             } else {
-                toast.error(String(response.error.message ?? response.error.name));
+                toast.success('Restart requested');
             }
         },
         [requestRestart]

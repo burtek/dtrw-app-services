@@ -2,11 +2,13 @@ import { Button, Dialog, Flex } from '@radix-ui/themes';
 import { memo, useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { CheckboxField } from '../components/form/fields/checkboxField';
 import { TagsField } from '../components/form/fields/tagsField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
+import { handleQueryError } from '../query-error-handler';
 import { useAppSelector } from '../redux/store';
 import type { CreateUser } from '../types';
 
@@ -45,19 +47,11 @@ const Component = ({ close, id }: { close: () => void; id: string | null }) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             : await createUser(data as CreateUser);
 
-        if (!response.error) {
-            close();
-        } else if ('status' in response.error) {
-            let message: string;
-            if (typeof response.error.data === 'object' && response.error.data !== null && 'message' in response.error.data && typeof response.error.data.message === 'string') {
-                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
-                message = response.error.data.message;
-            } else {
-                message = JSON.stringify(response.error.data);
-            }
-            setError('username', { message });
+        if (response.error) {
+            toast.error(`User update failed: ${handleQueryError(response.error)}`);
         } else {
-            setError('username', { message: String(response.error.message ?? response.error.name) });
+            toast.success('User updated');
+            close();
         }
     };
 

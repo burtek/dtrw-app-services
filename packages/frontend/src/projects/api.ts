@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { toast } from 'react-toastify';
 
 import { baseQuery } from '../consts';
 import type { MaybeWithId, Project, WithId } from '../types';
@@ -15,23 +14,10 @@ export const projectsApi = createApi({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         getProjects: builder.query<WithId<Project>[], void>({
             query: () => 'projects',
-            providesTags: result =>
-                (result
-                    ? [
-                        ...result.map(({ id }) => ({ type: TYPE, id } as const)),
-                        { type: TYPE, id: 'LIST' }
-                    ]
-                    : [{ type: TYPE, id: 'LIST' }]),
-            onQueryStarted: async (_arg, { queryFulfilled }) => {
-                try {
-                    await queryFulfilled;
-                } catch {
-                    toast.error(
-                        'Projects fetch failed',
-                        { autoClose: false }
-                    );
-                }
-            }
+            providesTags: (result = []) => [
+                ...result.map(({ id }) => ({ type: TYPE, id } as const)),
+                { type: TYPE, id: 'LIST' }
+            ]
         }),
         saveProject: builder.mutation<WithId<Project>, MaybeWithId<Project>>({
             query: ({ id, ...body }) => ({
@@ -56,10 +42,7 @@ export const projectsApi = createApi({
                             }
                         })
                     );
-
-                    toast.success('Project saved');
                 } catch {
-                    toast.error('Project save failed');
                 }
             },
             extraOptions: { maxRetries: 0 }
@@ -83,10 +66,8 @@ export const projectsApi = createApi({
                                 }
                             })
                         );
-                        toast.success('Project removed');
                     }
                 } catch {
-                    toast.error('Project could not be removed');
                 }
             }
         })

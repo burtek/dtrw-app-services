@@ -8,6 +8,7 @@ import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
 import { useGetContainersState } from '../containers/api-containers';
 import { JiraIcon } from '../icons/jira.svg';
+import { handleQueryError } from '../query-error-handler';
 import type { Project, WithId } from '../types';
 
 import { useDeleteProjectMutation } from './api';
@@ -29,13 +30,10 @@ const Component = ({ project, openEdit }: Props) => {
         async () => {
             const response = await deleteProject({ id: project.id });
 
-            if (typeof response.data === 'boolean') {
-                return;
-            }
-            if ('status' in response.error) {
-                toast.error(String(response.error.data));
+            if (response.error) {
+                toast.error(`Password reset failed: ${handleQueryError(response.error)}`);
             } else {
-                toast.error(String(response.error.message ?? response.error.name));
+                toast.success('Password reset initiated');
             }
         },
         [deleteProject, project.id]

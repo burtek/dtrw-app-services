@@ -1,7 +1,6 @@
 import type { WritableDraft } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { toast } from 'react-toastify';
 
 import { baseQuery } from '../consts';
 import type { CreateUser, GetUser, UpdateUser } from '../types';
@@ -16,23 +15,10 @@ export const usersApi = createApi({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         getUsers: builder.query<Record<string, GetUser>, void>({
             query: () => 'users',
-            providesTags: result =>
-                (result
-                    ? [
-                        ...Object.keys(result).map(username => ({ type: TYPE, username } as const)),
-                        { type: TYPE, id: 'LIST' }
-                    ]
-                    : [{ type: TYPE, id: 'LIST' }]),
-            onQueryStarted: async (_arg, { queryFulfilled }) => {
-                try {
-                    await queryFulfilled;
-                } catch {
-                    toast.error(
-                        'Users fetch failed',
-                        { autoClose: false }
-                    );
-                }
-            }
+            providesTags: (result = {}) => [
+                ...Object.keys(result).map(username => ({ type: TYPE, username } as const)),
+                { type: TYPE, id: 'LIST' }
+            ]
         }),
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         createUser: builder.mutation<void, CreateUser>({
@@ -52,10 +38,7 @@ export const usersApi = createApi({
                             draft[username] = user;
                         })
                     );
-
-                    toast.success('User saved');
                 } catch {
-                    toast.error('User save failed');
                 }
             }
         }),
@@ -96,10 +79,7 @@ export const usersApi = createApi({
                             }
                         })
                     );
-
-                    toast.success('User saved');
                 } catch {
-                    toast.error('User save failed');
                 }
             }
         }),
@@ -114,7 +94,7 @@ export const usersApi = createApi({
                     if ((await queryFulfilled).data) {
                         dispatch(
                             usersApi.util.updateQueryData('getUsers', undefined, draft => {
-                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                                 if (!draft[username]) {
                                     return;
                                 }
@@ -122,14 +102,17 @@ export const usersApi = createApi({
                             })
                         );
                     }
-
-                    toast.success('User deleted');
                 } catch {
-                    toast.error('User could not be deleted');
                 }
             }
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        resetUserPassword: builder.mutation<void, { username: string }>({
+            query: body => ({
+                url: `users/${body.username}/reset-password`,
+                method: 'POST'
+            })
         })
-        // resetPassword: todo
     })
 });
 
@@ -140,7 +123,8 @@ export const {
     },
     createUser: { useMutation: useCreateUserMutation },
     updateUser: { useMutation: useUpdateUserMutation },
-    deleteUser: { useMutation: useDeleteUserMutation }
+    deleteUser: { useMutation: useDeleteUserMutation },
+    resetUserPassword: { useMutation: useResetUserPasswordMutation }
 } = usersApi.endpoints;
 
 export const selectUsers = createSelector(

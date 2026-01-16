@@ -2,11 +2,13 @@ import { Button, Dialog, Flex } from '@radix-ui/themes';
 import { memo, useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { CheckboxField } from '../components/form/fields/checkboxField';
 import { ListField } from '../components/form/fields/listField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
+import { handleQueryError } from '../query-error-handler';
 import type { Project } from '../types';
 
 import { useGetProjectsState, useSaveProjectMutation } from './api';
@@ -17,7 +19,7 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
 
     const [saveProject, { isLoading }] = useSaveProjectMutation();
 
-    const { control, handleSubmit, setError } = useForm<Partial<Project>>({
+    const { control, handleSubmit } = useForm<Partial<Project>>({
         defaultValues: useMemo(
             () => projects.find(project => project.id === id) ?? { additionalUrls: [], planned: false },
             []
@@ -28,19 +30,11 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const response = await saveProject({ id, ...data as Project });
 
-        if (response.data) {
-            close();
-        } else if ('status' in response.error) {
-            let message: string;
-            if (typeof response.error.data === 'object' && response.error.data !== null && 'message' in response.error.data && typeof response.error.data.message === 'string') {
-                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
-                message = response.error.data.message;
-            } else {
-                message = JSON.stringify(response.error.data);
-            }
-            setError('slug', { message });
+        if (response.error) {
+            toast.error(`Project save failed: ${handleQueryError(response.error)}`);
         } else {
-            setError('slug', { message: String(response.error.message ?? response.error.name) });
+            toast.success('Project saved');
+            close();
         }
     };
 

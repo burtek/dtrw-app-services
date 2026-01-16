@@ -1,12 +1,14 @@
 import { Button, Dialog, Flex, Select } from '@radix-ui/themes';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { SelectField } from '../components/form/fields/selectField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
 import { useGetProjectsState } from '../projects/api';
+import { handleQueryError } from '../query-error-handler';
 import type { Container, Project, WithId } from '../types';
 
 import { useGetContainersState, useGetContainerTypesQuery, useSaveContainerMutation } from './api-containers';
@@ -16,7 +18,13 @@ import { containerTypeByPrefix } from './containers-types';
 const Component = ({ close, id, newContainerName = '' }: { close: () => void; id: number | null; newContainerName?: string }) => {
     const { data: projects = [] } = useGetProjectsState();
     const { data: containers = [] } = useGetContainersState();
-    const { data: containerTypes } = useGetContainerTypesQuery();
+    const { data: containerTypes, error } = useGetContainerTypesQuery();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(`Container types fetch failed: ${handleQueryError(error)}`);
+        }
+    }, [error]);
 
     const getDefaults = useCallback((name: string): Partial<Container> => {
         const parts = name.split('_');
@@ -50,19 +58,11 @@ const Component = ({ close, id, newContainerName = '' }: { close: () => void; id
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const response = await saveContainer({ id, ...data as Container });
 
-        if (response.data) {
-            close();
-        } else if ('status' in response.error) {
-            let message: string;
-            if (typeof response.error.data === 'object' && response.error.data !== null && 'message' in response.error.data && typeof response.error.data.message === 'string') {
-                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
-                message = response.error.data.message;
-            } else {
-                message = JSON.stringify(response.error.data);
-            }
-            setError('name', { message });
+        if (response.error) {
+            toast.error(`Container save failed: ${handleQueryError(response.error)}`);
         } else {
-            setError('name', { message: String(response.error.message ?? response.error.name) });
+            toast.success('Container saved');
+            close();
         }
     };
 

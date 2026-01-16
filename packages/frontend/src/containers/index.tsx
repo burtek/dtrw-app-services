@@ -1,9 +1,11 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading, Separator } from '@radix-ui/themes';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
+import { handleQueryError } from '../query-error-handler';
 import { useAppSelector } from '../redux/store';
 import { useSearchContext } from '../search/context';
 
@@ -30,7 +32,13 @@ const measureTextWidth = (text: string) => {
 };
 
 const Component = () => {
-    const { refetch, isFetching } = useGetContainersQuery();
+    const { refetch, isFetching, error } = useGetContainersQuery();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(`Containers fetch failed: ${handleQueryError(error)}`);
+        }
+    }, [error]);
 
     const searchParams = useSearchContext();
 
@@ -60,6 +68,7 @@ const Component = () => {
             overflowY="auto"
             height="100%"
             {...useMinDivWidth()}
+            aria-labelledby="containers-heading"
         >
             <DockerRefetchController />
             <Flex
@@ -67,7 +76,10 @@ const Component = () => {
                 align="center"
                 px="2"
             >
-                <Heading as="h2">
+                <Heading
+                    as="h2"
+                    id="containers-heading"
+                >
                     Containers (
                     {knownDockerContainers.length}
                     {unknownDockerContainers.length > 0 ? ` + ${unknownDockerContainers.length}` : ''}
@@ -97,6 +109,7 @@ const Component = () => {
                 variant="soft"
                 style={{ width: '100%' }}
                 onClick={handleCreateNew}
+                disabled={isFetching}
             >
                 New Container
             </Button>

@@ -1,9 +1,11 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
+import { handleQueryError } from '../query-error-handler';
 import { useSearchContext } from '../search/context';
 import { userMatchesStringSearch } from '../search/helpers';
 
@@ -13,7 +15,13 @@ import { UserCard } from './user';
 
 
 const Component = () => {
-    const { data: users, refetch, isFetching } = useGetUsersQuery();
+    const { data: users, refetch, isFetching, error } = useGetUsersQuery();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(`Users fetch failed: ${handleQueryError(error)}`);
+        }
+    }, [error]);
 
     const searchParams = useSearchContext();
     const filteredUsers = useMemo(() => Object.entries(users ?? {}).filter(([username, user]) => {
@@ -46,13 +54,17 @@ const Component = () => {
             overflowY="auto"
             height="100%"
             {...useMinDivWidth()}
+            aria-labelledby="users-heading"
         >
             <Flex
                 justify="between"
                 align="center"
                 px="2"
             >
-                <Heading as="h2">
+                <Heading
+                    as="h2"
+                    id="users-heading"
+                >
                     Users (
                     {Object.keys(users ?? {}).length}
                     )

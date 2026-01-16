@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { toast } from 'react-toastify';
 
 import { baseQuery } from '../consts';
 import type { MaybeWithId, Container, WithId } from '../types';
@@ -15,37 +14,13 @@ export const containersApi = createApi({
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         getContainers: builder.query<WithId<Container>[], void>({
             query: () => 'containers',
-            providesTags: result =>
-                (result
-                    ? [
-                        ...result.map(({ id }) => ({ type: TYPE, id } as const)),
-                        { type: TYPE, id: 'LIST' }
-                    ]
-                    : [{ type: TYPE, id: 'LIST' }]),
-            onQueryStarted: async (_arg, { queryFulfilled }) => {
-                try {
-                    await queryFulfilled;
-                } catch {
-                    toast.error(
-                        'Containers fetch failed',
-                        { autoClose: false }
-                    );
-                }
-            }
+            providesTags: (result = []) => [
+                ...result.map(({ id }) => ({ type: TYPE, id } as const)),
+                { type: TYPE, id: 'LIST' }
+            ]
         }),
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        getContainerTypes: builder.query<Container['type'][], void>({
-            query: () => 'containers/types',
-            onQueryStarted: async (_arg, { queryFulfilled }) => {
-                try {
-                    await queryFulfilled;
-                } catch {
-                    toast.error(
-                        'Container types fetch failed'
-                    );
-                }
-            }
-        }),
+        getContainerTypes: builder.query<Container['type'][], void>({ query: () => 'containers/types' }),
         saveContainer: builder.mutation<WithId<Container>, MaybeWithId<Container>>({
             query: ({ id, ...body }) => ({
                 url: typeof id === 'number'
@@ -69,10 +44,7 @@ export const containersApi = createApi({
                             }
                         })
                     );
-
-                    toast.success('Container saved');
                 } catch {
-                    toast.error('Container save failed');
                 }
             },
             extraOptions: { maxRetries: 0 }
@@ -96,10 +68,8 @@ export const containersApi = createApi({
                                 }
                             })
                         );
-                        toast.success('Container removed');
                     }
                 } catch {
-                    toast.error('Container could not be removed');
                 }
             }
         })
