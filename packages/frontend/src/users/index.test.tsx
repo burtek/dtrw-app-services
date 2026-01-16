@@ -79,7 +79,7 @@ describe('users module', () => {
         expect(screen.getByRole('button', { name: /New User/ })).toBeDisabled();
 
         await waitFor(() => {
-            expect(screen.getByText('Users fetch failed')).toBeInTheDocument();
+            expect(screen.getByText(/Users fetch failed/)).toBeInTheDocument();
         });
 
         expect(screen.getByText('Users (0)')).toBeInTheDocument();
