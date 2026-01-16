@@ -1,5 +1,5 @@
 import { Cross1Icon, ExternalLinkIcon, GitHubLogoIcon, Link1Icon, Pencil2Icon } from '@radix-ui/react-icons';
-import { Box, Button, Card, Flex, Link, Text } from '@radix-ui/themes';
+import { Badge, Box, Button, Card, Flex, Link, Text } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
@@ -20,7 +20,10 @@ import styles from './projects.module.scss';
 
 const Component = ({ project, openEdit }: Props) => {
     const containers = useAppSelector(state => selectContainers(state)?.filter(c => c.projectId === project.id) ?? []);
-    const githubStatus = useAppSelector(state => selectGithubWorkflowStatuses(state)?.find(g => g.projectId === project.id));
+    const githubStatus = useAppSelector(state => {
+        const statuses = selectGithubWorkflowStatuses(state);
+        return statuses ? statuses.find(g => g.projectId === project.id) : null;
+    });
 
     const handleEdit = useCallback(
         () => {
@@ -104,26 +107,26 @@ const Component = ({ project, openEdit }: Props) => {
                 >
                     <GitHubLogoIcon />
                     <Text>{project.github.replace('https://github.com/', '').replace(/\/$/, '')}</Text>
+                    {githubStatus?.error ? '⚠️' : null}
                 </Flex>
-                {Object.keys(githubStatus?.workflows ?? {}).length > 0 && (
+                {(githubStatus === null || Object.keys(githubStatus?.workflows ?? {}).length > 0) && (
                     <Flex
                         gap="2"
                         align="center"
                         ml="4"
                         mb="1"
                     >
-                        {Object.keys(githubStatus?.workflows ?? {}).map(workflowName => {
-                            const workflow = githubStatus?.workflows[workflowName];
-                            if (!workflow) {
-                                return null;
-                            }
-                            return (
-                                <GithubStatusBadge
-                                    key={workflowName}
-                                    workflow={workflow}
-                                />
-                            );
-                        })}
+                        {githubStatus === null && (
+                            <Link style={{ textDecoration: 'none' }}>
+                                <Badge color="blue">⏳ Loading...</Badge>
+                            </Link>
+                        )}
+                        {Object.entries(githubStatus?.workflows ?? {}).map(([workflowName, workflow]) => (
+                            <GithubStatusBadge
+                                key={workflowName}
+                                workflow={workflow}
+                            />
+                        ))}
                     </Flex>
                 )}
                 {!project.planned && (

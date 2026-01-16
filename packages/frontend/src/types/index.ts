@@ -80,11 +80,15 @@ export interface Workflow {
         };
     };
 }
-export interface ProjecktWorkflows {
+export type ProjecktWorkflows = {
     projectId: number;
     workflows: Record<string, Workflow>;
     error: null;
-}
+} | {
+    projectId: number;
+    workflows: null;
+    error: string;
+};
 
 export type WithId<T, ID = number> = T & { id: ID };
 export type MaybeWithId<T, ID = number> = T & { id?: ID | null };

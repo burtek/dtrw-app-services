@@ -7,7 +7,7 @@ import { useGetWorkflowStatusesQuery } from './api-github';
 
 
 export const GithubRefetchController = () => {
-    const { error } = useGetWorkflowStatusesQuery(undefined, { pollingInterval: 10_000 });
+    const { error } = useGetWorkflowStatusesQuery(undefined, { pollingInterval: 5_000 });
 
     useEffect(() => {
         if (error) {
