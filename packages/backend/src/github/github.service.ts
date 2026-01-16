@@ -4,15 +4,21 @@ import { env } from '../config';
 import { BaseRepo } from '../database/repo';
 
 
+const WEBOOK_THROTTLE_MS = 5 * 1000; // 5 seconds // env?
+
 export class GithubService extends BaseRepo {
     private readonly closeAbortController: AbortController = new AbortController();
     private data: WokflowItem[] = [];
     private refetchTimeout: NodeJS.Timeout | undefined;
+    private readonly throttleData = new Map<string, {
+        lastCallTime: number;
+        timeoutHandle: NodeJS.Timeout | null;
+    }>();
 
     constructor(fastifyContext: FastifyInstance) {
         super(fastifyContext);
 
-        this.setupRefetch();
+        void this.refetchProjectsGithubWorkflows();
 
         fastifyContext.addHook('onClose', () => {
             this.closeAbortController.abort();
@@ -24,8 +30,7 @@ export class GithubService extends BaseRepo {
         return this.data;
     }
 
-    /** @throws never */
-    async processWebhook(type: string, payload: unknown) {
+    processWebhook(type: string, payload: unknown) {
         if (type === 'workflow_run' || type === 'workflow_job') {
             const repositorySlug = typeof payload === 'object'
                 && payload !== null
@@ -37,8 +42,12 @@ export class GithubService extends BaseRepo {
                 ? payload.repository.full_name
                 : undefined;
 
-            await this.refetchProjectsGithubWorkflows(repositorySlug, false);
+            if (repositorySlug) {
+                return this.throttleWebhookRefetch(repositorySlug);
+            }
+            return { status: 'ignored', reason: 'missing_repository_slug' };
         }
+        return { status: 'ignored', reason: 'unsupported_event_type' };
     }
 
     private async getProjectsGithubUrls(githubSlug?: string) {
@@ -135,6 +144,38 @@ export class GithubService extends BaseRepo {
             env.GITHUB_POLLING_INTERVAL
         );
         return this.refetchTimeout;
+    }
+
+    private throttleWebhookRefetch(slug: string) {
+        const now = Date.now();
+        const throttleInfo = this.throttleData.get(slug);
+
+        if (!throttleInfo) {
+            this.throttleData.set(slug, {
+                lastCallTime: now,
+                timeoutHandle: null
+            });
+            void this.refetchProjectsGithubWorkflows(slug, false);
+            return { status: 'initiated', reason: 'first_call' };
+        }
+
+        const timeSinceLastCall = now - throttleInfo.lastCallTime;
+
+        if (timeSinceLastCall >= WEBOOK_THROTTLE_MS) {
+            throttleInfo.lastCallTime = now;
+            void this.refetchProjectsGithubWorkflows(slug, false);
+            return { status: 'initiated', reason: 'enough_time_passed' };
+        }
+        if (throttleInfo.timeoutHandle === null) {
+            const waitTime = WEBOOK_THROTTLE_MS - timeSinceLastCall;
+            throttleInfo.timeoutHandle = setTimeout(() => {
+                throttleInfo.lastCallTime = Date.now();
+                throttleInfo.timeoutHandle = null;
+                void this.refetchProjectsGithubWorkflows(slug, false);
+            }, waitTime);
+            return { status: 'scheduled', reason: 'within_throttle_period' };
+        }
+        return { status: 'skipped', reason: 'already_scheduled' };
     }
 }
 
