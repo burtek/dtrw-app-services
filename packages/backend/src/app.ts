@@ -1,4 +1,5 @@
 import type { FastifyServerOptions } from 'fastify';
+import fastifyRawBody from 'fastify-raw-body';
 
 import { accessControlController } from './access-control/access-control.controller';
 import { createPreDecoratedApp } from './app-base';
@@ -16,8 +17,15 @@ import { projectsController } from './projects/projects.controller';
 import { usersController } from './users/users.controller';
 
 
-export function createApp(opts: FastifyServerOptions = {}) {
+export async function createApp(opts: FastifyServerOptions = {}) {
     const app = createPreDecoratedApp(opts);
+
+    await app.register(fastifyRawBody, {
+        field: 'rawBody',
+        global: false,
+        encoding: false,
+        runFirst: true
+    });
 
     app.register(healthController, { prefix: '/health' });
 

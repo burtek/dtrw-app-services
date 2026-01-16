@@ -1,35 +1,43 @@
+import type { FastifyInstance } from 'fastify';
+
 import { env } from '../config';
 import { BaseRepo } from '../database/repo';
 
 
 export class GithubService extends BaseRepo {
-    async getProjectsGithubWorkflows() {
-        const projects = await this.getProjectsGithubUrls();
+    private readonly closeAbortController: AbortController = new AbortController();
+    private data: WokflowItem[] = [];
+    private refetchTimeout: NodeJS.Timeout | undefined;
 
-        const workflows = await Promise.all(
-            projects.map(async project => {
-                try {
-                    const statuses = await this.getWorkflowStatusesForProject(project.github);
-                    return {
-                        projectId: project.id,
-                        workflows: statuses,
-                        error: null
-                    };
-                } catch (error) {
-                    return {
-                        projectId: project.id,
-                        workflows: null,
-                        error: error instanceof Error ? error.message : 'Unknown error'
-                    };
-                }
-            })
-        );
+    constructor(fastifyContext: FastifyInstance) {
+        super(fastifyContext);
 
-        return workflows;
+        this.setupRefetch();
+
+        fastifyContext.addHook('onClose', () => {
+            this.closeAbortController.abort();
+            clearInterval(this.refetchTimeout);
+        });
+    }
+
+    getProjectsGithubWorkflows() {
+        return this.data;
+    }
+
+    /** @throws never */
+    async processWebhook(type: string, _payload: unknown) {
+        if (type === 'workflow_run' || type === 'workflow_job') {
+            await this.refetchProjectsGithubWorkflows();
+        }
     }
 
     private async getProjectsGithubUrls() {
-        return await this.db.query.projects.findMany({ columns: { id: true, github: true } });
+        return await this.db.query.projects.findMany({
+            columns: { id: true, github: true },
+            where(fields, operators) {
+                return operators.eq(fields.planned, false);
+            }
+        });
     }
 
     private async getWorkflowStatusesForProject(projectUrl: string) {
@@ -40,7 +48,8 @@ export class GithubService extends BaseRepo {
             headers: {
                 authorization: `Bearer ${env.GITHUB_ACTIONS_PAT}`,
                 accept: 'application/vnd.github+json'
-            }
+            },
+            signal: this.closeAbortController.signal
         });
 
         if (!response.ok) {
@@ -65,6 +74,44 @@ export class GithubService extends BaseRepo {
 
         return grouped;
     }
+
+    /** @throws never */
+    private async refetchProjectsGithubWorkflows() {
+        const projects = await this.getProjectsGithubUrls();
+
+        this.data = await Promise.all(
+            projects.map<Promise<WokflowItem>>(async project => {
+                try {
+                    const statuses = await this.getWorkflowStatusesForProject(project.github);
+                    return {
+                        projectId: project.id,
+                        workflows: statuses,
+                        error: null
+                    };
+                } catch (error) {
+                    return {
+                        projectId: project.id,
+                        workflows: null,
+                        error: error instanceof Error ? error.message : 'Unknown error'
+                    };
+                }
+            })
+        );
+
+        this.setupRefetch();
+    }
+
+    private setupRefetch() {
+        if (this.closeAbortController.signal.aborted) {
+            return undefined;
+        }
+
+        this.refetchTimeout = setTimeout(
+            () => this.refetchProjectsGithubWorkflows(),
+            env.GITHUB_POLLING_INTERVAL
+        );
+        return this.refetchTimeout;
+    }
 }
 
 function isGithubWorkflowRunsResponse(obj: unknown): obj is GithubWorkflowRunsResponse {
@@ -72,40 +119,52 @@ function isGithubWorkflowRunsResponse(obj: unknown): obj is GithubWorkflowRunsRe
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
-interface GithubWorkflowRunsResponse {
-    total_count: number;
-    workflow_runs: Array<{
+interface GithubWorkflowRun {
+    id: number;
+    name: string;
+    head_branch: string;
+    head_sha: string;
+    display_title: string;
+    run_number: number;
+    event: string;
+    status: string;
+    conclusion: string | null;
+    url: string;
+    html_url: string;
+    created_at: string;
+    updated_at: string;
+    jobs_url: string;
+    logs_url: string;
+    check_suite_url: string;
+    artifacts_url: string;
+    cancel_url: string;
+    rerun_url: string;
+    workflow_url: string;
+    head_commit: {
+        id: string;
+        tree_id: string;
+        message: string;
+        timestamp: string;
+    };
+    repository: {
         id: number;
         name: string;
-        head_branch: string;
-        head_sha: string;
-        display_title: string;
-        run_number: number;
-        event: string;
-        status: string;
-        conclusion: string | null;
-        url: string;
+        full_name: string;
         html_url: string;
-        created_at: string;
-        updated_at: string;
-        jobs_url: string;
-        logs_url: string;
-        check_suite_url: string;
-        artifacts_url: string;
-        cancel_url: string;
-        rerun_url: string;
-        workflow_url: string;
-        head_commit: {
-            id: string;
-            tree_id: string;
-            message: string;
-            timestamp: string;
-        };
-        repository: {
-            id: number;
-            name: string;
-            full_name: string;
-            html_url: string;
-        };
-    }>;
+    };
 }
+
+interface GithubWorkflowRunsResponse {
+    total_count: number;
+    workflow_runs: GithubWorkflowRun[];
+}
+
+type WokflowItem = {
+    projectId: number;
+    workflows: Record<string, GithubWorkflowRun>;
+    error: null;
+} | {
+    projectId: number;
+    workflows: null;
+    error: string;
+};

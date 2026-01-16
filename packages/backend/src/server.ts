@@ -3,19 +3,24 @@ import { env } from './config';
 import { runMigrations } from './database';
 
 
-const { app, shutdown } = createApp({ logger: true });
+async function bootstrap() {
+    const { app, shutdown } = await createApp({ logger: true });
 
-runMigrations(app.log);
+    runMigrations(app.log);
 
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-app.listen({
-    port: env.PORT,
-    host: '0.0.0.0'
-// eslint-disable-next-line promise/prefer-await-to-callbacks
-}).catch((error: unknown) => {
-    app.log.error(error);
-    // eslint-disable-next-line n/no-process-exit
-    process.exit(1);
-});
+    try {
+        await app.listen({
+            port: env.PORT,
+            host: '0.0.0.0'
+        });
+    } catch (error: unknown) {
+        app.log.error(error);
+        // eslint-disable-next-line n/no-process-exit
+        process.exit(1);
+    }
+}
+
+void bootstrap();
