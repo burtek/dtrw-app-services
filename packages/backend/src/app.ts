@@ -7,6 +7,8 @@ import { containersController } from './containers/containers.controller';
 import { getDb } from './database';
 import { decorateRequestUser } from './decorators/auth.decorator';
 import { decorateDockerProvider } from './decorators/docker.decorator';
+import { decorateErrorHandler } from './decorators/error.decorator';
+import { decorateMailerHandler } from './decorators/mailer.decorator';
 import { dockerController } from './docker/docker.controller';
 import { healthController } from './health/health.controller';
 import { projectsController } from './projects/projects.controller';
@@ -18,8 +20,10 @@ export function createApp(opts: FastifyServerOptions = {}) {
 
     app.register(healthController, { prefix: '/health' });
 
+    decorateErrorHandler(app);
     decorateRequestUser(app);
     decorateDockerProvider(app);
+    decorateMailerHandler(app);
 
     app.register(projectsController, { prefix: '/projects' });
     app.register(containersController, { prefix: '/containers' });

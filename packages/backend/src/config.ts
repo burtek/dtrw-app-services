@@ -20,10 +20,13 @@ const envSchema = z.object({
     LOGS_FILE: z.string().optional(),
     DOCKER_PROXY: z.url({ protocol: /^(tcp|http)$/ }).optional(),
     DOCKER_AUTHELIA_CONTAINER_NAME: z.string().nonempty().optional(),
-    DOCKER_CADDY_ADMIN_HOST: z.url({ protocol: /^(http|https)$/ }).optional()
+    DOCKER_CADDY_ADMIN_HOST: z.url({ protocol: /^(http|https)$/ }).optional(),
+    EMAIL_SMTP_USER: z.email(),
+    EMAIL_SMTP_PASS: z.string().nonempty(),
+    EMAIL_FROM: z.templateLiteral([z.string().nonempty(), ' <', z.email(), '>'])
 })
-    .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_AUTHELIA_CONTAINER_NAME'))
-    .superRefine(refineOptionalCondition('DOCKER_PROXY', 'DOCKER_CADDY_ADMIN_HOST'));
+    .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_AUTHELIA_CONTAINER_NAME'))
+    .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_CADDY_ADMIN_HOST'));
 /* eslint-enable @typescript-eslint/naming-convention */
 
 const parsedEnv = envSchema.safeParse(process.env);

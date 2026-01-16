@@ -24,6 +24,9 @@ export const filePath = () => z.string()
         }
     }, 'Path must point to a file');
 
+/**
+ * Sets property as required if condition is set
+ */
 export const refineOptionalCondition = <T extends Partial<Record<`DOCKER_${string}`, string>>>(
     condition: `DOCKER_${string}` & keyof T,
     property: `DOCKER_${string}` & keyof T

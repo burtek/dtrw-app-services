@@ -1,4 +1,3 @@
-/* eslint no-warning-comments: 1 */
 import { argon2, randomBytes, randomInt } from 'node:crypto';
 import { readFile, rename, writeFile } from 'node:fs/promises';
 
@@ -27,8 +26,12 @@ export class UsersService extends BaseRepo {
 
         await this.writeUsersConfig(config);
 
-        if (!user.password) {
-            // TODO: email the password?
+        if (!user.password && user.email) {
+            await this.fastifyContext.mailerProvider?.sendMail({
+                to: user.email,
+                subject: 'Your new account',
+                text: `Hello ${user.displayname || username},\n\nYour account has been created. Your temporary password is: ${password}\n\nPlease change your password after logging in for the first time.\n\nBest regards,\nDTRW Services Management`
+            });
         }
     }
 
@@ -62,12 +65,19 @@ export class UsersService extends BaseRepo {
         if (!(username in config.users)) {
             throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
         }
-        // TODO: verify user has email
+
+        if (!config.users[username].email) {
+            throw new AppError(ErrorType.BAD_REQUEST, 'User does not have an email set');
+        }
 
         config.users[username].password = hashedPassword;
         await this.writeUsersConfig(config);
 
-        // TODO: email the password?
+        await this.fastifyContext.mailerProvider?.sendMail({
+            to: config.users[username].email,
+            subject: 'Your password has been reset',
+            text: `Hello ${config.users[username].displayname || username},\n\nYour password has been reset. Your new temporary password is: ${newPassword}\n\nPlease change your password after logging in for the first time.\n\nBest regards,\nDTRW Services Management`
+        });
     }
 
     async updateUser(username: string, body: Partial<UserWithUsername>) {
