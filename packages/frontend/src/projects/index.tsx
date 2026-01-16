@@ -11,8 +11,9 @@ import { handleQueryError } from '../query-error-handler';
 import { useSearchContext } from '../search/context';
 import { containerMatchesStringSearch, projectMatchesStringSearch } from '../search/helpers';
 
-import { useGetProjectsQuery } from './api';
+import { useGetProjectsQuery } from './api-projects';
 import { ProjectFormDialog } from './form';
+import { GithubRefetchController } from './github-refetch-controller';
 import { ProjectCard } from './project';
 
 
@@ -60,6 +61,7 @@ const Component = () => {
             {...useMinDivWidth()}
             aria-labelledby="projects-heading"
         >
+            <GithubRefetchController />
             <Flex
                 justify="between"
                 align="center"

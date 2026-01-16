@@ -11,7 +11,7 @@ import { withErrorBoundary } from '../components/withErrorBoundary';
 import { handleQueryError } from '../query-error-handler';
 import type { Project } from '../types';
 
-import { useGetProjectsState, useSaveProjectMutation } from './api';
+import { useGetProjectsState, useSaveProjectMutation } from './api-projects';
 
 
 const Component = ({ close, id }: { close: () => void; id: number | null }) => {

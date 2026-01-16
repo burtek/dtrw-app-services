@@ -10,6 +10,7 @@ import { decorateDockerProvider } from './decorators/docker.decorator';
 import { decorateErrorHandler } from './decorators/error.decorator';
 import { decorateMailerHandler } from './decorators/mailer.decorator';
 import { dockerController } from './docker/docker.controller';
+import { githubController } from './github/github.controller';
 import { healthController } from './health/health.controller';
 import { projectsController } from './projects/projects.controller';
 import { usersController } from './users/users.controller';
@@ -29,6 +30,7 @@ export function createApp(opts: FastifyServerOptions = {}) {
     app.register(containersController, { prefix: '/containers' });
     app.register(dockerController, { prefix: '/docker' });
     app.register(usersController, { prefix: '/users' });
+    app.register(githubController, { prefix: '/github' });
 
     app.register(accessControlController, { prefix: '/access-control' });
     app.register(caddyController, { prefix: '/caddy' });

@@ -1,7 +1,7 @@
 /* eslint no-warning-comments: 1 */
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectProjects } from '../projects/api';
+import { selectProjects } from '../projects/api-projects';
 import type { SearchContextValues } from '../search/context';
 import { containerMatchesStringSearch, dockerContainerMatchesStringSearch, projectMatchesStringSearch } from '../search/helpers';
 import type { Container, DockerContainer, WithId } from '../types';

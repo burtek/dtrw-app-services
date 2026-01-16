@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { SelectField } from '../components/form/fields/selectField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
-import { useGetProjectsState } from '../projects/api';
+import { useGetProjectsState } from '../projects/api-projects';
 import { handleQueryError } from '../query-error-handler';
 import type { Container, Project, WithId } from '../types';
 

@@ -4,7 +4,8 @@ import { createLogger } from 'redux-logger';
 
 import { containersApi } from '../containers/api-containers';
 import { dockerApi } from '../containers/api-docker';
-import { projectsApi } from '../projects/api';
+import { githubApi } from '../projects/api-github';
+import { projectsApi } from '../projects/api-projects';
 import { usersApi } from '../users/api';
 
 
@@ -14,7 +15,7 @@ declare global {
     }
 }
 
-const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi);
+const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi, githubApi);
 
 export const createStore = () => configureStore({
     devTools: true,
@@ -25,6 +26,7 @@ export const createStore = () => configureStore({
             containersApi.middleware,
             dockerApi.middleware,
             usersApi.middleware,
+            githubApi.middleware,
             createLogger({
                 predicate() {
                     return (import.meta.env.DEV && !import.meta.env.TEST) || !!window.forceLog;

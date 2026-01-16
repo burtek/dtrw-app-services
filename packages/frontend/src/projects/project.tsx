@@ -6,17 +6,21 @@ import { toast } from 'react-toastify';
 
 import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
-import { useGetContainersState } from '../containers/api-containers';
+import { selectContainers } from '../containers/api-containers';
 import { JiraIcon } from '../icons/jira.svg';
 import { handleQueryError } from '../query-error-handler';
+import { useAppSelector } from '../redux/store';
 import type { Project, WithId } from '../types';
 
-import { useDeleteProjectMutation } from './api';
+import { selectGithubWorkflowStatuses } from './api-github';
+import { useDeleteProjectMutation } from './api-projects';
+import { GithubStatusBadge } from './github-status-badge';
 import styles from './projects.module.scss';
 
 
 const Component = ({ project, openEdit }: Props) => {
-    const { data: containers } = useGetContainersState();
+    const containers = useAppSelector(state => selectContainers(state)?.filter(c => c.projectId === project.id) ?? []);
+    const githubStatus = useAppSelector(state => selectGithubWorkflowStatuses(state)?.find(g => g.projectId === project.id));
 
     const handleEdit = useCallback(
         () => {
@@ -38,8 +42,6 @@ const Component = ({ project, openEdit }: Props) => {
         },
         [deleteProject, project.id]
     );
-
-    const containersForProject = containers?.filter(c => c.projectId === project.id) ?? [];
 
     return (
         <Box style={{ opacity: isLoading ? 0.4 : 1 }}>
@@ -103,6 +105,27 @@ const Component = ({ project, openEdit }: Props) => {
                     <GitHubLogoIcon />
                     <Text>{project.github.replace('https://github.com/', '').replace(/\/$/, '')}</Text>
                 </Flex>
+                {Object.keys(githubStatus?.workflows ?? {}).length > 0 && (
+                    <Flex
+                        gap="2"
+                        align="center"
+                        ml="4"
+                        mb="1"
+                    >
+                        {Object.keys(githubStatus?.workflows ?? {}).map(workflowName => {
+                            const workflow = githubStatus?.workflows[workflowName];
+                            if (!workflow) {
+                                return null;
+                            }
+                            return (
+                                <GithubStatusBadge
+                                    key={workflowName}
+                                    workflow={workflow}
+                                />
+                            );
+                        })}
+                    </Flex>
+                )}
                 {!project.planned && (
                     <Flex
                         gap="1"
@@ -110,8 +133,8 @@ const Component = ({ project, openEdit }: Props) => {
                         align="center"
                     >
                         <Text as="div">Containers:</Text>
-                        {containersForProject.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
-                        {containersForProject.map(container => (
+                        {containers.length === 0 && <Text style={{ fontStyle: 'italic' }}>None</Text>}
+                        {containers.map(container => (
                             <ClickableBadge
                                 key={container.id}
                                 type="container_type"

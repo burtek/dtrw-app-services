@@ -56,5 +56,35 @@ export interface CreateUser extends GetUser {
 }
 export type UpdateUser = Partial<CreateUser>;
 
+export interface Workflow {
+    id: number;
+    name: string;
+    status: 'queued' | 'in_progress' | 'completed';
+    conclusion: 'success' | 'failure' | 'neutral' | 'cancelled' | 'skipped' | 'timed_out' | 'action_required' | null;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    html_url: string;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    head_commit: {
+        id: string;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        tree_id: string;
+        message: string;
+        timestamp: string;
+        author: {
+            name: string;
+            email: string;
+        };
+        committer: {
+            name: string;
+            email: string;
+        };
+    };
+}
+export interface ProjecktWorkflows {
+    projectId: number;
+    workflows: Record<string, Workflow>;
+    error: null;
+}
+
 export type WithId<T, ID = number> = T & { id: ID };
 export type MaybeWithId<T, ID = number> = T & { id?: ID | null };

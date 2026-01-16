@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 import { ClickableBadge } from '../components/clickableBadge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
-import { selectProjects } from '../projects/api';
+import { selectProjects } from '../projects/api-projects';
 import { handleQueryError } from '../query-error-handler';
 import { useAppSelector } from '../redux/store';
 import type { Container, DockerContainer, WithId } from '../types';

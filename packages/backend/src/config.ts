@@ -21,6 +21,7 @@ const envSchema = z.object({
     DOCKER_PROXY: z.url({ protocol: /^(tcp|http)$/ }).optional(),
     DOCKER_AUTHELIA_CONTAINER_NAME: z.string().nonempty().optional(),
     DOCKER_CADDY_ADMIN_HOST: z.url({ protocol: /^(http|https)$/ }).optional(),
+    GITHUB_ACTIONS_PAT: z.string().regex(/^github_pat_/).nonempty(),
     EMAIL_SMTP_USER: z.email(),
     EMAIL_SMTP_PASS: z.string().nonempty(),
     EMAIL_FROM: z.templateLiteral([z.string().nonempty(), ' <', z.email(), '>'])
