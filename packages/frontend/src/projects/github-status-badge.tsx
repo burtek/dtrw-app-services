@@ -15,11 +15,11 @@ const getConfig = (status: Workflow['status'], conclusion: Workflow['conclusion'
         case 'success':
             return { color: 'green', icon: '✅' };
         case 'failure':
-            return { color: 'red', icon: '✅' };
+            return { color: 'red', icon: '❌' };
         case 'timed_out':
             return { color: 'red', icon: '⏳' };
         case 'cancelled':
-            return { color: 'gray', icon: '❌' };
+            return { color: 'gray', icon: '🚫' };
         case 'action_required':
             return { color: 'orange', icon: '⚠️' };
         case 'neutral':
