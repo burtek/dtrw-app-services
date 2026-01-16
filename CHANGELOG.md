@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.4](https://github.com/burtek/dtrw-app-services/compare/v1.12.3...v1.12.4) (2026-01-16)
+
+
+### Bug Fixes
+
+* **backend:** response code ([35fa65a](https://github.com/burtek/dtrw-app-services/commit/35fa65ad764bc53a4b035a8f7938a3280b1a7d4a))
+
 ### [1.12.3](https://github.com/burtek/dtrw-app-services/compare/v1.12.2...v1.12.3) (2026-01-16)
 
 
