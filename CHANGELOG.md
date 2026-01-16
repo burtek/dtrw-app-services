@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/burtek/dtrw-app-services/compare/v1.11.0...v1.12.0) (2026-01-16)
+
+
+### Features
+
+* **backend:** email sending ([4c52f16](https://github.com/burtek/dtrw-app-services/commit/4c52f1618fad3f97d3351754ca6ad7c4a65beac4))
+* github workflows ([edf3f81](https://github.com/burtek/dtrw-app-services/commit/edf3f8149e5797c74e970571754df178794ae1b3))
+* **ui:** reset password, refactor error handling ([438f13c](https://github.com/burtek/dtrw-app-services/commit/438f13cb62b77e10b1b8631b159c3c9485c9bab2))
+
+
+### Bug Fixes
+
+* **ui:** github badge ([ea13dde](https://github.com/burtek/dtrw-app-services/commit/ea13dde566f8f06f675bee4be2251052e6492666))
+
 ## [1.11.0](https://github.com/burtek/dtrw-app-services/compare/v1.10.1...v1.11.0) (2026-01-12)
 
 
