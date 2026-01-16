@@ -50,7 +50,7 @@ export const githubController: FastifyPluginCallback = (instance, options, done)
                 return await res.code(400).send();
             }
 
-            return await res.code(204).send(githubService.processWebhook(type, req.body));
+            return await res.code(202).send(githubService.processWebhook(type, req.body));
         }
     );
 
