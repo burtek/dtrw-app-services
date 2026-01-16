@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.1](https://github.com/burtek/dtrw-app-services/compare/v1.12.0...v1.12.1) (2026-01-16)
+
+
+### Bug Fixes
+
+* **backend:** github polling ([93453ec](https://github.com/burtek/dtrw-app-services/commit/93453ecede3ed2baf72eda134844a115733d51a9))
+* **ui:** error handling ([02ef9a1](https://github.com/burtek/dtrw-app-services/commit/02ef9a1b9170214f731f9ba73f3440983bfcef23))
+* **ui:** github statuses displaying ([0271bae](https://github.com/burtek/dtrw-app-services/commit/0271bae1c649b147e4e2eeb41b614a16e92769c1))
+
 ## [1.12.0](https://github.com/burtek/dtrw-app-services/compare/v1.11.0...v1.12.0) (2026-01-16)
 
 
