@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.2](https://github.com/burtek/dtrw-app-services/compare/v1.12.1...v1.12.2) (2026-01-16)
+
+
+### Bug Fixes
+
+* **backend:** webhook handling ([5e01af8](https://github.com/burtek/dtrw-app-services/commit/5e01af8cd11757924e3ab5f5dc46e4e6557ef885))
+
 ### [1.12.1](https://github.com/burtek/dtrw-app-services/compare/v1.12.0...v1.12.1) (2026-01-16)
 
 
