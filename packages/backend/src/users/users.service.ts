@@ -12,6 +12,8 @@ import { AppError, ErrorType } from '../errors';
 
 type CreateUser = { [K in keyof UserWithUsername]: K extends 'password' ? string | undefined : UserWithUsername[K] };
 
+const DEFAULT_PASSWORD_LENGTH = 12;
+
 export class UsersService extends BaseRepo {
     async createUser({ username, ...user }: CreateUser) {
         const password = user.password ?? this.generateRandomPassword();
@@ -46,15 +48,13 @@ export class UsersService extends BaseRepo {
         await this.writeUsersConfig(config);
     }
 
-    async getUsers() {
+    async getUsersWithooutPasswords() {
         const { users: allUsers } = await this.getUsersRaw();
-        return Object.keys(allUsers).reduce<Record<string, Omit<User, 'password'>>>((users, username) => {
-            const { password, ...user } = allUsers[username];
-            return {
-                ...users,
-                [username]: user
-            };
-        }, {});
+
+        return Object.fromEntries(
+            Object.entries(allUsers)
+                .map(([username, { password, ...user }]) => [username, user as Omit<User, 'password'>])
+        );
     }
 
     async resetUserPassword(username: string) {
@@ -62,7 +62,7 @@ export class UsersService extends BaseRepo {
         const hashedPassword = await this.generatePasswordHash(newPassword);
 
         const config = await this.getUsersRaw();
-        if (!(username in config.users)) {
+        if (!(username in config.users) || !config.users[username]) {
             throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
         }
 
@@ -82,7 +82,7 @@ export class UsersService extends BaseRepo {
 
     async updateUser(username: string, body: Partial<UserWithUsername>) {
         const config = await this.getUsersRaw();
-        if (!(username in config.users)) {
+        if (!(username in config.users) || !config.users[username]) {
             throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
         }
         if (!!body.username && body.username !== username && body.username in config.users) {
@@ -139,7 +139,8 @@ export class UsersService extends BaseRepo {
 
     private generateRandomPassword() {
         function random(characters: string) {
-            return characters[randomInt(0, characters.length)];
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            return characters[randomInt(0, characters.length)] as string;
         }
 
         const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
@@ -155,14 +156,14 @@ export class UsersService extends BaseRepo {
         ];
 
         const allChars = lowerCase + upperCase + numbers + specialChars;
-
-        while (newPasswordArray.length < 12) {
+        while (newPasswordArray.length < DEFAULT_PASSWORD_LENGTH) {
             newPasswordArray.push(random(allChars));
         }
 
         for (let i = newPasswordArray.length - 1; i > 0; i--) {
             const j = randomInt(0, i + 1);
-            [newPasswordArray[i], newPasswordArray[j]] = [newPasswordArray[j], newPasswordArray[i]];
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            [newPasswordArray[i] as string, newPasswordArray[j] as string] = [newPasswordArray[j] as string, newPasswordArray[i] as string];
         }
 
         return newPasswordArray.join('');

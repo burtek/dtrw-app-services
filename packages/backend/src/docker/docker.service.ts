@@ -60,14 +60,10 @@ export class DockerService extends BaseRepo {
     }
 
     private mapNetworks(networks: Record<string, NetworkInfo>) {
-        return Object.keys(networks)
-            .reduce<Record<string, ReturnType<typeof this.mapNetwork>>>(
-                (acc, network) => ({
-                    ...acc,
-                    [network]: this.mapNetwork(networks[network], network)
-                }),
-                {}
-            );
+        return Object.fromEntries(
+            Object.entries(networks)
+                .map(([name, info]) => [name, this.mapNetwork(info, name)])
+        );
     }
 
     private mapPort(port: Port) {

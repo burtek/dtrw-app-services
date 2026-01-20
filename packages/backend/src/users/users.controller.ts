@@ -14,7 +14,7 @@ export const usersController: FastifyPluginCallback = (instance, options, done) 
 
     f.get(
         '/',
-        async () => await usersService.getUsers()
+        async () => await usersService.getUsersWithooutPasswords()
     );
 
     f.post(

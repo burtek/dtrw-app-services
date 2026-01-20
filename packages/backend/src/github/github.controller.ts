@@ -1,9 +1,6 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
 import type { FastifyPluginCallback } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
-
-import { env } from '../config';
+import z from 'zod/v4';
 
 import { GithubService } from './github.service';
 
@@ -20,34 +17,18 @@ export const githubController: FastifyPluginCallback = (instance, options, done)
 
     f.post(
         '/webhook',
-        { config: { rawBody: true } },
+        {
+            config: { rawBody: true },
+            schema: { body: z.looseObject({}) }
+        },
         async (req, res) => {
-            const sig = req.headers['x-hub-signature-256'];
-
-            if (!sig || typeof sig !== 'string') {
-                return await res.code(401).send();
-            }
-
-            const { rawBody } = req;
-            if (!Buffer.isBuffer(rawBody)) {
-                throw new Error('rawBody is required for webhook signature verification');
-            }
-            const expected = `sha256=${
-                createHmac('sha256', env.GITHUB_WEBHOOK_SECRET)
-                    .update(rawBody)
-                    .digest('hex')
-            }`;
-
-            if (!timingSafeEqual(
-                Buffer.from(sig),
-                Buffer.from(expected)
-            )) {
+            if (!githubService.validateSignature(req.headers['x-hub-signature-256'], req.rawBody)) {
                 return await res.code(401).send();
             }
 
             const type = req.headers['x-github-event'];
             if (typeof type !== 'string') {
-                return await res.code(400).send();
+                return await res.code(400).send({ message: 'Missing X-GitHub-Event header' });
             }
 
             return await res.code(202).send(githubService.processWebhook(type, req.body));

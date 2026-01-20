@@ -1,19 +1,43 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+import { Octokit } from '@octokit/core';
+import type { components } from '@octokit/openapi-types';
 import type { FastifyInstance } from 'fastify';
 
 import { env } from '../config';
 import { BaseRepo } from '../database/repo';
+import type { Project } from '../database/schemas/projects';
 
 
-const WEBOOK_THROTTLE_MS = 5 * 1000; // 5 seconds // env?
+export class GithubProjectsRepo extends BaseRepo {
+    protected async getBySlug(githubSlug: string) {
+        return await this.db.query.projects.findFirst({
+            where(fields, operators) {
+                return operators.eq(fields.github, `https://github.com/${githubSlug}`);
+            }
+        });
+    }
 
-export class GithubService extends BaseRepo {
+    protected async getProjectsGithubUrls(githubSlug?: string) {
+        return await this.db.query.projects.findMany({
+            columns: { id: true, github: true },
+            where(fields, operators) {
+                const coditions = [operators.eq(fields.planned, false)];
+
+                if (githubSlug) {
+                    coditions.push(operators.like(fields.github, `%${githubSlug}%`));
+                }
+                return operators.and(...coditions);
+            }
+        });
+    }
+}
+
+export class GithubService extends GithubProjectsRepo {
     private readonly closeAbortController: AbortController = new AbortController();
-    private data: WokflowItem[] = [];
+    private data: WorkflowItem[] = [];
+    private readonly octokit = new Octokit({ auth: env.GITHUB_ACTIONS_PAT });
     private refetchTimeout: NodeJS.Timeout | undefined;
-    private readonly throttleData = new Map<string, {
-        lastCallTime: number;
-        timeoutHandle: NodeJS.Timeout | null;
-    }>();
 
     constructor(fastifyContext: FastifyInstance) {
         super(fastifyContext);
@@ -22,7 +46,7 @@ export class GithubService extends BaseRepo {
 
         fastifyContext.addHook('onClose', () => {
             this.closeAbortController.abort();
-            clearInterval(this.refetchTimeout);
+            clearTimeout(this.refetchTimeout);
         });
     }
 
@@ -30,71 +54,141 @@ export class GithubService extends BaseRepo {
         return this.data;
     }
 
-    processWebhook(type: string, payload: unknown) {
-        if (type === 'workflow_run' || type === 'workflow_job') {
-            const repositorySlug = typeof payload === 'object'
-                && payload !== null
-                && 'repository' in payload
-                && typeof payload.repository === 'object'
-                && payload.repository !== null
-                && 'full_name' in payload.repository
-                && typeof payload.repository.full_name === 'string'
-                ? payload.repository.full_name
-                : undefined;
+    async processWebhook(type: string, payload: Record<string, unknown>) {
+        if (type === 'ping') {
+            return { status: 'pong' };
+        }
+        if (type !== 'workflow_run') {
+            return { status: 'ignored', reason: 'only workflow_run event is handled now' };
+        }
+        const repositorySlug = typeof payload.repository === 'object'
+            && payload.repository !== null
+            && 'full_name' in payload.repository
+            && typeof payload.repository.full_name === 'string'
+            ? payload.repository.full_name
+            : undefined;
 
-            if (repositorySlug) {
-                return this.throttleWebhookRefetch(repositorySlug);
-            }
+        if (!repositorySlug) {
             return { status: 'ignored', reason: 'missing_repository_slug' };
         }
-        return { status: 'ignored', reason: 'unsupported_event_type' };
+
+        const project = await this.getBySlug(repositorySlug);
+
+        if (!project) {
+            return { status: 'ignored', reason: 'unknown_repository' };
+        }
+
+        this.processWorkflowRunWebhookPayload(project, payload);
+
+        return { status: 'accepted' };
     }
 
-    private async getProjectsGithubUrls(githubSlug?: string) {
-        return await this.db.query.projects.findMany({
-            columns: { id: true, github: true },
-            where(fields, operators) {
-                if (githubSlug) {
-                    return operators.like(fields.github, `%${githubSlug}%`);
-                }
-                return operators.eq(fields.planned, false);
-            }
-        });
+    validateSignature(sig: unknown, rawBody: unknown): boolean {
+        if (!Buffer.isBuffer(rawBody)) {
+            throw new Error('rawBody is required for webhook signature verification');
+        }
+        const expected = `sha256=${
+            createHmac('sha256', env.GITHUB_WEBHOOK_SECRET)
+                .update(rawBody)
+                .digest('hex')
+        }`;
+
+        return timingSafeEqual(
+            Buffer.from(typeof sig === 'string' ? sig : ''),
+            Buffer.from(expected)
+        );
     }
 
     private async getWorkflowStatusesForProject(projectUrl: string) {
-        const slug = new URL(projectUrl).pathname.split('/').slice(1, 3).join('/'); // owner/repo
-        const url = `https://api.github.com/repos/${slug}/actions/runs`;
-
-        const response = await fetch(url, {
-            headers: {
-                authorization: `Bearer ${env.GITHUB_ACTIONS_PAT}`,
-                accept: 'application/vnd.github+json'
-            },
-            signal: this.closeAbortController.signal
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch workflow statuses for project ${projectUrl}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!isGithubWorkflowRunsResponse(data)) {
-            throw new Error(`Invalid response format when fetching workflow statuses for project ${projectUrl}`);
-        }
+        const { owner, repo } = this.githubUrlToSlug(projectUrl);
+        const response = await this.octokit.request(
+            'GET /repos/{owner}/{repo}/actions/runs',
+            {
+                owner,
+                repo,
+                signal: this.closeAbortController.signal
+            }
+        );
 
         const grouped = Object.fromEntries(
             Object.entries(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 Object.groupBy(
-                    data.workflow_runs.filter(run => run.conclusion !== 'skipped' && run.event !== 'dynamic'),
-                    run => run.name
-                ) as Record<string, typeof data.workflow_runs>
-            ).map(([name, [run]]) => [name, run])
+                    response.data.workflow_runs
+                        .filter(run => run.conclusion !== 'skipped' && run.event !== 'dynamic'),
+                    run => run.name ?? run.path
+                )
+            ).flatMap(([name, runs]) => (runs?.[0] ? [[name, runs[0]]] : []))
         );
 
         return grouped;
+    }
+
+    private githubUrlToSlug(url: string) {
+        const [owner, repo] = new URL(url).pathname.split('/').slice(1, 3);
+        if (!owner || !repo) {
+            throw new Error(`Invalid GitHub URL: ${url}`);
+        }
+        return {
+            slug: `${owner}/${repo}`,
+            owner,
+            repo
+        };
+    }
+
+    private processWorkflowRunWebhookPayload(
+        project: Project,
+        payload: Record<string, unknown>
+    ) {
+        // eslint-disable-next-line -- for type checking only (would be nice to validate with zod, but idc)
+        function fakeAssertType<T>(arg: unknown): asserts arg is T {}
+
+        switch (payload.action) {
+            case 'requested':
+                fakeAssertType<components['schemas']['webhook-workflow-run-requested']>(payload);
+                break;
+            case 'in_progress':
+                fakeAssertType<components['schemas']['webhook-workflow-run-in-progress']>(payload);
+                break;
+            case 'completed':
+                fakeAssertType<components['schemas']['webhook-workflow-run-completed']>(payload);
+                if (payload.workflow_run.conclusion === 'skipped') {
+                    void this.refetchProjectsGithubWorkflows(this.githubUrlToSlug(project.github).slug, false);
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+
+        if (!payload.workflow?.name) {
+            return;
+        }
+        let projectData = this.data.find(d => d.projectId === project.id);
+        if (!projectData) {
+            this.data.push(projectData = { projectId: project.id, workflows: null, error: null });
+        }
+        projectData.workflows ??= {};
+
+        const currentEntry = projectData.workflows[payload.workflow.name];
+        if (currentEntry && currentEntry.id > payload.workflow_run.id) {
+            return; // older run, ignore
+        }
+
+        projectData.workflows[payload.workflow.name] = {
+            ...payload.workflow_run,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            head_commit: {
+                ...payload.workflow_run.head_commit,
+                author: {
+                    ...payload.workflow_run.head_commit.author,
+                    email: payload.workflow_run.head_commit.author.email ?? ''
+                },
+                committer: {
+                    ...payload.workflow_run.head_commit.committer,
+                    email: payload.workflow_run.head_commit.committer.email ?? ''
+                }
+            }
+        };
     }
 
     /** @throws never */
@@ -102,7 +196,7 @@ export class GithubService extends BaseRepo {
         const projects = await this.getProjectsGithubUrls(githubSlug);
 
         const data = await Promise.all(
-            projects.map<Promise<WokflowItem>>(async project => {
+            projects.map<Promise<WorkflowItem>>(async project => {
                 try {
                     const statuses = await this.getWorkflowStatusesForProject(project.github);
                     return {
@@ -145,91 +239,27 @@ export class GithubService extends BaseRepo {
         );
         return this.refetchTimeout;
     }
-
-    private throttleWebhookRefetch(slug: string) {
-        const now = Date.now();
-        const throttleInfo = this.throttleData.get(slug);
-
-        if (!throttleInfo) {
-            this.throttleData.set(slug, {
-                lastCallTime: now,
-                timeoutHandle: null
-            });
-            void this.refetchProjectsGithubWorkflows(slug, false);
-            return { status: 'initiated', reason: 'first_call' };
-        }
-
-        const timeSinceLastCall = now - throttleInfo.lastCallTime;
-
-        if (timeSinceLastCall >= WEBOOK_THROTTLE_MS) {
-            throttleInfo.lastCallTime = now;
-            void this.refetchProjectsGithubWorkflows(slug, false);
-            return { status: 'initiated', reason: 'enough_time_passed' };
-        }
-        if (throttleInfo.timeoutHandle === null) {
-            const waitTime = WEBOOK_THROTTLE_MS - timeSinceLastCall;
-            throttleInfo.timeoutHandle = setTimeout(() => {
-                throttleInfo.lastCallTime = Date.now();
-                throttleInfo.timeoutHandle = null;
-                void this.refetchProjectsGithubWorkflows(slug, false);
-            }, waitTime);
-            return { status: 'scheduled', reason: 'within_throttle_period' };
-        }
-        return { status: 'skipped', reason: 'already_scheduled' };
-    }
 }
 
-function isGithubWorkflowRunsResponse(obj: unknown): obj is GithubWorkflowRunsResponse {
-    return typeof obj === 'object' && obj !== null && 'total_count' in obj && 'workflow_runs' in obj && Array.isArray(obj.workflow_runs);
-}
-
-/* eslint-disable @typescript-eslint/naming-convention */
-interface GithubWorkflowRun {
-    id: number;
-    name: string;
-    head_branch: string;
-    head_sha: string;
-    display_title: string;
-    run_number: number;
-    event: string;
-    status: string;
-    conclusion: string | null;
-    url: string;
-    html_url: string;
-    created_at: string;
-    updated_at: string;
-    jobs_url: string;
-    logs_url: string;
-    check_suite_url: string;
-    artifacts_url: string;
-    cancel_url: string;
-    rerun_url: string;
-    workflow_url: string;
-    head_commit: {
-        id: string;
-        tree_id: string;
-        message: string;
-        timestamp: string;
+type Redefined = 'actor' | 'triggering_actor' | 'repository' | 'head_repository' | 'pull_requests' | 'display_title';
+type WorkflowRun = Omit<components['schemas']['workflow-run'], Redefined> & {
+    actor?: Partial<components['schemas']['workflow-run']['actor']> | null;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    triggering_actor?: Partial<components['schemas']['workflow-run']['triggering_actor']> | null;
+    repository: Omit<components['schemas']['workflow-run']['repository'], 'owner'> & {
+        //
+        owner?: Partial<components['schemas']['workflow-run']['repository']['owner']> | null;
     };
-    repository: {
-        id: number;
-        name: string;
-        full_name: string;
-        html_url: string;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    head_repository: Omit<components['schemas']['workflow-run']['head_repository'], 'owner' | 'name'> & {
+        owner?: Partial<components['schemas']['workflow-run']['head_repository']['owner']> | null;
+        name?: string | null;
     };
-}
-
-interface GithubWorkflowRunsResponse {
-    total_count: number;
-    workflow_runs: GithubWorkflowRun[];
-}
-
-type WokflowItem = {
-    projectId: number;
-    workflows: Record<string, GithubWorkflowRun>;
-    error: null;
-} | {
-    projectId: number;
-    workflows: null;
-    error: string;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    display_title?: string | null;
 };
+interface WorkflowItem {
+    projectId: number;
+    workflows: Record<string, WorkflowRun> | null;
+    error: string | null;
+}
