@@ -1,10 +1,12 @@
 import { PlusIcon } from '@radix-ui/react-icons';
-import { Box, Button, Card, Flex, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Grid, Text, Tooltip } from '@radix-ui/themes';
 import { memo, useCallback } from 'react';
 
 import type { DockerContainer, WithId } from '../types';
 
+import { getTooltipContent } from './container-details-tooltip';
 import styles from './containers.module.scss';
+import { ExposedBadge } from './exposed-badge';
 
 
 const Component = ({ dockerContainer, openAdd }: Props) => {
@@ -16,27 +18,37 @@ const Component = ({ dockerContainer, openAdd }: Props) => {
         [openAdd, mainName]
     );
 
+    const exposed = dockerContainer.ports.some(p => !!p.publicPort);
+
     return (
         <Box>
             <Card className={styles.container}>
-                <Text
-                    as="div"
-                    weight="bold"
+                <Flex gap="1">
+                    <Text
+                        as="div"
+                        weight="bold"
+                    >
+                        {mainName}
+                    </Text>
+                    {exposed ? <ExposedBadge text="Container is exposed to the world" /> : null}
+                </Flex>
+                <Grid
+                    gap="1"
+                    columns="3fr 2fr 1fr"
                 >
-                    {mainName}
-                </Text>
-                <Text as="div">
-                    {dockerContainer.id}
-                </Text>
-                <Text as="div">
-                    {dockerContainer.image}
-                </Text>
-                <Text as="div">
-                    {dockerContainer.status}
-                </Text>
-                <Text as="div">
-                    {dockerContainer.state}
-                </Text>
+                    <Tooltip
+                        content={getTooltipContent(dockerContainer)}
+                        maxWidth="800px"
+                    >
+                        <Text as="div">{dockerContainer.image}</Text>
+                    </Tooltip>
+                    <Text as="div">
+                        {dockerContainer.status}
+                    </Text>
+                    <Text as="div">
+                        {dockerContainer.state}
+                    </Text>
+                </Grid>
                 <Flex
                     m="2"
                     gap="2"

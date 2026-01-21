@@ -1,5 +1,5 @@
 import { Cross1Icon, Pencil2Icon, ReloadIcon } from '@radix-ui/react-icons';
-import { Badge, Box, Button, Card, Flex, Grid, Text } from '@radix-ui/themes';
+import { Badge, Box, Button, Card, Flex, Grid, Text, Tooltip } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { Fragment, memo, useCallback } from 'react';
 import { toast } from 'react-toastify';
@@ -13,7 +13,9 @@ import type { Container, DockerContainer, WithId } from '../types';
 
 import { useDeleteContainerMutation } from './api-containers';
 import { useRequestRestartMutation } from './api-docker';
+import { getTooltipContent } from './container-details-tooltip';
 import styles from './containers.module.scss';
+import { ExposedBadge } from './exposed-badge';
 
 
 const Component = ({ container, dockerContainers, openEdit, widthProps }: Props) => {
@@ -54,15 +56,19 @@ const Component = ({ container, dockerContainers, openEdit, widthProps }: Props)
         [requestRestart]
     );
 
+    const exposed = dockerContainers.some(c => c.ports.some(p => !!p.publicPort));
     const renderDockerContainersBadge = () => {
         const color = { 0: 'red' as const, 1: 'green' as const }[dockerContainers.length] ?? 'orange' as const;
         return (
-            <Badge
-                color={color}
-                variant="surface"
-            >
-                {`${dockerContainers.length} found`}
-            </Badge>
+            <>
+                <Badge
+                    color={color}
+                    variant="surface"
+                >
+                    {`${dockerContainers.length} found`}
+                </Badge>
+                {exposed ? <ExposedBadge text="At least one container is exposed to the world" /> : null}
+            </>
         );
     };
 
@@ -103,7 +109,12 @@ const Component = ({ container, dockerContainers, openEdit, widthProps }: Props)
 
                         return (
                             <Fragment key={c.id}>
-                                <Text as="div">{c.image}</Text>
+                                <Tooltip
+                                    content={getTooltipContent(c)}
+                                    maxWidth="800px"
+                                >
+                                    <Text as="div">{c.image}</Text>
+                                </Tooltip>
                                 <Text as="div">{c.status}</Text>
                                 <Badge
                                     variant="surface"
