@@ -1,28 +1,23 @@
-import type { FastifyPluginCallback } from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod';
 import z from 'zod/v4';
 
-import { GithubService } from './github.service';
+import { routeFp } from '../helpers/route-plugin';
 
 
-export const githubController: FastifyPluginCallback = (instance, options, done) => {
-    const githubService = new GithubService(instance);
-
-    const f = instance.withTypeProvider<ZodTypeProvider>();
-
-    f.get(
+const githubController: FastifyPluginCallbackZod = (instance, options, done) => {
+    instance.get(
         '/workflow-runs',
-        () => githubService.getProjectsGithubWorkflows()
+        () => instance.githubService.getProjectsGithubWorkflows()
     );
 
-    f.post(
+    instance.post(
         '/webhook',
         {
             config: { rawBody: true },
             schema: { body: z.looseObject({}) }
         },
         async (req, res) => {
-            if (!githubService.validateSignature(req.headers['x-hub-signature-256'], req.rawBody)) {
+            if (!instance.githubService.validateSignature(req.headers['x-hub-signature-256'], req.rawBody)) {
                 return await res.code(401).send();
             }
 
@@ -31,11 +26,11 @@ export const githubController: FastifyPluginCallback = (instance, options, done)
                 return await res.code(400).send({ message: 'Missing X-GitHub-Event header' });
             }
 
-            return await res.code(202).send(githubService.processWebhook(type, req.body));
+            return await res.code(202).send(instance.githubService.processWebhook(type, req.body));
         }
     );
 
-    // f.post(
+    // isntance.post(
     //     '/cancel/:repoId/:runId',
     //     { schema: { params: z.object({ id: z.string().nonempty() }) } },
     //     async req => {
@@ -45,3 +40,8 @@ export const githubController: FastifyPluginCallback = (instance, options, done)
 
     done();
 };
+
+export default routeFp(githubController, {
+    dependencies: ['github-service'],
+    decorators: { fastify: ['githubService'] }
+});

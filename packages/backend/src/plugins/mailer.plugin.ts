@@ -1,10 +1,10 @@
-import type { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 import * as mailer from 'nodemailer';
 
 import { env } from '../config';
 
 
-export class MailerProvider {
+class MailerProvider {
     private readonly transport = mailer.createTransport(
         {
             service: 'Gmail',
@@ -25,11 +25,13 @@ export class MailerProvider {
     }
 }
 
-export function decorateMailerHandler(app: FastifyInstance) {
+export default fp((app, options, done) => {
     const provider = new MailerProvider();
 
     app.decorate('mailerProvider', provider);
-}
+
+    done();
+}, { name: 'mailer-plugin' });
 
 declare module 'fastify' {
     interface FastifyInstance {

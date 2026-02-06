@@ -54,6 +54,7 @@ export default defineConfig({
             preferBuiltins: true
         }),
         nodeBinaryResolver(),
+        importMetaDirname(),
         commonjs({
             include: /node_modules/,
             requireReturnsDefault: 'auto',
@@ -68,6 +69,7 @@ export default defineConfig({
             targets: [
                 { src: 'src/assets/*', dest: 'dist/src/assets' },
                 { src: 'drizzle/*', dest: 'dist/drizzle' },
+                { src: '.env', dest: 'dist' },
                 {
                     src: 'package.json',
                     dest: 'dist',
@@ -93,4 +95,16 @@ function copyFilesForLibrary(library, files) {
         src: join(libraryPath, file),
         dest: join('dist', 'node_modules', file && library)
     }));
+}
+
+function importMetaDirname() {
+    return {
+        name: 'import-meta-dirname-current-module',
+        resolveImportMeta(property, { moduleId }) {
+            if (property === 'dirname') {
+                return '__dirname';
+            }
+            return null;
+        }
+    };
 }

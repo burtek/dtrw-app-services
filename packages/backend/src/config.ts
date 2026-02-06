@@ -1,7 +1,9 @@
-import 'dotenv/config';
+import { resolve } from 'node:path';
+
+import { config } from 'dotenv';
 import { z } from 'zod/v4';
 
-import { filePath, refineOptionalCondition } from './config.utils';
+import { realPath, refineOptionalCondition } from './config.utils';
 
 
 const DEFAULT_PORT = 4000;
@@ -10,17 +12,20 @@ const DEFAULT_PORT = 4000;
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).nonoptional(),
     PORT: z.coerce.number().default(DEFAULT_PORT),
-    DB_FILE_NAME: z.string().nonempty(),
-    DB_MIGRATIONS_FOLDER: z.string().nonempty(),
-    AUTHELIA_CONFIG: filePath(),
-    AUTHELIA_USERS: filePath(),
+    DB_FILE_NAME: z.union([z.literal(':memory:'), realPath()]),
+    DB_MIGRATIONS_FOLDER: realPath({ directory: true, writable: false }),
+    AUTHELIA_CONFIG: realPath(),
+    AUTHELIA_USERS: realPath(),
     AUTHELIA_USERS_SCHEMA_URL: z.url(),
     CADDY_FETCH_INTERVAL: z.coerce.number().positive(),
+    CADDY_CADDYFILE_PATH: realPath(),
+    CADDYFILE_ADMIN: z.email(),
     CF_TOKEN: z.string().optional(),
     LOGS_FILE: z.string().optional(),
     DOCKER_PROXY: z.url({ protocol: /^(tcp|http)$/ }).optional(),
     DOCKER_AUTHELIA_CONTAINER_NAME: z.string().nonempty().optional(),
     DOCKER_CADDY_ADMIN_HOST: z.url({ protocol: /^(http|https)$/ }).optional(),
+    DOCKER_CADDY_CONTAINER_NAME: z.string().nonempty().optional(),
     GITHUB_ACTIONS_PAT: z.string().regex(/^github_pat_/).nonempty(),
     GITHUB_POLLING_INTERVAL: z.coerce.number().positive().default(5 * 60 * 1000), // 5 minutes
     GITHUB_WEBHOOK_SECRET: z.string().nonempty(),
@@ -29,13 +34,23 @@ const envSchema = z.object({
     EMAIL_FROM: z.templateLiteral([z.string().nonempty(), ' <', z.email(), '>'])
 })
     .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_AUTHELIA_CONTAINER_NAME'))
-    .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_CADDY_ADMIN_HOST'));
+    .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_CADDY_ADMIN_HOST'))
+    .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_CADDY_CONTAINER_NAME'));
 /* eslint-enable @typescript-eslint/naming-convention */
 
+config({
+    path: [resolve(import.meta.dirname, '..', `.env.${process.env.NODE_ENV}`), resolve(import.meta.dirname, '..', '.env')],
+    quiet: true
+});
+
+console.log(`Received NODE_ENV=${process.env.NODE_ENV}, parsing env variables...`);
 const parsedEnv = envSchema.safeParse(process.env);
+
 if (!parsedEnv.success) {
     throw new Error(`Environment validation failed\n${z.prettifyError(parsedEnv.error)}`);
 }
+
+console.log(`Parsed env successfully, using NODE_ENV=${parsedEnv.data.NODE_ENV} going forward`);
 
 type Identity<T> = T extends object ? {} & {
     [P in keyof T]: T[P]

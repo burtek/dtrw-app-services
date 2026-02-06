@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { fastify } from 'fastify';
+import { setupAppWithDb } from 'tests/setup-app';
 
 import packageJson from '../../package.json';
 
-import { healthController } from './health.controller';
+import healthController from './health.controller';
+import healthService from './health.service';
 
 
-vitest.mock('../database/index', () => ({ getDb() {} }));
-
-describe('HealthController', () => {
-    const app = fastify();
+describe('HealthController', async () => {
+    const app = await setupAppWithDb();
+    app.register(healthService);
     app.register(healthController, { prefix: '/health' });
 
-    afterAll(async () => {
-        await app.close();
+    afterEach(() => {
+        vitest.clearAllMocks();
     });
 
     it('should return correct data', async () => {

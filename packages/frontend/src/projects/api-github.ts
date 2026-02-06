@@ -22,12 +22,7 @@ export const githubApi = createApi({
     })
 });
 
-export const {
-    getWorkflowStatuses: {
-        useQuery: useGetWorkflowStatusesQuery,
-        useQueryState: useGetWorkflowStatusesState
-    }
-} = githubApi.endpoints;
+export const { getWorkflowStatuses: { useQuery: useGetWorkflowStatusesQuery } } = githubApi.endpoints;
 
 export const selectGithubWorkflowStatuses = createSelector(
     githubApi.endpoints.getWorkflowStatuses.select(),

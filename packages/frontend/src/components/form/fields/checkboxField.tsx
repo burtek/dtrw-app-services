@@ -1,7 +1,7 @@
 import { Checkbox } from '@radix-ui/themes';
 import { shallowEqual } from 'fast-equals';
 import type { ComponentProps } from 'react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import type { Control, Validate } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
@@ -14,19 +14,32 @@ function checkValueType(value: unknown): asserts value is boolean | undefined {
     }
 }
 
-const Component = <C extends Control>({ label, control, name, rules }: Props<C>) => {
+const Component = <C extends Control>({ label, control, name, rules, overwriteValues: ov }: Props<C>) => {
+    const overwriteValues = useMemo(
+        () => ({
+            true: !!ov && 'true' in ov ? ov.true : true,
+            false: !!ov && 'false' in ov ? ov.false : false
+        }),
+        [ov]
+    );
+    const reverseOverwriteValues: Record<string, boolean | undefined> = Object.fromEntries(
+        Object.entries(overwriteValues)
+            .map(([key, val]) => [String(val), key === 'true' ? true : key === 'false' ? false : undefined])
+    );
     const {
         field: { value: v, onChange, onBlur, disabled, ref },
         fieldState: { error },
         formState: { isSubmitting }
     } = useController({ control, name, rules });
-    const value = v as unknown;
+    const value = reverseOverwriteValues[v as string] ?? undefined;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     checkValueType(value);
 
     const handleChange = useCallback<NonNullable<ComponentProps<typeof Checkbox>['onCheckedChange']>>(newValue => {
         checkValueType(newValue);
-        onChange(newValue);
-    }, [onChange]);
+
+        onChange(overwriteValues[`${newValue}`]);
+    }, [onChange, overwriteValues]);
 
     return (
         <FieldWrapper
@@ -67,4 +80,6 @@ interface Props<C extends Control> {
         required?: boolean;
         validate?: C extends Control<infer Values> ? Validate<string | undefined, Values> : never;
     };
+
+    overwriteValues?: Partial<Record<'true' | 'false', unknown>>;
 }

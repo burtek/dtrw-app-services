@@ -117,10 +117,7 @@ export const usersApi = createApi({
 });
 
 export const {
-    getUsers: {
-        useQuery: useGetUsersQuery,
-        useQueryState: useGetUsersState
-    },
+    getUsers: { useQuery: useGetUsersQuery },
     createUser: { useMutation: useCreateUserMutation },
     updateUser: { useMutation: useUpdateUserMutation },
     deleteUser: { useMutation: useDeleteUserMutation },

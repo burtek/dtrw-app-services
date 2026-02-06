@@ -35,11 +35,13 @@ services:
       DOCKER_PROXY: 'tcp://services_dproxy:2375'
       DOCKER_AUTHELIA_CONTAINER_NAME: authelia
       DOCKER_CADDY_ADMIN_HOST: 'http://caddy-proxy:2019'
+      DOCKER_CADDY_CONTAINER_NAME: caddy
       DB_FILE_NAME: '/db/db.db'
       DB_MIGRATIONS_FOLDER: '/app/drizzle'
       AUTHELIA_CONFIG: '/configs/authelia/configuration.yml'
       AUTHELIA_USERS: '/configs/authelia/users.yml'
       AUTHELIA_USERS_SCHEMA_URL: 'https://www.authelia.com/schemas/v4.39/json-schema/user-database.json'
+      CADDY_CADDYFILE_PATH: '/configs/caddy/Caddyfile'
       CADDY_FETCH_INTERVAL: 300
     expose:
       - 4000

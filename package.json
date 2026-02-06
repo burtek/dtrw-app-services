@@ -10,18 +10,18 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "concurrently": "^9.2.1",
     "husky": "^9.1.7",
-    "lerna": "^9.0.3",
     "standard-version": "^9.5.0",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.18"
   },
   "scripts": {
-    "dev": "lerna run start:dev",
-    "build": "lerna run build",
-    "lint": "lerna run lint",
-    "test": "vitest test",
+    "dev": "concurrently -c bgRed,bgBlue --names ' backend,frontend' --handle-input 'yarn workspace backend start:dev' 'yarn workspace frontend start:dev'",
+    "build": "concurrently -c bgRed,bgBlue --names ' backend,frontend' 'yarn workspace backend build' 'yarn workspace frontend build'",
+    "lint": "concurrently -c bgRed,bgBlue --names ' backend,frontend' 'yarn workspace backend lint' 'yarn workspace frontend lint'",
+    "test": "NODE_ENV=test vitest test",
     "prepare": "husky",
     "release": "standard-version",
     "generate": "yarn workspace backend generate",

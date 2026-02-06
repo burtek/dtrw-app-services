@@ -4,7 +4,7 @@ import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
-import { useGetContainersState } from '../containers/api-containers';
+import { useGetContainersQuery } from '../containers/api-containers';
 import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
 import { handleQueryError } from '../query-error-handler';
@@ -19,7 +19,7 @@ import { ProjectCard } from './project';
 
 const Component = () => {
     const { data: projects, refetch, isFetching, error } = useGetProjectsQuery();
-    const { data: containers } = useGetContainersState();
+    const { data: containers } = useGetContainersQuery();
 
     useEffect(() => {
         if (error) {

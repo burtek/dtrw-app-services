@@ -1,21 +1,16 @@
-import { createPreDecoratedApp } from '../app-base';
+import { setupAppWithDb } from 'tests/setup-app';
 
-import { projectsController } from './projects.controller';
+import  projectsController from './projects.controller';
+import projectsService from './projects.service';
 
 
-vitest.mock('../database/index', () => ({ getDb() {} }));
-vitest.mock('../config', () => ({ env: {} }));
-
-describe('UsersController', () => {
-    const app = createPreDecoratedApp();
+describe('ProjectsController', async () => {
+    const app = await setupAppWithDb();
+    app.register(projectsService);
     app.register(projectsController, { prefix: '/projects' });
 
     afterEach(() => {
         vitest.clearAllMocks();
-    });
-
-    afterAll(async () => {
-        await app.close();
     });
 
     describe('GET /projects', () => {

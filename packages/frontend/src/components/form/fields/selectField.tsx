@@ -14,7 +14,11 @@ function checkValueType(value: unknown): asserts value is string | number | unde
 }
 
 const Component = <T, C extends Control>(
-    { label, items, renderItem, parseIntValue, control, name, rules, placeholder, disabled: disabledProp }: Props<T, C>
+    {
+        label, items, renderItem, parseIntValue,
+        control, name, rules, onChange: onChangeProp,
+        placeholder, disabled: disabledProp
+    }: Props<T, C>
 ) => {
     const {
         field: { value: v, onChange, onBlur, disabled, ref },
@@ -27,7 +31,8 @@ const Component = <T, C extends Control>(
     const handleChange = useCallback((valueFromSelect: string) => {
         const newValue = valueFromSelect ? valueFromSelect : undefined;
         onChange(parseIntValue ? parseInt(valueFromSelect, 10) : newValue);
-    }, [onChange, parseIntValue]);
+        onChangeProp?.(valueFromSelect);
+    }, [onChange, onChangeProp, parseIntValue]);
 
     const [open, setOpen] = useState(false);
 
@@ -76,6 +81,7 @@ const Component = <T, C extends Control>(
                     color={error ? 'red' : undefined}
                 />
                 <Select.Content
+                    // eslint-disable-next-line react-hooks/refs
                     container={container.current}
                     style={{ zIndex: 1 }}
                 >
@@ -113,4 +119,6 @@ interface Props<T, C extends Control> {
     rules?: { required?: boolean };
 
     disabled?: boolean;
+
+    onChange?: (id: string) => void;
 }

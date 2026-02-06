@@ -1,31 +1,25 @@
-import type { FastifyPluginCallback } from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod';
 import { z } from 'zod/v4';
 
 import { UserWithUsernameSchema } from '../_schemas/authelia/user.schema';
+import { routeFp } from '../helpers/route-plugin';
 
-import { UsersService } from './users.service';
 
-
-export const usersController: FastifyPluginCallback = (instance, options, done) => {
-    const usersService = new UsersService(instance);
-
-    const f = instance.withTypeProvider<ZodTypeProvider>();
-
-    f.get(
+const usersController: FastifyPluginCallbackZod = (instance, options, done) => {
+    instance.get(
         '/',
-        async () => await usersService.getUsersWithooutPasswords()
+        async () => await instance.usersService.getUsersWithooutPasswords()
     );
 
-    f.post(
+    instance.post(
         '/',
         { schema: { body: UserWithUsernameSchema.partial({ password: true }) } },
         async request => {
-            await usersService.createUser({ password: undefined, ...request.body });
+            await instance.usersService.createUser({ password: undefined, ...request.body });
         }
     );
 
-    f.post(
+    instance.post(
         '/:username',
         {
             schema: {
@@ -34,26 +28,31 @@ export const usersController: FastifyPluginCallback = (instance, options, done) 
             }
         },
         async request => {
-            await usersService.updateUser(request.params.username, request.body);
+            await instance.usersService.updateUser(request.params.username, request.body);
         }
     );
 
-    f.post(
+    instance.post(
         '/:username/reset-password',
         { schema: { params: z.object({ username: z.string().nonempty() }) } },
         async request => {
-            await usersService.resetUserPassword(request.params.username);
+            await instance.usersService.resetUserPassword(request.params.username);
         }
     );
 
-    f.delete(
+    instance.delete(
         '/:username',
         { schema: { params: z.object({ username: z.string().nonempty() }) } },
         async request => {
-            await usersService.deleteUser(request.params.username);
+            await instance.usersService.deleteUser(request.params.username);
             return true;
         }
     );
 
     done();
 };
+
+export default routeFp(usersController, {
+    dependencies: ['users-service'],
+    decorators: { fastify: ['usersService'] }
+});

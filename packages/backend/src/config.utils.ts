@@ -5,24 +5,24 @@ import { z } from 'zod/v4';
 import type { $RefinementCtx } from 'zod/v4/core';
 
 
-export const filePath = () => z.string()
+export const realPath = ({ directory = false, writable = true } = {}) => z.string()
     .regex(/^\/.+$/, { error: 'Must be an absolute Unix path', abort: true })
     .transform(path => resolve(path))
     .refine(path => {
         try {
-            accessSync(path, fsConstants.R_OK | fsConstants.W_OK);
+            accessSync(path, fsConstants.R_OK | (writable ? fsConstants.W_OK : 0));
             return true;
         } catch {
             return false;
         }
-    }, { error: 'File must exist and be readable and writable by the application', abort: true })
+    }, { error: `${directory ? 'Directory' : 'File'} must exist and be readable and writable by the application`, abort: true })
     .refine(path => {
         try {
-            return lstatSync(path).isFile();
+            return directory ? lstatSync(path).isDirectory() : lstatSync(path).isFile();
         } catch {
             return false;
         }
-    }, 'Path must point to a file');
+    }, `Path must point to a ${directory ? 'directory' : 'File'}`);
 
 /**
  * Sets property as required if condition is set

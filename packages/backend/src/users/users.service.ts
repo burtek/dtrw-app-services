@@ -1,27 +1,31 @@
 import { argon2, randomBytes, randomInt } from 'node:crypto';
 import { readFile, rename, writeFile } from 'node:fs/promises';
 
+import type { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 import { dump, load } from 'js-yaml';
 
 import type { User, UsersConfig, UserWithUsername } from '../_schemas/authelia/user.schema';
 import { UsersConfigSchema } from '../_schemas/authelia/user.schema';
 import { env } from '../config';
-import { BaseRepo } from '../database/repo';
-import { AppError, ErrorType } from '../errors';
+import { AppError } from '../errors';
 
 
 type CreateUser = { [K in keyof UserWithUsername]: K extends 'password' ? string | undefined : UserWithUsername[K] };
 
 const DEFAULT_PASSWORD_LENGTH = 12;
 
-export class UsersService extends BaseRepo {
+class UsersService {
+    constructor(private readonly fastifyContext: FastifyInstance) {
+    }
+
     async createUser({ username, ...user }: CreateUser) {
         const password = user.password ?? this.generateRandomPassword();
         const hashedPassword = await this.generatePasswordHash(password);
 
         const config = await this.getUsersRaw();
         if (username in config.users) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'Another user exists with that username');
+            throw AppError.badRequest('Another user exists with that username');
         }
 
         config.users[username] = { ...user, password: hashedPassword };
@@ -40,7 +44,7 @@ export class UsersService extends BaseRepo {
     async deleteUser(username: string) {
         const config = await this.getUsersRaw();
         if (!(username in config.users)) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
+            throw AppError.badRequest('User does not exist');
         }
 
         delete config.users[username];
@@ -63,11 +67,11 @@ export class UsersService extends BaseRepo {
 
         const config = await this.getUsersRaw();
         if (!(username in config.users) || !config.users[username]) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
+            throw AppError.badRequest('User does not exist');
         }
 
         if (!config.users[username].email) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'User does not have an email set');
+            throw AppError.badRequest('User does not have an email set');
         }
 
         config.users[username].password = hashedPassword;
@@ -83,10 +87,10 @@ export class UsersService extends BaseRepo {
     async updateUser(username: string, body: Partial<UserWithUsername>) {
         const config = await this.getUsersRaw();
         if (!(username in config.users) || !config.users[username]) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'User does not exist');
+            throw AppError.badRequest('User does not exist');
         }
         if (!!body.username && body.username !== username && body.username in config.users) {
-            throw new AppError(ErrorType.BAD_REQUEST, 'Username in use');
+            throw AppError.badRequest('Username in use');
         }
 
         if (body.disabled !== undefined) {
@@ -182,5 +186,23 @@ export class UsersService extends BaseRepo {
         // validate schema manually using AUTHELIA_USERS_SCHEMA_URL
         // no authelia CLI to validate
         // authelia in watch mode - no need to reload
+    }
+}
+
+export default fp((app, opts, done) => {
+    const usersService = new UsersService(app);
+
+    app.decorate('usersService', usersService);
+
+    done();
+}, {
+    name: 'users-service',
+    dependencies: ['database-plugin', 'mailer-plugin'],
+    decorators: { fastify: ['database', 'mailerProvider'] }
+});
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        usersService: UsersService;
     }
 }

@@ -23,6 +23,10 @@ export const caddyRoutingRelations = relations(caddyConfigs, ({ one }) => ({
     project: one(projects, {
         fields: [caddyConfigs.projectId],
         references: [projects.id]
+    }),
+    container: one(containers, {
+        fields: [caddyConfigs.standaloneContainerId],
+        references: [containers.id]
     })
 }));
 

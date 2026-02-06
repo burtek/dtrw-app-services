@@ -7,17 +7,17 @@ import { toast } from 'react-toastify';
 import { SelectField } from '../components/form/fields/selectField';
 import { TextField } from '../components/form/fields/textField';
 import { withErrorBoundary } from '../components/withErrorBoundary';
-import { useGetProjectsState } from '../projects/api-projects';
+import { useGetProjectsQuery } from '../projects/api-projects';
 import { handleQueryError } from '../query-error-handler';
 import type { Container, Project, WithId } from '../types';
 
-import { useGetContainersState, useGetContainerTypesQuery, useSaveContainerMutation } from './api-containers';
+import { useGetContainersQuery, useGetContainerTypesQuery, useSaveContainerMutation } from './api-containers';
 import { containerTypeByPrefix } from './containers-types';
 
 
 const Component = ({ close, id, newContainerName = '' }: { close: () => void; id: number | null; newContainerName?: string }) => {
-    const { data: projects = [] } = useGetProjectsState();
-    const { data: containers = [] } = useGetContainersState();
+    const { data: projects = [] } = useGetProjectsQuery();
+    const { data: containers = [] } = useGetContainersQuery();
     const { data: containerTypes, error } = useGetContainerTypesQuery();
 
     useEffect(() => {

@@ -1,33 +1,32 @@
-import type { FastifyPluginCallback } from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod';
 import { z } from 'zod/v4';
 
+import { routeFp } from '../helpers/route-plugin';
+
 import { ContainerSchema } from './containers.schema';
-import { ContainersService } from './containers.service';
 
 
-export const containersController: FastifyPluginCallback = (instance, options, done) => {
-    const containersService = new ContainersService(instance);
-
-    const f = instance.withTypeProvider<ZodTypeProvider>();
-
-    f.get(
+const containersController: FastifyPluginCallbackZod = (instance, options, done) => {
+    instance.get(
         '/',
-        () => containersService.getContainers()
+        () => instance.containersService.getContainers()
     );
 
-    f.get(
+    instance.get(
         '/types',
-        () => containersService.getAllowedContainerTypes()
+        () => instance.containersService.getAllowedContainerTypes()
     );
 
-    f.post(
+    instance.post(
         '/',
         { schema: { body: ContainerSchema } },
-        async request => await containersService.create(request.body)
+        async (request, reply) => {
+            const created = await instance.containersService.create(request.body);
+            return await reply.status(201).send(created);
+        }
     );
 
-    f.post(
+    instance.post(
         '/:id',
         {
             schema: {
@@ -35,17 +34,22 @@ export const containersController: FastifyPluginCallback = (instance, options, d
                 params: z.object({ id: z.coerce.number().positive().refine(val => Number.isInteger(val)) })
             }
         },
-        async request => await containersService.update(request.params.id, request.body)
+        async request => await instance.containersService.update(request.params.id, request.body)
     );
 
-    f.delete(
+    instance.delete(
         '/:id',
         { schema: { params: z.object({ id: z.coerce.number().positive().refine(val => Number.isInteger(val)) }) } },
         async request => {
-            await containersService.delete(request.params.id);
+            await instance.containersService.delete(request.params.id);
             return true;
         }
     );
 
     done();
 };
+
+export default routeFp(containersController, {
+    dependencies: ['containers-service'],
+    decorators: { fastify: ['containersService'] }
+});

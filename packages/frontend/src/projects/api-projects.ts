@@ -75,10 +75,7 @@ export const projectsApi = createApi({
 });
 
 export const {
-    getProjects: {
-        useQuery: useGetProjectsQuery,
-        useQueryState: useGetProjectsState
-    },
+    getProjects: { useQuery: useGetProjectsQuery },
     saveProject: { useMutation: useSaveProjectMutation },
     deleteProject: { useMutation: useDeleteProjectMutation }
 } = projectsApi.endpoints;

@@ -1,6 +1,0 @@
-export enum ErrorType {
-    BAD_REQUEST = 400,
-    UNAUTHORIZED = 403,
-    BAD_GATEWAY = 502,
-    SERVICE_UNAVAILABLE = 503
-}

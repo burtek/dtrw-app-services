@@ -1,42 +1,67 @@
 /* eslint-disable import-x/no-named-as-default */
 import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import type { FastifyBaseLogger } from 'fastify';
+import fp from 'fastify-plugin';
 
 import { env } from '../config';
 
-import * as schema from './schemas';
+import type { DB } from './utils';
+import { makeDb } from './utils';
 
 
-const makeDb = (database: Database.Database) => drizzle(database, { schema });
-export type DB = ReturnType<typeof makeDb>;
+export class DatabaseWrapper {
+    private readonly dbInstance: Database.Database;
+    private readonly drizzleDb: DB;
 
-let dbInstance: Database.Database | null = null;
-let drizzleDb: DB | null = null;
-
-export function getDb(_log: FastifyBaseLogger): DB {
-    if (drizzleDb) {
-        return drizzleDb;
+    constructor(private readonly log: FastifyBaseLogger) {
+        this.log.info('Opening database...');
+        this.dbInstance = new Database(env.DB_FILE_NAME, { readonly: false });
+        this.drizzleDb = makeDb(this.dbInstance);
     }
 
-    dbInstance = new Database(env.DB_FILE_NAME, { readonly: false });
-    drizzleDb = makeDb(dbInstance);
+    get db() {
+        return this.drizzleDb;
+    }
 
-    return drizzleDb;
+    close() {
+        this.log.info('Closing database...');
+        this.dbInstance.close();
+        this.log.info('Database closed');
+    }
+
+    runMigrations() {
+        this.log.info('Running migrations...');
+        migrate(this.drizzleDb, { migrationsFolder: env.DB_MIGRATIONS_FOLDER });
+        this.log.info('Migrations complete');
+    }
+
+    async transaction<T>(worker: (txDb: DB) => Promise<T>, mode: 'deferred' | 'immediate' | 'exclusive' = 'deferred'): Promise<T> {
+        this.dbInstance.exec(`BEGIN ${mode.toUpperCase()};`);
+        try {
+            const result = await worker(this.drizzleDb);
+            this.dbInstance.exec('COMMIT;');
+            return result;
+        } catch (error) {
+            this.dbInstance.exec('ROLLBACK;');
+            throw error;
+        }
+    }
 }
 
-export function runMigrations(log: FastifyBaseLogger) {
-    const db = getDb(log);
+export default fp((app, options, done) => {
+    const dbWrapper = new DatabaseWrapper(app.log);
 
-    log.info('Database open, migrating...');
-    migrate(db, { migrationsFolder: env.DB_MIGRATIONS_FOLDER });
-    log.info('Database migrated');
-}
+    app.decorate('database', dbWrapper);
+    app.addHook('onClose', () => {
+        dbWrapper.close();
+    });
 
-export function closeDb() {
-    if (dbInstance) {
-        dbInstance.close();
-        dbInstance = null;
+    done();
+}, { name: 'database-plugin' });
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        database: DatabaseWrapper;
     }
 }

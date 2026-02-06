@@ -1,3 +1,6 @@
+import './augmentations';
+
+
 export interface Project {
     slug: string;
     name: string;
@@ -89,6 +92,29 @@ export type ProjecktWorkflows = {
     workflows: null;
     error: string;
 };
+
+export interface CaddyConfig {
+    order: number;
+    projectId: number | null;
+    standaloneContainerId: number | null;
+    standaloneContainerDomain: string | null;
+    auth: 'enabled' | 'disabled' | 'own' | 'provider';
+}
+// export interface CaddyConfigProject {
+//     order: number;
+//     projectId: number;
+//     standaloneContainerId: null | undefined;
+//     standaloneContainerDomain: null | undefined;
+//     auth: 'enabled' | 'disabled' | 'own';
+// }
+// export interface CaddyConfigStandalone {
+//     order: number;
+//     projectId: null | undefined;
+//     standaloneContainerId: number;
+//     standaloneContainerDomain: string;
+//     auth: 'enabled' | 'disabled' | 'own' | 'provider';
+// }
+// export type CaddyConfigTypeChecked = CaddyConfigProject | CaddyConfigStandalone;
 
 export type WithId<T, ID = number> = T & { id: ID };
 export type MaybeWithId<T, ID = number> = T & { id?: ID | null };

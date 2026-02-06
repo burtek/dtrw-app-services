@@ -3,15 +3,18 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { Octokit } from '@octokit/core';
 import type { components } from '@octokit/openapi-types';
 import type { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
 import { env } from '../config';
-import { BaseRepo } from '../database/repo';
 import type { Project } from '../database/schemas/projects';
 
 
-export class GithubProjectsRepo extends BaseRepo {
+class GithubProjectsRepo {
+    constructor(private readonly fastifyContext: FastifyInstance) {
+    }
+
     protected async getBySlug(githubSlug: string) {
-        return await this.db.query.projects.findFirst({
+        return await this.fastifyContext.database.db.query.projects.findFirst({
             where(fields, operators) {
                 return operators.eq(fields.github, `https://github.com/${githubSlug}`);
             }
@@ -19,7 +22,7 @@ export class GithubProjectsRepo extends BaseRepo {
     }
 
     protected async getProjectsGithubUrls(githubSlug?: string) {
-        return await this.db.query.projects.findMany({
+        return await this.fastifyContext.database.db.query.projects.findMany({
             columns: { id: true, github: true },
             where(fields, operators) {
                 const coditions = [operators.eq(fields.planned, false)];
@@ -262,4 +265,24 @@ interface WorkflowItem {
     projectId: number;
     workflows: Record<string, WorkflowRun> | null;
     error: string | null;
+}
+
+// ------------------- Fastify plugin wrapper ------------------ //
+
+export default fp((app, opts, done) => {
+    const githubService = new GithubService(app);
+
+    app.decorate('githubService', githubService);
+
+    done();
+}, {
+    name: 'github-service',
+    dependencies: ['database-plugin'],
+    decorators: { fastify: ['database'] }
+});
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        githubService: GithubService;
+    }
 }

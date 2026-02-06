@@ -1,16 +1,18 @@
 import { readFile, rename, writeFile } from 'node:fs/promises'
 
-import { createPreDecoratedApp } from '../app-base';
+import usersController from './users.controller';
+import usersService from './users.service';
+import { setupAppWithDb } from 'tests/setup-app';
+import { env } from '../config';
+import { argon2, randomBytes } from 'node:crypto';
 
-import { usersController } from './users.controller';
-import { UsersService } from './users.service';
 
-
-vitest.mock('../database/index', () => ({ getDb() {} }));
 vitest.mock('node:fs/promises');
-vitest.mock('../config', () => ({ env: { AUTHELIA_USERS: '/path/to/users.yaml' } }));
-
-UsersService.prototype['generatePasswordHash'] = (plainPassword: string) => Promise.resolve(plainPassword.replace('plain_', 'hashed_'));
+vitest.mock(import('node:crypto'), async importOriginal => ({
+    ...await importOriginal(),
+    argon2: vitest.fn(),
+    randomBytes: vitest.fn().mockReturnValue(Buffer.from('random_salt_12345')),
+}));
 
 const usersYamlMock = `
 users:
@@ -33,8 +35,9 @@ users:
     disabled: true
 `;
 
-describe('UsersController', () => {
-    const app = createPreDecoratedApp();
+describe('UsersController', async () => {
+    const app = await setupAppWithDb();
+    app.register(usersService);
     app.register(usersController, { prefix: '/users' });
 
     const readFileMock = vitest.mocked(readFile).mockResolvedValue(usersYamlMock);
@@ -43,10 +46,6 @@ describe('UsersController', () => {
 
     afterEach(() => {
         vitest.clearAllMocks();
-    });
-
-    afterAll(async () => {
-        await app.close();
     });
 
     describe('GET /users', () => {
@@ -78,6 +77,10 @@ describe('UsersController', () => {
 
     describe('POST /users', () => {
         it('should save data expected data', async () => {
+            vitest.mocked(argon2).mockImplementation(async (type, params, cb) => {
+                cb(null, Buffer.from('hashed_password_3'));
+            });
+
             const response = await app.inject({
                 method: 'POST',
                 url: '/users',
@@ -91,12 +94,16 @@ describe('UsersController', () => {
                 }
             });
 
+            expect(argon2).toHaveBeenCalledWith('argon2id', expect.objectContaining({
+                message: 'plain_password_3'
+            }), expect.any(Function));
+
             expect(writeFileMock).toHaveBeenCalledWith(
-                '/path/to/users.yaml.tmp',
+                `${env.AUTHELIA_USERS}.tmp`,
                 `
 ${usersYamlMock.trim()}
   charlie:
-    password: hashed_password_3
+    password: $argon2id$v=19$m=65536,t=3,p=4$cmFuZG9tX3NhbHRfMTIzNDU$aGFzaGVkX3Bhc3N3b3JkXzM
     displayname: Charlie Brown
     email: charlie@example.com
     groups:
@@ -107,7 +114,10 @@ ${usersYamlMock.trim()}
 
             );
 
-            expect(renameMock).toHaveBeenCalledWith('/path/to/users.yaml.tmp', '/path/to/users.yaml');
+            expect(renameMock).toHaveBeenCalledWith(
+                `${env.AUTHELIA_USERS}.tmp`,
+                env.AUTHELIA_USERS
+            );
         });
 
         it('should throw if user exists', async () => {

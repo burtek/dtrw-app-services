@@ -1,9 +1,28 @@
+import fp from 'fastify-plugin';
+
 import packageJson from '../../package.json' with { type: 'json' };
-import { BaseRepo } from '../database/repo';
 
 
-export class HealthService extends BaseRepo {
+class HealthService {
     getVersion(): string {
         return packageJson.version;
+    }
+}
+
+export default fp((app, opts, done) => {
+    const healthService = new HealthService();
+
+    app.decorate('healthService', healthService);
+
+    done();
+}, {
+    name: 'health-service',
+    dependencies: ['database-plugin'],
+    decorators: { fastify: ['database'] }
+});
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        healthService: HealthService;
     }
 }

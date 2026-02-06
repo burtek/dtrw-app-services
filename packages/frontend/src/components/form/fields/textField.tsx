@@ -14,12 +14,12 @@ function checkValueType(value: unknown): asserts value is string | undefined | n
     }
 }
 
-const Component = <C extends Control>({ label, control, name, rules, onChange: onChangeProp, type = 'text' }: Props<C>) => {
+const Component = <C extends Control>({ label, control, name, rules, onChange: onChangeProp, type = 'text', disabled: disabledProp }: Props<C>) => {
     const {
         field: { value: v, onChange, onBlur, disabled, ref },
         fieldState: { error },
         formState: { isSubmitting }
-    } = useController({ control, name, rules });
+    } = useController({ control, name, rules, disabled: disabledProp });
     const value = v as unknown;
     checkValueType(value);
 
@@ -79,4 +79,6 @@ interface Props<C extends Control> {
     type?: 'text' | 'password' | 'email';
 
     onChange?: (value: string) => void;
+
+    disabled?: boolean;
 }

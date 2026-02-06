@@ -20,5 +20,6 @@ export default config(
         },
         settings: { 'import/resolver': { typescript: true } }
     },
+    { rules: { 'react-hooks/preserve-manual-memoization': 'off' } },
     { ignores: ['dist', 'node_modules'] }
 );

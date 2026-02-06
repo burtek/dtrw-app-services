@@ -1,9 +1,18 @@
 import type { ContainerInfo, NetworkInfo, Port } from 'dockerode';
+import type { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
-import { BaseRepo } from '../database/repo';
 
+class DockerService {
+    constructor(private readonly fastifyContext: FastifyInstance) {
+    }
 
-export class DockerService extends BaseRepo {
+    async getContainerByName(name: string) {
+        const containers = await this.getContainers();
+
+        return containers.find(c => c.names.includes(`/${name}`));
+    }
+
     async getContainers() {
         const containers = await this.fastifyContext.dockerProxy?.containers;
 
@@ -73,5 +82,23 @@ export class DockerService extends BaseRepo {
             publicPort: port.PublicPort,
             type: port.Type
         };
+    }
+}
+
+export default fp((app, opts, done) => {
+    const dockerService = new DockerService(app);
+
+    app.decorate('dockerService', dockerService);
+
+    done();
+}, {
+    name: 'docker-service',
+    dependencies: ['docker-proxy'],
+    decorators: { fastify: ['dockerProxy'] }
+});
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        dockerService: DockerService;
     }
 }

@@ -2,23 +2,41 @@ import type { ComponentType, ErrorInfo, FC, PropsWithChildren } from 'react';
 import { PureComponent } from 'react';
 
 
-class ErrorBoundary extends PureComponent<PropsWithChildren, { hasCaught: boolean }> {
+class ErrorBoundary extends PureComponent<PropsWithChildren, { error?: Error; errorInfo?: ErrorInfo }> {
     static displayName = 'ErrorBoundary';
 
     constructor(thisProps: PropsWithChildren) {
         super(thisProps);
-        this.state = { hasCaught: false };
+        this.state = {};
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
         // eslint-disable-next-line no-console
         console.log(error, errorInfo);
-        this.setState({ hasCaught: true });
+        this.setState({ error, errorInfo });
     }
 
+    private resetState() {
+        this.setState({ error: undefined, errorInfo: undefined });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     render() {
-        if (this.state.hasCaught) {
-            return <p>An error occured</p>;
+        if (this.state.error || this.state.errorInfo) {
+            return (
+                <>
+                    <p>
+                        An error occured:
+                        {this.state.error?.message}
+                    </p>
+                    <button
+                        onClick={this.resetState.bind(this)}
+                        type="button"
+                    >
+                        Reset
+                    </button>
+                </>
+            );
         }
 
         return this.props.children;

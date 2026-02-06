@@ -1,28 +1,24 @@
-import type { FastifyPluginCallback } from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod';
 import { z } from 'zod/v4';
 
+import { routeFp } from '../helpers/route-plugin';
+
 import { ProjectSchema } from './projects.schema';
-import { ProjectsService } from './projects.service';
 
 
-export const projectsController: FastifyPluginCallback = (instance, options, done) => {
-    const projectsService = new ProjectsService(instance);
-
-    const f = instance.withTypeProvider<ZodTypeProvider>();
-
-    f.get(
+const projectsController: FastifyPluginCallbackZod = (instance, options, done) => {
+    instance.get(
         '/',
-        () => projectsService.getProjects()
+        () => instance.projectsService.getProjects()
     );
 
-    f.post(
+    instance.post(
         '/',
         { schema: { body: ProjectSchema } },
-        async request => await projectsService.create(request.body)
+        async request => await instance.projectsService.create(request.body)
     );
 
-    f.post(
+    instance.post(
         '/:id',
         {
             schema: {
@@ -30,17 +26,22 @@ export const projectsController: FastifyPluginCallback = (instance, options, don
                 params: z.object({ id: z.coerce.number().positive().refine(val => Number.isInteger(val)) })
             }
         },
-        async request => await projectsService.update(request.params.id, request.body)
+        async request => await instance.projectsService.update(request.params.id, request.body)
     );
 
-    f.delete(
+    instance.delete(
         '/:id',
         { schema: { params: z.object({ id: z.coerce.number().positive().refine(val => Number.isInteger(val)) }) } },
         async request => {
-            await projectsService.delete(request.params.id);
+            await instance.projectsService.delete(request.params.id);
             return true;
         }
     );
 
     done();
 };
+
+export default routeFp(projectsController, {
+    dependencies: ['projects-service'],
+    decorators: { fastify: ['projectsService'] }
+});

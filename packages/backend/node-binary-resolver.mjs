@@ -29,7 +29,6 @@ export function nodeBinaryResolver() {
             }
 
             const resolved = id.slice(PREFIX.length);
-            // console.log({ id, resolved, 'import.meta.dirname': import.meta.dirname });
             try {
                 await access(resolved); // throw if not accessible
             } catch (err) {

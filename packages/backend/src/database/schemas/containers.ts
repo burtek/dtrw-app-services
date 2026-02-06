@@ -1,4 +1,5 @@
-import { integer, sqliteTable as table, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+import { check, integer, sqliteTable as table, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 import { projects } from './projects';
 
@@ -24,7 +25,10 @@ export const containers = table('containers', {
         .notNull() // default calculated by UI based on container name
 }, t => [
     //
-    uniqueIndex('unique_container_type_per_project').on(t.projectId, t.type)
+    uniqueIndex('unique_container_type_per_project').on(t.projectId, t.type),
+    check('standalone_without_project', sql`${t.type} != 'standalone' OR ${t.projectId} IS NULL`),
+    check('project_required_for_non_standalone', sql`${t.type} = 'standalone' OR ${t.projectId} IS NOT NULL`),
+    check('valid_container_type', sql`${t.type} IN (${sql.join(containerTypes.map(type => sql.raw(`'${type}'`)), sql.raw(', '))})`)
 ]);
 
 export type Container = typeof containers.$inferSelect;

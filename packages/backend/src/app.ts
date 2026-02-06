@@ -1,24 +1,34 @@
 import type { FastifyServerOptions } from 'fastify';
-import fastifyRawBody from 'fastify-raw-body';
+import { fastify } from 'fastify';
+import { fastifyRawBody } from 'fastify-raw-body';
+import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
-import { accessControlController } from './access-control/access-control.controller';
-import { createPreDecoratedApp } from './app-base';
-import { caddyController } from './caddy/caddy.controller';
-import { containersController } from './containers/containers.controller';
-import { getDb } from './database';
-import { decorateRequestUser } from './decorators/auth.decorator';
-import { decorateDockerProvider } from './decorators/docker.decorator';
-import { decorateErrorHandler } from './decorators/error.decorator';
-import { decorateMailerHandler } from './decorators/mailer.decorator';
-import { dockerController } from './docker/docker.controller';
-import { githubController } from './github/github.controller';
-import { healthController } from './health/health.controller';
-import { projectsController } from './projects/projects.controller';
-import { usersController } from './users/users.controller';
+
+// import { accessControlController } from './access-control/access-control.controller';
+import caddyController from './caddy/caddy.controller';
+import caddyService from './caddy/caddy.service';
+import containersController from './containers/containers.controller';
+import containersService from './containers/containers.service';
+import databasePlugin from './database';
+import dockerController from './docker/docker.controller';
+import dockerService from './docker/docker.service';
+import githubController from './github/github.controller';
+import githubService from './github/github.service';
+import healthController from './health/health.controller';
+import healthService from './health/health.service';
+import authPlugin from './plugins/auth.plugin';
+import dockerProxyPlugin from './plugins/docker-proxy.plugin';
+import { errorHandler } from './plugins/error.handler';
+import mailerPlugin from './plugins/mailer.plugin';
+import projectsController from './projects/projects.controller';
+import projectsService from './projects/projects.service';
+import { createPluginRegistry } from './services-registry';
+import usersController from './users/users.controller';
+import usersService from './users/users.service';
 
 
 export async function createApp(opts: FastifyServerOptions = {}) {
-    const app = createPreDecoratedApp(opts);
+    const app = fastify(opts);
 
     await app.register(fastifyRawBody, {
         field: 'rawBody',
@@ -27,27 +37,41 @@ export async function createApp(opts: FastifyServerOptions = {}) {
         runFirst: true
     });
 
-    app.register(healthController, { prefix: '/health' });
+    app.setErrorHandler(errorHandler);
 
-    decorateErrorHandler(app);
-    decorateRequestUser(app);
-    decorateDockerProvider(app);
-    decorateMailerHandler(app);
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
 
-    app.register(projectsController, { prefix: '/projects' });
+    //  Decorators
+    app.register(authPlugin);
+    app.register(databasePlugin);
+    app.register(dockerProxyPlugin);
+    app.register(mailerPlugin);
+
+    // Services
+    createPluginRegistry(app)
+        .use(caddyService)
+        .use(containersService)
+        .use(dockerService)
+        .use(githubService)
+        .use(healthService)
+        .use(projectsService)
+        .use(usersService)
+        .registerAll();
+
+    // Controllers
+    app.register(caddyController, { prefix: '/caddy' });
     app.register(containersController, { prefix: '/containers' });
     app.register(dockerController, { prefix: '/docker' });
-    app.register(usersController, { prefix: '/users' });
     app.register(githubController, { prefix: '/github' });
+    app.register(healthController, { prefix: '/health' });
+    app.register(projectsController, { prefix: '/projects' });
+    app.register(usersController, { prefix: '/users' });
 
-    app.register(accessControlController, { prefix: '/access-control' });
-    app.register(caddyController, { prefix: '/caddy' });
+    // Controllers todo
+    // app.register(accessControlController, { prefix: '/access-control' });
 
-    app.addHook('onClose', instance => {
-        instance.log.info('Closing database...');
-        getDb(instance.log).$client.close();
-        instance.log.info('Database closed');
-    });
+    await app.ready();
 
     return {
         app,
@@ -62,6 +86,9 @@ export async function createApp(opts: FastifyServerOptions = {}) {
                 app.log.error(err, 'Error during shutdown');
                 throw err;
             }
+        },
+        runMigrations() {
+            app.database.runMigrations();
         }
     };
 }

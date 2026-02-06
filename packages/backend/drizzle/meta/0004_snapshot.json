@@ -1,0 +1,376 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "ac6243c9-0ba4-4c5a-911e-af0d17325c19",
+  "prevId": "5e0f6220-75ca-4937-a233-a4a8c6137831",
+  "tables": {
+    "authelia_config": {
+      "name": "authelia_config",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "policy": {
+          "name": "policy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "resources": {
+          "name": "resources",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "authelia_config_project_id_projects_id_fk": {
+          "name": "authelia_config_project_id_projects_id_fk",
+          "tableFrom": "authelia_config",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "caddy_config": {
+      "name": "caddy_config",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "standalone_container_id": {
+          "name": "standalone_container_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auth": {
+          "name": "auth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_provider": {
+          "name": "is_provider",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "generated": {
+            "as": "(CASE WHEN \"auth\" = 'provider' THEN 1 ELSE NULL END)",
+            "type": "virtual"
+          }
+        },
+        "standalone_container_domain": {
+          "name": "standalone_container_domain",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "caddy_config_project_id_unique": {
+          "name": "caddy_config_project_id_unique",
+          "columns": [
+            "project_id"
+          ],
+          "isUnique": true
+        },
+        "caddy_config_standalone_container_id_unique": {
+          "name": "caddy_config_standalone_container_id_unique",
+          "columns": [
+            "standalone_container_id"
+          ],
+          "isUnique": true
+        },
+        "caddy_config_order_unique": {
+          "name": "caddy_config_order_unique",
+          "columns": [
+            "order"
+          ],
+          "isUnique": true
+        },
+        "caddy_config_is_provider_unique": {
+          "name": "caddy_config_is_provider_unique",
+          "columns": [
+            "is_provider"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "caddy_config_project_id_projects_id_fk": {
+          "name": "caddy_config_project_id_projects_id_fk",
+          "tableFrom": "caddy_config",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "caddy_config_standalone_container_id_containers_id_fk": {
+          "name": "caddy_config_standalone_container_id_containers_id_fk",
+          "tableFrom": "caddy_config",
+          "tableTo": "containers",
+          "columnsFrom": [
+            "standalone_container_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "xor_project_container": {
+          "name": "xor_project_container",
+          "value": "(\"caddy_config\".\"project_id\" IS NOT NULL AND \"caddy_config\".\"standalone_container_id\" IS NULL) OR (\"caddy_config\".\"project_id\" IS NULL AND \"caddy_config\".\"standalone_container_id\" IS NOT NULL)"
+        },
+        "standalone_container_has_domain": {
+          "name": "standalone_container_has_domain",
+          "value": "(\"caddy_config\".\"standalone_container_id\" IS NULL AND \"caddy_config\".\"standalone_container_domain\" IS NULL) OR (\"caddy_config\".\"standalone_container_id\" IS NOT NULL AND \"caddy_config\".\"standalone_container_domain\" IS NOT NULL)"
+        }
+      }
+    },
+    "containers": {
+      "name": "containers",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "containers_name_unique": {
+          "name": "containers_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        },
+        "unique_container_type_per_project": {
+          "name": "unique_container_type_per_project",
+          "columns": [
+            "project_id",
+            "type"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "containers_project_id_projects_id_fk": {
+          "name": "containers_project_id_projects_id_fk",
+          "tableFrom": "containers",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "standalone_without_project": {
+          "name": "standalone_without_project",
+          "value": "\"containers\".\"type\" != 'standalone' OR \"containers\".\"project_id\" IS NULL"
+        },
+        "project_required_for_non_standalone": {
+          "name": "project_required_for_non_standalone",
+          "value": "\"containers\".\"type\" = 'standalone' OR \"containers\".\"project_id\" IS NOT NULL"
+        },
+        "valid_container_type": {
+          "name": "valid_container_type",
+          "value": "\"containers\".\"type\" IN ('frontend', 'backend', 'database', 'docker-proxy', 'standalone')"
+        }
+      }
+    },
+    "projects": {
+      "name": "projects",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "github": {
+          "name": "github",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "main_url": {
+          "name": "main_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "jira": {
+          "name": "jira",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "more_urls": {
+          "name": "more_urls",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "planned": {
+          "name": "planned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "projects_slug_unique": {
+          "name": "projects_slug_unique",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
+        },
+        "projects_name_unique": {
+          "name": "projects_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

@@ -1,5 +1,5 @@
 import Dockerode from 'dockerode';
-import type { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
 import type { DockeredEnv } from '../config';
 import { env } from '../config';
@@ -21,6 +21,10 @@ class DockerProxyProvider {
         return this.instance.getContainer(this.verifiedEnv.DOCKER_AUTHELIA_CONTAINER_NAME);
     }
 
+    get caddy() {
+        return this.instance.getContainer(this.verifiedEnv.DOCKER_CADDY_CONTAINER_NAME);
+    }
+
     get containers() {
         return this.instance.listContainers({ all: true });
     }
@@ -35,13 +39,15 @@ class DockerProxyProvider {
     }
 }
 
-export function decorateDockerProvider(app: FastifyInstance) {
+export default fp((app, options, done) => {
     const proxy = env.DOCKER_PROXY
         ? new DockerProxyProvider(env)
         : undefined;
 
     app.decorate('dockerProxy', proxy);
-}
+
+    done();
+}, { name: 'docker-proxy' });
 
 declare module 'fastify' {
     interface FastifyInstance {

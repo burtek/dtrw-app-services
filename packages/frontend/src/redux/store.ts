@@ -6,6 +6,7 @@ import { containersApi } from '../containers/api-containers';
 import { dockerApi } from '../containers/api-docker';
 import { githubApi } from '../projects/api-github';
 import { projectsApi } from '../projects/api-projects';
+import { caddyApi } from '../routing/api';
 import { usersApi } from '../users/api';
 
 
@@ -15,7 +16,7 @@ declare global {
     }
 }
 
-const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi, githubApi);
+const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi, githubApi, caddyApi);
 
 export const createStore = () => configureStore({
     devTools: true,
@@ -27,6 +28,7 @@ export const createStore = () => configureStore({
             dockerApi.middleware,
             usersApi.middleware,
             githubApi.middleware,
+            caddyApi.middleware,
             createLogger({
                 predicate() {
                     return (import.meta.env.DEV && !import.meta.env.TEST) || !!window.forceLog;

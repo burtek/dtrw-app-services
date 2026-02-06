@@ -1,12 +1,11 @@
 import { createApp } from './app';
 import { env } from './config';
-import { runMigrations } from './database';
 
 
 async function bootstrap() {
-    const { app, shutdown } = await createApp({ logger: true });
+    const { app, shutdown, runMigrations } = await createApp({ logger: env.NODE_ENV === 'development' });
 
-    runMigrations(app.log);
+    runMigrations();
 
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
@@ -18,8 +17,7 @@ async function bootstrap() {
         });
     } catch (error: unknown) {
         app.log.error(error);
-        // eslint-disable-next-line n/no-process-exit
-        process.exit(1);
+        await shutdown('ERROR');
     }
 }
 

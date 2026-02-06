@@ -77,14 +77,8 @@ export const containersApi = createApi({
 });
 
 export const {
-    getContainers: {
-        useQuery: useGetContainersQuery,
-        useQueryState: useGetContainersState
-    },
-    getContainerTypes: {
-        useQuery: useGetContainerTypesQuery,
-        useQueryState: useGetContainerTypesState
-    },
+    getContainers: { useQuery: useGetContainersQuery },
+    getContainerTypes: { useQuery: useGetContainerTypesQuery },
     saveContainer: { useMutation: useSaveContainerMutation },
     deleteContainer: { useMutation: useDeleteContainerMutation }
 } = containersApi.endpoints;

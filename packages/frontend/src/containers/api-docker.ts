@@ -51,10 +51,7 @@ export const dockerApi = createApi({
 });
 
 export const {
-    getDockerContainers: {
-        useQuery: useGetDockerContainersQuery,
-        useQueryState: useGetDockerContainersState
-    },
+    getDockerContainers: { useQuery: useGetDockerContainersQuery },
     requestRestart: { useMutation: useRequestRestartMutation }
 } = dockerApi.endpoints;
 

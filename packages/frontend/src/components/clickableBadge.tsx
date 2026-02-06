@@ -1,13 +1,12 @@
-import { Badge } from '@radix-ui/themes';
 import { memo, useCallback } from 'react';
 
-import { Prefix } from '../consts';
-import { containerConfigByType } from '../containers/containers-types';
 import { useSearchSetterContext } from '../search/context';
-import type { Container } from '../types';
+
+import type { BadgeProps } from './badge';
+import { Badge } from './badge';
 
 
-export const Component = (props: ClickableBadgeProps) => {
+const Component = (props: ClickableBadgeProps) => {
     const { add: addToSearch } = useSearchSetterContext();
 
     const handleClick = useCallback(() => {
@@ -27,71 +26,15 @@ export const Component = (props: ClickableBadgeProps) => {
         }
     }, [addToSearch, props]);
 
-    const makeProps = (
-        color: React.ComponentProps<typeof Badge>['color'] = 'gray',
-        variant: React.ComponentProps<typeof Badge>['variant'] = 'surface'
-    ) => ({
-        color,
-        variant,
-        style: { cursor: 'context-menu' },
-        onClick: handleClick
-    });
-
-    switch (props.type) {
-        case 'project_slug':
-            return (
-                <Badge {...makeProps(props.planned ? 'gray' : 'blue')}>
-                    {`${Prefix.PROJECT_SLUG}${props.slug}`}
-                </Badge>
-            );
-        case 'container_type':
-            return (
-                <Badge {...makeProps(containerConfigByType(props.containerType)?.color, props.containerType === 'standalone' ? 'soft' : undefined)}>
-                    {props.label ?? props.containerType}
-                </Badge>
-            );
-        case 'username':
-            return (
-                <Badge {...makeProps(props.disabled ? 'gray' : 'orange')}>
-                    {`${Prefix.USERNAME}${props.name}`}
-                </Badge>
-            );
-        case 'usergroup':
-            return (
-                <Badge {...makeProps(props.userDisabled ? 'gray' : 'gold')}>
-                    {`${Prefix.USERGROUP}${props.group}`}
-                </Badge>
-            );
-    }
-
-    return null;
+    return (
+        <Badge
+            {...props}
+            onClick={handleClick}
+        />
+    );
 };
 Component.displayName = 'ClickableBadge';
 
-interface SlugProps {
-    type: 'project_slug';
-    slug: string;
-    planned?: boolean;
-}
-
-interface ContainerProps {
-    type: 'container_type';
-    containerType: Container['type'];
-    label?: string;
-}
-
-interface UserProps {
-    type: 'username';
-    name: string;
-    disabled?: boolean;
-}
-
-interface UserGroupProps {
-    type: 'usergroup';
-    group: string;
-    userDisabled?: boolean;
-}
-
-type ClickableBadgeProps = SlugProps | ContainerProps | UserProps | UserGroupProps;
+type ClickableBadgeProps = BadgeProps & { onClick?: never };
 
 export const ClickableBadge = memo(Component);
