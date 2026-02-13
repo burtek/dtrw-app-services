@@ -27,10 +27,10 @@ export async function seedData(db: ReturnType<typeof makeDb>) {
     }));
 
     await Promise.all([
-        { id: 1, projectId: 1, standaloneContainerId: null, order: 1, auth: true },
-        { id: 2, projectId: 2, standaloneContainerId: null, order: 2, auth: false },
-        { id: 3, projectId: 3, standaloneContainerId: null, order: 4, auth: true },
-        { id: 4, projectId: null, standaloneContainerId: 8, order: 3, auth: true }
+        { id: 1, projectId: 1, standaloneContainerId: null, order: 1, auth: 'enabled' as const },
+        { id: 2, projectId: 2, standaloneContainerId: null, order: 2, auth: 'disabled' as const },
+        { id: 3, projectId: 3, standaloneContainerId: null, order: 4, auth: 'enabled' as const },
+        { id: 4, projectId: null, standaloneContainerId: 8, order: 3, auth: 'enabled' as const, standaloneContainerDomain: 'standalone.dtrw.ovh' }
     ].map(async config => {
         await db.insert(caddyConfigs).values(config);
     }));

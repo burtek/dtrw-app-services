@@ -37,8 +37,6 @@ users:
 
 describe('UsersController', async () => {
     const app = await setupAppWithDb();
-    app.register(usersService);
-    app.register(usersController, { prefix: '/users' });
 
     const readFileMock = vitest.mocked(readFile).mockResolvedValue(usersYamlMock);
     const writeFileMock = vitest.mocked(writeFile).mockResolvedValue();

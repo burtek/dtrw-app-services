@@ -8,8 +8,6 @@ import containersService from './containers.service';
 
 describe('UsersController', async () => {
     const app = await setupAppWithDb();
-    app.register(containersService);
-    app.register(containersController, { prefix: '/containers' });
 
     afterEach(() => {
         vitest.clearAllMocks();

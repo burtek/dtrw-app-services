@@ -6,8 +6,6 @@ import caddyService from './caddy.service';
 
 describe('CaddyController', async () => {
     const app = await setupAppWithDb();
-    app.register(caddyService);
-    app.register(caddyController, { prefix: '/caddy' });
 
     afterEach(() => {
         vitest.clearAllMocks();
@@ -22,10 +20,10 @@ describe('CaddyController', async () => {
             
             expect(response.statusCode).toBe(200);
             expect(response.json()).toEqual([
-                { id: 1, projectId: 1, standaloneContainerId: null, order: 1, auth: true },
-                { id: 2, projectId: 2, standaloneContainerId: null, order: 2, auth: false },
-                { id: 4, projectId: null, standaloneContainerId: 8, order: 3, auth: true },
-                { id: 3, projectId: 3, standaloneContainerId: null, order: 4, auth: true }
+                { id: 1, projectId: 1, standaloneContainerId: null, order: 1, auth: 'enabled', isProvider: null, standaloneContainerDomain: null },
+                { id: 2, projectId: 2, standaloneContainerId: null, order: 2, auth: 'disabled', isProvider: null, standaloneContainerDomain: null },
+                { id: 4, projectId: null, standaloneContainerId: 8, order: 3, auth: 'enabled', isProvider: null, standaloneContainerDomain: "standalone.dtrw.ovh" },
+                { id: 3, projectId: 3, standaloneContainerId: null, order: 4, auth: 'enabled', isProvider: null, standaloneContainerDomain: null }
             ]);
         });
     });

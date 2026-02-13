@@ -71,8 +71,6 @@ export async function createApp(opts: FastifyServerOptions = {}) {
     // Controllers todo
     // app.register(accessControlController, { prefix: '/access-control' });
 
-    await app.ready();
-
     return {
         app,
         async shutdown(signal: string) {

@@ -50,6 +50,6 @@ describe('components/withErrorBoundary', () => {
         );
 
         expect(screen.getByText('Parent')).toBeInTheDocument();
-        expect(screen.getByText('An error occured')).toBeInTheDocument();
+        expect(screen.getByText('An error occured:')).toBeInTheDocument();
     });
 });

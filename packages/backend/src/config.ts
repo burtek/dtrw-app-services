@@ -50,8 +50,6 @@ if (!parsedEnv.success) {
     throw new Error(`Environment validation failed\n${z.prettifyError(parsedEnv.error)}`);
 }
 
-console.log(`Parsed env successfully, using NODE_ENV=${parsedEnv.data.NODE_ENV} going forward`);
-
 type Identity<T> = T extends object ? {} & {
     [P in keyof T]: T[P]
 } : T;

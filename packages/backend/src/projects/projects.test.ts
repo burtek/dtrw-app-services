@@ -6,8 +6,6 @@ import projectsService from './projects.service';
 
 describe('ProjectsController', async () => {
     const app = await setupAppWithDb();
-    app.register(projectsService);
-    app.register(projectsController, { prefix: '/projects' });
 
     afterEach(() => {
         vitest.clearAllMocks();

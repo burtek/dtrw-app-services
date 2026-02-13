@@ -9,8 +9,6 @@ import healthService from './health.service';
 
 describe('HealthController', async () => {
     const app = await setupAppWithDb();
-    app.register(healthService);
-    app.register(healthController, { prefix: '/health' });
 
     afterEach(() => {
         vitest.clearAllMocks();

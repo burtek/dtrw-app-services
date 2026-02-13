@@ -1,4 +1,5 @@
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
+DROP TABLE IF EXISTS `caddy_config`;--> statement-breakpoint
 CREATE TABLE `caddy_config` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`project_id` integer,

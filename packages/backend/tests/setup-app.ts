@@ -4,7 +4,7 @@ import { seedData } from './setup-db';
 
 
 export const setupAppWithDb = async ({ closeAfterAll = true } = {}) => {
-    const { app, runMigrations } = await createApp();
+    const { app, runMigrations } = await createApp({ logger: { level: 'warn' } });
 
     beforeAll(async () => {
         runMigrations();

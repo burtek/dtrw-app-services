@@ -21,7 +21,7 @@ class ContainersService {
             return newContainer as NonNullable<typeof newContainer>;
         } catch (error) {
             if (error instanceof SqliteError) {
-                console.error('SQLite Error Code:', error.code);
+                this.fastifyContext.log.error(`SQLite Error Code: ${error.code}`);
                 if (error.code === 'SQLITE_CONSTRAINT_UNIQUE' || error.code === 'SQLITE_CONSTRAINT_CHECK') {
                     throw AppError.badRequest(error.message);
                 } else {
