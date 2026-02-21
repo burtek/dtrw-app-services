@@ -49,8 +49,12 @@ export class DatabaseWrapper {
     }
 }
 
-export default fp((app, options, done) => {
+export default fp((app, options: { runMigrations?: boolean } = {}, done) => {
     const dbWrapper = new DatabaseWrapper(app.log);
+
+    if (options.runMigrations) {
+        dbWrapper.runMigrations();
+    }
 
     app.decorate('database', dbWrapper);
     app.addHook('onClose', () => {

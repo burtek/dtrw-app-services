@@ -196,17 +196,7 @@ export class GithubService extends GithubProjectsRepo {
 
     /** @throws never */
     private async refetchProjectsGithubWorkflows(githubSlug?: string, setupRefetch = true) {
-        let projects: Array<{ id: number; github: string }>;
-
-        try {
-            projects = await this.getProjectsGithubUrls(githubSlug);
-        } catch {
-            // should only happen in tests when DB is queried before it's seeded, let's ignore
-            if (setupRefetch) {
-                this.setupRefetch();
-            }
-            return;
-        }
+        const projects = await this.getProjectsGithubUrls(githubSlug);
 
         const data = await Promise.all(
             projects.map<Promise<WorkflowItem>>(async project => {

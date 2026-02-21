@@ -44,7 +44,7 @@ export async function createApp(opts: FastifyServerOptions = {}) {
 
     //  Decorators
     app.register(authPlugin);
-    app.register(databasePlugin);
+    app.register(databasePlugin, { runMigrations: true });
     app.register(dockerProxyPlugin);
     app.register(mailerPlugin);
 
@@ -84,9 +84,6 @@ export async function createApp(opts: FastifyServerOptions = {}) {
                 app.log.error(err, 'Error during shutdown');
                 throw err;
             }
-        },
-        runMigrations() {
-            app.database.runMigrations();
         }
     };
 }

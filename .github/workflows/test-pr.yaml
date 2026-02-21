@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run tests
-        run: yarn test
+      - name: Run 
+        run: ./tests.github.sh
 
       - name: Build
         run: yarn build
