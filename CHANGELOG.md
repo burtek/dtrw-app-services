@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/burtek/dtrw-app-services/compare/v1.13.1...v1.13.2) (2026-02-22)
+
+
+### Bug Fixes
+
+* **tests.github.sh:** correctly propagate test failure exit code and fix env setup ([#4](https://github.com/burtek/dtrw-app-services/issues/4)) ([eb4eab9](https://github.com/burtek/dtrw-app-services/commit/eb4eab9c5f53762c6967d9ee83d74c66e605fa36))
+
 ### [1.13.1](https://github.com/burtek/dtrw-app-services/compare/v1.13.0...v1.13.1) (2026-02-22)
 
 
