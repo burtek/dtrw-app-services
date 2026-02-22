@@ -28,7 +28,7 @@ echo "🧪 Running tests..."
 if yarn test; then
 	echo "✅ Tests passed"
 else
-	echo "❌ Tests failed"
 	exit_code=$?
+	echo "❌ Tests failed"
 	exit "$exit_code"
 fi
