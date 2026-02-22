@@ -6,9 +6,9 @@ set -euo pipefail
 : "${GITHUB_WORKSPACE:=$(pwd)}"
 
 echo "🛠️  Setting up environment variables for testing..."
-export AUTHELIA_CONFIG=$(mktemp authelia-config.XXXXXX.yml)
-export AUTHELIA_USERS=$(mktemp authelia-users.XXXXXX.yml)
-export CADDY_CADDYFILE_PATH=$(mktemp Caddyfile.XXXXXX)
+export AUTHELIA_CONFIG=$(mktemp /tmp/authelia-config.XXXXXX.yml)
+export AUTHELIA_USERS=$(mktemp /tmp/authelia-users.XXXXXX.yml)
+export CADDY_CADDYFILE_PATH=$(mktemp /tmp/Caddyfile.XXXXXX)
 export DB_MIGRATIONS_FOLDER="${GITHUB_WORKSPACE}/packages/backend/drizzle"
 
 cleanup() {
