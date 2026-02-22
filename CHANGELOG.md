@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/burtek/dtrw-app-services/compare/v1.12.4...v1.13.0) (2026-02-22)
+
+
+### Features
+
+* major changes ([7adae2d](https://github.com/burtek/dtrw-app-services/commit/7adae2dc731ba6005f709823cb665af14eb5c2d9))
+* **ui:** add docker container details tooltips ([312762f](https://github.com/burtek/dtrw-app-services/commit/312762f018a57e8f1f8c6294a18caf1b237449cf))
+
+
+### Bug Fixes
+
+* add execute permission to tests.github.sh ([#1](https://github.com/burtek/dtrw-app-services/issues/1)) ([af8dabd](https://github.com/burtek/dtrw-app-services/commit/af8dabdb9669213e849831118d046f2c3b60b9ff))
+* **backend:** github service will use webhook payload for data updates ([afdf079](https://github.com/burtek/dtrw-app-services/commit/afdf0794556b027bdbba6f5008724f18301decb9))
+* fix migrations and tests ([c735b6d](https://github.com/burtek/dtrw-app-services/commit/c735b6dc355e9ffefbc7425767827612e5286ca6))
+
 ### [1.12.4](https://github.com/burtek/dtrw-app-services/compare/v1.12.3...v1.12.4) (2026-01-16)
 
 
