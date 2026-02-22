@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.1](https://github.com/burtek/dtrw-app-services/compare/v1.13.0...v1.13.1) (2026-02-22)
+
+
+### Bug Fixes
+
+* install bash in alpine container and fix Test PR workflow ([#3](https://github.com/burtek/dtrw-app-services/issues/3)) ([23c9df6](https://github.com/burtek/dtrw-app-services/commit/23c9df62cd31ee9df524fa646e6f8575f43521cd))
+
 ## [1.13.0](https://github.com/burtek/dtrw-app-services/compare/v1.12.4...v1.13.0) (2026-02-22)
 
 
