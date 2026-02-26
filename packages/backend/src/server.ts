@@ -3,7 +3,7 @@ import { env } from './config';
 
 
 async function bootstrap() {
-    const { app, shutdown } = await createApp({ logger: env.NODE_ENV === 'development' });
+    const { app, shutdown } = await createApp({ logger: env.NODE_ENV !== 'test' });
 
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));

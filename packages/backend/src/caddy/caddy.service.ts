@@ -37,13 +37,24 @@ class CaddyService {
             return {};
         }
 
-        const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/adapt/`, {
+        const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/adapt`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/caddyfile' },
             body: await this.getCaddyfile(),
             signal
         });
-        return await response.json();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        const { error, warnings, result } = await response.json() as { error?: string; warnings?: unknown[]; result?: unknown };
+        if (error) {
+            throw AppError.badRequest(`Failed to parse Caddyfile: ${error}`);
+        }
+        if (Array.isArray(warnings) && warnings.length > 0) {
+            this.fastifyContext.log.warn('Caddyfile parsed with warnings');
+            warnings.forEach(warning => {
+                this.fastifyContext.log.warn(JSON.stringify(warning));
+            });
+        }
+        return result;
     }
 
     async getRoutes() {
