@@ -31,7 +31,8 @@ const envSchema = z.object({
     GITHUB_WEBHOOK_SECRET: z.string().nonempty(),
     EMAIL_SMTP_USER: z.email(),
     EMAIL_SMTP_PASS: z.string().nonempty(),
-    EMAIL_FROM: z.templateLiteral([z.string().nonempty(), ' <', z.email(), '>'])
+    EMAIL_FROM: z.templateLiteral([z.string().nonempty(), ' <', z.email(), '>']),
+    CADDY_WILDCARD_DOMAIN: z.string().nonempty()
 })
     .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_AUTHELIA_CONTAINER_NAME'))
     .superRefine(refineOptionalCondition(/* condition */'DOCKER_PROXY', /* property */'DOCKER_CADDY_ADMIN_HOST'))

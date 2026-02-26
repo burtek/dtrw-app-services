@@ -43,6 +43,7 @@ services:
       AUTHELIA_USERS_SCHEMA_URL: 'https://www.authelia.com/schemas/v4.39/json-schema/user-database.json'
       CADDY_CADDYFILE_PATH: '/configs/caddy/Caddyfile'
       CADDY_FETCH_INTERVAL: 300
+      CADDY_WILDCARD_DOMAIN: 'dtrw.ovh'
     expose:
       - 4000
     restart: on-failure:5

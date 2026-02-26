@@ -47,7 +47,11 @@ export const compileTemplate = (routes: Route[]) => render([
                 });
         }
         return { type: 'noop' };
-    })
+    }),
+    { type: 'emptyline' },
+    block(`*.${env.CADDY_WILDCARD_DOMAIN}`,
+        block('respond "No app configured under this domain" 418',
+            dir('close')))
 ]);
 
 interface StandaloneRoute {
