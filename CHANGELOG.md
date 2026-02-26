@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.4](https://github.com/burtek/dtrw-app-services/compare/v1.13.3...v1.13.4) (2026-02-26)
+
+
+### Bug Fixes
+
+* **backend:** adapt caddyfile API call ([fdffdf3](https://github.com/burtek/dtrw-app-services/commit/fdffdf3d0805b92456548ac649c32742f001e629))
+* **backend:** bump vulnerable packages ([7a6552d](https://github.com/burtek/dtrw-app-services/commit/7a6552d7c757bc0da14e6e7df7e497e74c681c67))
+
 ### [1.13.3](https://github.com/burtek/dtrw-app-services/compare/v1.13.2...v1.13.3) (2026-02-22)
 
 ### [1.13.2](https://github.com/burtek/dtrw-app-services/compare/v1.13.1...v1.13.2) (2026-02-22)
