@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.5](https://github.com/burtek/dtrw-app-services/compare/v1.13.4...v1.13.5) (2026-02-26)
+
+
+### Bug Fixes
+
+* enable wildcard cert in caddy ([059676d](https://github.com/burtek/dtrw-app-services/commit/059676d5dd22cde93df235a402c0f521e096c6c7))
+
 ### [1.13.4](https://github.com/burtek/dtrw-app-services/compare/v1.13.3...v1.13.4) (2026-02-26)
 
 
