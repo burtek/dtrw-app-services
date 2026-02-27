@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.6](https://github.com/burtek/dtrw-app-services/compare/v1.13.5...v1.13.6) (2026-02-27)
+
+
+### Bug Fixes
+
+* **backend:** jira link schema for project ([c94e8fe](https://github.com/burtek/dtrw-app-services/commit/c94e8fedeece6b7f31fdd5922306b33e9f0937fa))
+
 ### [1.13.5](https://github.com/burtek/dtrw-app-services/compare/v1.13.4...v1.13.5) (2026-02-26)
 
 
