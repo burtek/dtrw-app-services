@@ -181,11 +181,13 @@ class CaddyService {
             return false;
         }
 
-        await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/load`, {
+        const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/load`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/caddyfile' },
             body: await this.getCaddyfile()
         });
+
+        this.fastifyContext.log.info(`Caddy API response: ${response.status} ${JSON.stringify(await response.json())}`);
 
         return true;
     }
