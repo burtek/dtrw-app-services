@@ -13,7 +13,7 @@ export const ProjectSchema = createInsertSchema(projects, {
     jira: z.url({
         protocol: /^https$/,
         hostname: /^dtrw\.atlassian\.net$/
-    }).refine(url => /^\/browse\/DTRW-\d+$/.test(new URL(url).pathname)).optional(),
+    }).refine(url => /^\/browse\/DTRW-\d+$/.test(new URL(url).pathname)).nullish(),
     url: z.url({ protocol: /^https?$/ }),
     additionalUrls: z.array(z.url({ protocol: /^https?$/ }))
 }).omit({ id: true }).strict();
