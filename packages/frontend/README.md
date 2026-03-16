@@ -1,54 +1,113 @@
-# React + TypeScript + Vite
+# frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The React SPA that provides the web dashboard for `dtrw-app-services`. It lets operators manage projects, Docker containers, reverse-proxy routing, and user accounts from a single browser tab.
 
-Currently, two official plugins are available:
+## Purpose
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The frontend is the primary user interface for the `dtrw.ovh` infrastructure. It:
 
-## Expanding the ESLint configuration
+- Displays all **projects** tracked in the system together with their GitHub CI/CD status, live URLs, and Jira links.
+- Shows all **Docker containers** and lets operators assign them to projects by role (frontend, backend, database, docker-proxy, standalone).
+- Provides a **routing** editor for creating and updating Caddy reverse-proxy rules, with a diff view to preview changes before applying them.
+- Manages **user accounts** in the Authelia authentication database.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Architecture
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+┌────────────────────────────────────────────────────┐
+│                  React SPA                         │
+│                                                    │
+│  ┌───────────────────────────────────────────────┐ │
+│  │               App (Tabs)                      │ │
+│  │  ┌─────────────┬────────────┬───────────────┐ │ │
+│  │  │  Projects,  │  Routing   │  (future tabs)│ │ │
+│  │  │  Containers,│            │               │ │ │
+│  │  │  Users      │            │               │ │ │
+│  │  └──────┬──────┴──────┬─────┘               │ │ │
+│  │         │             │                     │ │ │
+│  │  ┌──────▼──────┐ ┌────▼──────────────────┐  │ │ │
+│  │  │ Redux Store │ │  React Hook Form       │  │ │ │
+│  │  │ (RTK)       │ │  Radix UI Themes       │  │ │ │
+│  │  └─────────────┘ └───────────────────────┘  │ │ │
+│  └───────────────────────────────────────────────┘ │
+│                        │                           │
+│              ┌─────────▼──────────┐                │
+│              │  fetch /api/*      │                │
+│              │  (proxied to :4000)│                │
+│              └────────────────────┘                │
+└────────────────────────────────────────────────────┘
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+State is managed with **Redux Toolkit**. All server communication goes through the `fetch /api/*` path, which the Vite dev server proxies to the backend during development and Nginx routes in production.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Views
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Projects, Containers & Users tab
+
+The default tab shows three side-by-side columns backed by a shared search bar:
+
+| Column | Description |
+|---|---|
+| **Projects** | List of projects with name, GitHub workflow status badge, main URL, Jira link, and additional URLs. Supports create, edit, and delete. |
+| **Containers** | List of Docker containers. Each can be assigned to a project and given a role via drag-and-drop. Supports create, edit, and delete. |
+| **Users** | List of Authelia user accounts. Supports create, edit, and delete. |
+
+### Routing tab
+
+A full-height editor for managing Caddy routing rules:
+
+- Browse and edit routing entries (host, path, upstream).
+- Preview the generated `Caddyfile` diff before applying changes.
+- Apply changes to the live Caddy instance via the backend API.
+
+## Key components
+
+| Component | Path | Description |
+|---|---|---|
+| `App` | `src/App.tsx` | Root component; Radix UI `Tabs` shell |
+| `Projects` | `src/projects/` | Project list + create/edit/delete forms |
+| `Containers` | `src/containers/` | Container list + assignment form + drag-and-drop |
+| `Users` | `src/users/` | User list + create/edit/delete forms |
+| `Routing` | `src/routing/` | Routing rule editor + Caddyfile diff viewer |
+| `SearchWrapper` | `src/search/` | Context-based cross-column search |
+| `redux/` | `src/redux/` | Redux store and slices |
+| `components/` | `src/components/` | Shared form fields, dialogs, badges, error boundaries |
+
+## Tech stack
+
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.2 | UI framework |
+| Vite | 7.2 | Dev server and production bundler |
+| TypeScript | 5.9 | Type safety |
+| Radix UI Themes | 3.2.1 | Component library and design system |
+| Redux Toolkit | 2.11 | Application state management |
+| React Hook Form | 7.71 | Form state and validation |
+| react-dnd | 16.0 | Drag-and-drop container assignment |
+| react-diff-viewer-continued | 3.4 | Caddyfile diff preview |
+| react-toastify | 11.0 | Toast notifications |
+| Vitest + Testing Library | 4.0 | Unit and component tests |
+
+## Development
+
+```bash
+# Install dependencies (from repo root)
+yarn install
+
+# Start the Vite dev server (proxies /api/* to http://localhost:4000)
+yarn workspace frontend start:dev
+
+# Run tests
+yarn workspace frontend test
+
+# Run linter
+yarn workspace frontend lint
 ```
+
+## Build
+
+```bash
+yarn workspace frontend build
+```
+
+TypeScript is compiled with `tsc -b` first, then Vite bundles the output into `dist/`. The `dist/` directory is served by the `nginx:alpine` Docker image in production.
