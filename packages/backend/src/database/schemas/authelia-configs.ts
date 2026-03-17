@@ -17,7 +17,7 @@ export const autheliaConfigs = table('authelia_config', {
         .references(() => containers.id, {
             onDelete: 'cascade',
             onUpdate: 'cascade'
-        }), // null if project rule or global rule
+        }), // Null if project rule or global rule
     order: integer('order').notNull(),
     policy: text('policy').$type<AccessControlPolicy>().notNull(),
     resources: text('resources', { mode: 'json' }).$type<string[]>(),

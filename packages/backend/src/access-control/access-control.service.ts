@@ -76,8 +76,12 @@ class AccessControlService {
         const configs = await this.fastifyContext.database.db.query.autheliaConfigs
             .findMany({ orderBy: (fields, { asc }) => [asc(fields.order)] });
 
-        if (ids.length !== configs.length || !ids.every(id => configs.some(c => c.id === id))) {
-            throw AppError.badRequest('Reorder list does not match existing rules');
+        if (ids.length !== configs.length) {
+            throw AppError.badRequest(`Reorder list has ${ids.length} entries but there are ${configs.length} existing rules`);
+        }
+
+        if (!ids.every(id => configs.some(c => c.id === id))) {
+            throw AppError.badRequest('Reorder list contains rule IDs that do not exist');
         }
 
         await this.fastifyContext.database.transaction(async tx => {
@@ -250,7 +254,11 @@ class AccessControlService {
 
         await rename(tmp, env.AUTHELIA_CONFIG);
 
-        await this.fastifyContext.dockerProxy.authelia.restart();
+        try {
+            await this.fastifyContext.dockerProxy.authelia.restart();
+        } catch (restartErr) {
+            this.fastifyContext.log.warn(`Config written but Authelia restart failed – restart it manually: ${String(restartErr)}`);
+        }
     }
 }
 

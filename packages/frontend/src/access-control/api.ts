@@ -108,7 +108,10 @@ export const accessControlApi = createApi({
                         accessControlApi.util.updateQueryData(
                             'getConfig',
                             undefined,
-                            draft => ids.map(id => draft.find(r => r.id === id)).filter(r => !!r)
+                            draft => {
+                                const reordered = ids.map(id => draft.find(r => r.id === id)).filter(r => !!r);
+                                draft.splice(0, draft.length, ...reordered);
+                            }
                         )
                     );
                 } catch {
