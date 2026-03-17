@@ -1,0 +1,12 @@
+.actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.ruleCard .actions {
+    visibility: hidden;
+}
+.ruleCard:hover .actions {
+    visibility: visible;
+}

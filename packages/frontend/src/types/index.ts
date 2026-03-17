@@ -100,6 +100,45 @@ export interface CaddyConfig {
     standaloneContainerDomain: string | null;
     auth: 'enabled' | 'disabled' | 'own' | 'provider';
 }
+
+export type AccessControlPolicy = 'deny' | 'bypass' | 'one_factor' | 'two_factor';
+
+export interface AccessControlRule {
+    id: number;
+    projectId: number | null;
+    standaloneContainerId: number | null;
+    order: number;
+    policy: AccessControlPolicy;
+    resources: string[] | null;
+    subject: string[][] | null;
+}
+
+export interface AccessControlRuleWithRelations extends AccessControlRule {
+    project: {
+        id: number;
+        name: string;
+        slug: string;
+        url: string;
+        planned: boolean;
+    } | null;
+    container: {
+        id: number;
+        name: string;
+    } | null;
+}
+
+export interface AccessControl {
+    /* eslint-disable @typescript-eslint/naming-convention */
+    default_policy?: AccessControlPolicy;
+    rules: Array<{
+        domain?: string | string[];
+        domain_regex?: string | string[];
+        policy: AccessControlPolicy;
+        subject?: string | Array<string | string[]>;
+        resources?: string[];
+    }>;
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
 // export interface CaddyConfigProject {
 //     order: number;
 //     projectId: number;

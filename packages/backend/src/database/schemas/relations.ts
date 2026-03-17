@@ -34,5 +34,9 @@ export const autheliaConfigRelations = relations(autheliaConfigs, ({ one }) => (
     project: one(projects, {
         fields: [autheliaConfigs.projectId],
         references: [projects.id]
+    }),
+    container: one(containers, {
+        fields: [autheliaConfigs.standaloneContainerId],
+        references: [containers.id]
     })
 }));

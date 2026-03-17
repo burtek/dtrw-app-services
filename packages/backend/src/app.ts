@@ -4,7 +4,8 @@ import { fastifyRawBody } from 'fastify-raw-body';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
 
-// import { accessControlController } from './access-control/access-control.controller';
+import accessControlController from './access-control/access-control.controller';
+import accessControlService from './access-control/access-control.service';
 import caddyController from './caddy/caddy.controller';
 import caddyService from './caddy/caddy.service';
 import containersController from './containers/containers.controller';
@@ -50,6 +51,7 @@ export async function createApp(opts: FastifyServerOptions = {}) {
 
     // Services
     createPluginRegistry(app)
+        .use(accessControlService)
         .use(caddyService)
         .use(containersService)
         .use(dockerService)
@@ -60,6 +62,7 @@ export async function createApp(opts: FastifyServerOptions = {}) {
         .registerAll();
 
     // Controllers
+    app.register(accessControlController, { prefix: '/access-control' });
     app.register(caddyController, { prefix: '/caddy' });
     app.register(containersController, { prefix: '/containers' });
     app.register(dockerController, { prefix: '/docker' });
@@ -69,7 +72,7 @@ export async function createApp(opts: FastifyServerOptions = {}) {
     app.register(usersController, { prefix: '/users' });
 
     // Controllers todo
-    // app.register(accessControlController, { prefix: '/access-control' });
+    // (none at this time)
 
     return {
         app,

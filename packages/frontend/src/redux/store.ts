@@ -2,6 +2,7 @@ import { combineSlices, configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { createLogger } from 'redux-logger';
 
+import { accessControlApi } from '../access-control/api';
 import { containersApi } from '../containers/api-containers';
 import { dockerApi } from '../containers/api-docker';
 import { githubApi } from '../projects/api-github';
@@ -16,13 +17,14 @@ declare global {
     }
 }
 
-const rootReducer = combineSlices(projectsApi, containersApi, dockerApi, usersApi, githubApi, caddyApi);
+const rootReducer = combineSlices(accessControlApi, projectsApi, containersApi, dockerApi, usersApi, githubApi, caddyApi);
 
 export const createStore = () => configureStore({
     devTools: true,
     reducer: rootReducer,
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(
+            accessControlApi.middleware,
             projectsApi.middleware,
             containersApi.middleware,
             dockerApi.middleware,
