@@ -107,6 +107,33 @@ export const usersApi = createApi({
             }
         }),
         // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        batchUpdateUsersGroups: builder.mutation<void, Array<{ username: string; groups: string[] }>>({
+            query: updates => ({
+                url: 'users/batch-groups',
+                method: 'POST',
+                body: { updates }
+            }),
+            invalidatesTags: [{ type: TYPE, id: 'LIST' }],
+            onQueryStarted: async (updates, { dispatch, queryFulfilled }) => {
+                try {
+                    await queryFulfilled;
+
+                    dispatch(
+                        usersApi.util.updateQueryData('getUsers', undefined, draft => {
+                            for (const { username, groups } of updates) {
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                if (draft[username]) {
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+                                    (draft[username] as WritableDraft<GetUser>).groups = groups;
+                                }
+                            }
+                        })
+                    );
+                } catch {
+                }
+            }
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
         resetUserPassword: builder.mutation<void, { username: string }>({
             query: body => ({
                 url: `users/${body.username}/reset-password`,
@@ -120,6 +147,7 @@ export const {
     getUsers: { useQuery: useGetUsersQuery },
     createUser: { useMutation: useCreateUserMutation },
     updateUser: { useMutation: useUpdateUserMutation },
+    batchUpdateUsersGroups: { useMutation: useBatchUpdateUsersGroupsMutation },
     deleteUser: { useMutation: useDeleteUserMutation },
     resetUserPassword: { useMutation: useResetUserPasswordMutation }
 } = usersApi.endpoints;

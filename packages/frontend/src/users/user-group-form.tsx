@@ -10,7 +10,7 @@ import { withErrorBoundary } from '../components/withErrorBoundary';
 import { handleQueryError } from '../query-error-handler';
 import { useAppSelector } from '../redux/store';
 
-import { selectUsers, useUpdateUserMutation } from './api';
+import { selectUsers, useBatchUpdateUsersGroupsMutation } from './api';
 
 
 interface GroupFormData {
@@ -53,7 +53,7 @@ const Component = ({ close, groupName }: Props) => {
         });
     }, []);
 
-    const [updateUser, { isLoading }] = useUpdateUserMutation();
+    const [batchUpdateUsersGroups, { isLoading }] = useBatchUpdateUsersGroupsMutation();
 
     const { control, handleSubmit } = useForm<GroupFormData>({
         defaultValues: useMemo(
@@ -97,21 +97,17 @@ const Component = ({ close, groupName }: Props) => {
         });
 
         if (toUpdate.length > 0) {
-            const responses = await Promise.all(
-                toUpdate.map(({ username, groups }) => updateUser({ username, data: { groups } }))
-            );
+            const response = await batchUpdateUsersGroups(toUpdate);
 
-            for (const response of responses) {
-                if (response.error) {
-                    toast.error(`Group update failed: ${handleQueryError(response.error)}`);
-                    return;
-                }
+            if (response.error) {
+                toast.error(`Group update failed: ${handleQueryError(response.error)}`);
+                return;
             }
         }
 
         toast.success(groupName === null ? 'Group created' : 'Group updated');
         close();
-    }, [close, groupName, selectedUsernames, updateUser, users]);
+    }, [close, groupName, selectedUsernames, batchUpdateUsersGroups, users]);
 
     const handleClose = useCallback((newState: boolean) => {
         if (!newState) {

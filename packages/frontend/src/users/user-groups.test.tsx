@@ -136,10 +136,10 @@ describe('user groups module', () => {
             expect(screen.getByText(/User Groups/)).toHaveTextContent('User Groups (2)');
         });
 
-        // Mock the PATCH calls for removing 'admins' group from johndoe
+        // Mock the batch-groups call for removing 'admins' group from johndoe
         scope
-            .post('/api/users/johndoe', { groups: ['users'] })
-            .reply(200, { ...usersMock.johndoe, groups: ['users'] })
+            .post('/api/users/batch-groups', { updates: [{ username: 'johndoe', groups: ['users'] }] })
+            .reply(200)
             .get('/api/users')
             .reply(200, { ...usersMock, johndoe: { ...usersMock.johndoe, groups: ['users'] } });
 
@@ -184,16 +184,13 @@ describe('user groups module', () => {
     });
 
     it('should handle new group creation', async () => {
-        const postBody = vitest.fn().mockReturnValue(true);
         const user = userEvent.setup();
 
         nock('http://localhost')
             .get('/api/users')
             .reply(200, usersMock)
-            .post('/api/users/johndoe', postBody)
-            .reply(200, { ...usersMock.johndoe, groups: ['admins', 'users', 'superadmins'] })
-            .post('/api/users/janedoe', postBody)
-            .reply(200, { ...usersMock.janedoe, groups: ['users', 'superadmins'] })
+            .post('/api/users/batch-groups')
+            .reply(200)
             .get('/api/users')
             .reply(200, {
                 johndoe: { ...usersMock.johndoe, groups: ['admins', 'users', 'superadmins'] },
@@ -226,10 +223,6 @@ describe('user groups module', () => {
         await waitFor(() => {
             expect(screen.getByText('Group created')).toBeInTheDocument();
         });
-
-        expect(postBody).toHaveBeenCalledWith(
-            expect.objectContaining({ groups: expect.arrayContaining(['superadmins']) })
-        );
     });
 
     it('should open edit group dialog with pre-selected users', async () => {

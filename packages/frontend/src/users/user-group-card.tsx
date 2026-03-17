@@ -9,13 +9,13 @@ import { handleQueryError } from '../query-error-handler';
 import { useSearchSetterContext } from '../search/context';
 import type { GetUser } from '../types';
 
-import { useUpdateUserMutation } from './api';
+import { useBatchUpdateUsersGroupsMutation } from './api';
 import styles from './users.module.scss';
 
 
 const Component = ({ group, usernames, users, openEdit }: Props) => {
     const { add: addToSearch } = useSearchSetterContext();
-    const [updateUser] = useUpdateUserMutation();
+    const [batchUpdateUsersGroups] = useBatchUpdateUsersGroupsMutation();
 
     const handleGroupClick = useCallback(() => {
         addToSearch({ queryType: 'usergroup', query: group });
@@ -26,21 +26,19 @@ const Component = ({ group, usernames, users, openEdit }: Props) => {
     }, [openEdit, group]);
 
     const handleDelete = useCallback(async () => {
-        const updates = usernames.map(username => {
-            const groups = (users?.[username]?.groups ?? []).filter(g => g !== group);
-            return updateUser({ username, data: { groups } });
-        });
-        const responses = await Promise.all(updates);
+        const updates = usernames.map(username => ({
+            username,
+            groups: (users?.[username]?.groups ?? []).filter(g => g !== group)
+        }));
+        const response = await batchUpdateUsersGroups(updates);
 
-        for (const response of responses) {
-            if (response.error) {
-                toast.error(`Group deletion failed: ${handleQueryError(response.error)}`);
-                return;
-            }
+        if (response.error) {
+            toast.error(`Group deletion failed: ${handleQueryError(response.error)}`);
+            return;
         }
 
         toast.success('Group deleted');
-    }, [updateUser, usernames, users, group]);
+    }, [batchUpdateUsersGroups, usernames, users, group]);
 
     return (
         <Box>

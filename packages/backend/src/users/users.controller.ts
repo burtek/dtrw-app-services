@@ -20,6 +20,23 @@ const usersController: FastifyPluginCallbackZod = (instance, options, done) => {
     );
 
     instance.post(
+        '/batch-groups',
+        {
+            schema: {
+                body: z.object({
+                    updates: z.array(z.object({
+                        username: z.string().nonempty(),
+                        groups: z.array(z.string().nonempty())
+                    })).nonempty()
+                })
+            }
+        },
+        async request => {
+            await instance.usersService.batchUpdateGroups(request.body.updates);
+        }
+    );
+
+    instance.post(
         '/:username',
         {
             schema: {
