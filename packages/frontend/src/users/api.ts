@@ -115,7 +115,7 @@ export const usersApi = createApi({
             }),
             invalidatesTags: (_, __, updates) => [
                 { type: TYPE, id: 'LIST' },
-                ...updates.map(({ username }) => ({ type: TYPE, username }))
+                ...updates.map(({ username }) => ({ type: TYPE, username } as const))
             ],
             onQueryStarted: async (updates, { dispatch, queryFulfilled }) => {
                 try {
