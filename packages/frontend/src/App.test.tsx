@@ -18,4 +18,5 @@ test('App renders', async () => {
     expect(screen.getByText(/Projects/, { selector: 'h2' })).toBeInTheDocument();
     expect(screen.getByText(/Containers/, { selector: 'h2' })).toBeInTheDocument();
     expect(screen.getByText(/Users/, { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByText(/User Groups/, { selector: 'h2' })).toBeInTheDocument();
 });

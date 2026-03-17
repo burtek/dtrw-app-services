@@ -6,6 +6,7 @@ import { Projects } from './projects';
 import { Routing } from './routing';
 import { SearchWrapper } from './search/context';
 import { Users } from './users';
+import { UserGroups } from './users/user-groups';
 
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -35,7 +36,7 @@ function App() {
                     style={{ height: '100%' }}
                 >
                     <Grid
-                        columns="repeat(3, max-content) 1fr"
+                        columns="repeat(4, max-content) 1fr"
                         rows="min-content 1fr"
                         width="auto"
                         height="100%"
@@ -45,6 +46,7 @@ function App() {
                             <Projects />
                             <Containers />
                             <Users />
+                            <UserGroups />
                             {/* <ACL /> */}
                         </SearchWrapper>
                     </Grid>

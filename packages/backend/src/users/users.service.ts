@@ -84,6 +84,19 @@ class UsersService {
         });
     }
 
+    async batchUpdateGroups(updates: Array<{ username: string; groups: string[] }>) {
+        const config = await this.getUsersRaw();
+
+        for (const { username, groups } of updates) {
+            if (!(username in config.users) || !config.users[username]) {
+                throw AppError.badRequest(`User does not exist: ${username}`);
+            }
+            config.users[username].groups = groups;
+        }
+
+        await this.writeUsersConfig(config);
+    }
+
     async updateUser(username: string, body: Partial<UserWithUsername>) {
         const config = await this.getUsersRaw();
         if (!(username in config.users) || !config.users[username]) {

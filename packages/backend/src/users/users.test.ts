@@ -143,6 +143,65 @@ ${usersYamlMock.trim()}
         });
     })
 
+    describe('POST /users/batch-groups', () => {
+        it('should update groups for multiple users atomically', async () => {
+            const response = await app.inject({
+                method: 'POST',
+                url: '/users/batch-groups',
+                body: {
+                    updates: [
+                        { username: 'alice', groups: ['admins'] },
+                        { username: 'bob', groups: ['users', 'bob_fanclub'] }
+                    ]
+                }
+            });
+
+            expect(response.statusCode).toBe(200);
+
+            expect(writeFileMock).toHaveBeenCalledTimes(1);
+            expect(renameMock).toHaveBeenCalledTimes(1);
+
+            const writtenYaml = writeFileMock.mock.calls[0]?.[1] as string;
+            expect(writtenYaml).toContain('admins');
+            expect(writtenYaml).not.toContain('alice_fanclub');
+            expect(writtenYaml).toContain('bob_fanclub');
+            expect(writtenYaml).not.toContain('alice_fanclub:\n');
+        });
+
+        it('should throw if any user does not exist', async () => {
+            const response = await app.inject({
+                method: 'POST',
+                url: '/users/batch-groups',
+                body: {
+                    updates: [
+                        { username: 'alice', groups: ['admins'] },
+                        { username: 'nonexistent', groups: ['users'] }
+                    ]
+                }
+            });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.json()).toStrictEqual({
+                error: 'User does not exist: nonexistent',
+                success: false
+            });
+
+            expect(writeFileMock).not.toHaveBeenCalled();
+            expect(renameMock).not.toHaveBeenCalled();
+        });
+
+        it('should reject empty updates array', async () => {
+            const response = await app.inject({
+                method: 'POST',
+                url: '/users/batch-groups',
+                body: { updates: [] }
+            });
+
+            expect(response.statusCode).toBe(400);
+            expect(writeFileMock).not.toHaveBeenCalled();
+        });
+    });
+
     describe('POST /users/:username', () => {
         it.todo('should update user');
         it.todo('should throw if user does not exist');
