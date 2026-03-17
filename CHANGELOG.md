@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/burtek/dtrw-app-services/compare/v1.13.6...v1.14.0) (2026-03-17)
+
+
+### Features
+
+* add User Groups section to dashboard main tab ([#7](https://github.com/burtek/dtrw-app-services/issues/7)) ([94af468](https://github.com/burtek/dtrw-app-services/commit/94af46822d8342715b522a1c0dbc219d90a2143e))
+
 ### [1.13.6](https://github.com/burtek/dtrw-app-services/compare/v1.13.5...v1.13.6) (2026-02-27)
 
 
