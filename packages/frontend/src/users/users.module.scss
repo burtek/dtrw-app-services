@@ -17,3 +17,10 @@
         color: grey;
     }
 }
+
+.group .actions {
+    visibility: hidden;
+}
+.group:hover .actions {
+    visibility: visible;
+}

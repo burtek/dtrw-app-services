@@ -1,14 +1,16 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { Box, Button, Card, Flex, Heading } from '@radix-ui/themes';
+import { Button, Flex, Heading } from '@radix-ui/themes';
 import { memo, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
-import { ClickableBadge } from '../components/clickableBadge';
+import { useDialogId } from '../hooks/useDialogId';
 import { useMinDivWidth } from '../hooks/useMinDivWidth';
 import { handleQueryError } from '../query-error-handler';
 import { useSearchContext } from '../search/context';
 
 import { useGetUsersQuery } from './api';
+import { UserGroupCard } from './user-group-card';
+import { UserGroupFormDialog } from './user-group-form';
 
 
 const Component = () => {
@@ -60,6 +62,8 @@ const Component = () => {
         }));
     }, [groups, searchParams]);
 
+    const [dialogId, openEditDialog, openNewDialog, closeDialog] = useDialogId<string>();
+
     return (
         <Flex
             gap="1"
@@ -94,35 +98,29 @@ const Component = () => {
                 </Button>
             </Flex>
             {filteredGroups.map(([group, usernames]) => (
-                <Box key={group}>
-                    <Card>
-                        <Flex
-                            direction="column"
-                            gap="1"
-                        >
-                            <Heading
-                                as="h3"
-                                size="3"
-                            >
-                                {group}
-                            </Heading>
-                            <Flex
-                                gap="1"
-                                wrap="wrap"
-                            >
-                                {usernames.map(username => (
-                                    <ClickableBadge
-                                        key={username}
-                                        type="username"
-                                        name={username}
-                                        disabled={users?.[username]?.disabled}
-                                    />
-                                ))}
-                            </Flex>
-                        </Flex>
-                    </Card>
-                </Box>
+                <UserGroupCard
+                    key={group}
+                    group={group}
+                    usernames={usernames}
+                    users={users}
+                    openEdit={openEditDialog}
+                />
             ))}
+            <Button
+                size="1"
+                variant="soft"
+                style={{ width: '100%' }}
+                onClick={openNewDialog}
+                disabled={isFetching}
+            >
+                New Group
+            </Button>
+            {dialogId !== false && (
+                <UserGroupFormDialog
+                    groupName={dialogId}
+                    close={closeDialog}
+                />
+            )}
         </Flex>
     );
 };
