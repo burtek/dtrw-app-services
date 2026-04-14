@@ -98,7 +98,7 @@ class CaddyService {
                 const port = dockerOnlyPort ?? container.ports[0];
 
                 if (!port?.privatePort) {
-                    this.fastifyContext.log.warn(`No valid port found for standalone container ${config.container.name}. Skipping route.`);
+                    this.fastifyContext.log.warn(`No privatePort found for standalone container ${config.container.name}. Skipping route.`);
                     return undefined;
                 }
 
