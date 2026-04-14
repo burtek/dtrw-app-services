@@ -122,7 +122,7 @@ export const caddyApi = createApi({
             },
             extraOptions: { maxRetries: 0 }
         }),
-        deleteProject: builder.mutation<boolean, WithId<unknown>>({
+        deleteRoute: builder.mutation<boolean, WithId<unknown>>({
             query: ({ id }) => ({
                 url: `caddy/route/${id}`,
                 method: 'DELETE'
@@ -168,6 +168,6 @@ export const {
     applyCaddyfile: { useMutation: useApplyCaddyfileMutation },
     saveRoute: { useMutation: useSaveRouteMutation },
     reorderRoutes: { useMutation: useReorderRoutesMutation },
-    deleteProject: { useMutation: useDeleteProjectMutation },
+    deleteRoute: { useMutation: useDeleteRouteMutation },
     forceReloadAll: { useMutation: useForceReloadAllTrigger }
 } = caddyApi.endpoints;

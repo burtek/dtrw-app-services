@@ -17,6 +17,12 @@ class CaddyService {
     constructor(private readonly fastifyContext: FastifyInstance) {
     }
 
+    async deleteRoute(configId: number) {
+        await this.fastifyContext.database.db
+            .delete(caddyConfigs)
+            .where(eq(caddyConfigs.id, configId));
+    }
+
     async getCaddyApi({ signal }: { signal?: AbortSignal } = {}) {
         if (!env.DOCKER_CADDY_ADMIN_HOST) {
             this.fastifyContext.log.warn('DOCKER_CADDY_ADMIN_HOST env is not set. Caddy API will not be fetched');

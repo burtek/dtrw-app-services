@@ -63,6 +63,15 @@ const caddyController: FastifyPluginCallbackZod = (instance, opts, done) => {
         async request => await instance.caddyService.saveRoute(request.body, request.params.id)
     );
 
+    instance.delete(
+        '/route/:id',
+        { schema: { params: z.object({ id: z.coerce.number().positive().refine(Number.isInteger) }) } },
+        async request => {
+            await instance.caddyService.deleteRoute(request.params.id);
+            return true;
+        }
+    );
+
     instance.post(
         '/routes/config/reorder',
         {

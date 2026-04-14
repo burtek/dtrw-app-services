@@ -47,7 +47,8 @@ const Component = ({ close, id }: { close: () => void; id: number | null }) => {
                 const found = configs?.find(item => item.id === id);
                 if (found) {
                     return {
-                        ...found,
+                        order: found.order,
+                        auth: found.auth,
                         projectId: found.projectId ?? undefined,
                         standaloneContainerId: found.standaloneContainerId ?? undefined,
                         standaloneContainerDomain: found.standaloneContainerDomain ?? undefined
