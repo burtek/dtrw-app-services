@@ -77,10 +77,13 @@ class CaddyService {
                     ? {
                         ports: [
                             {
+                                ip: undefined,
                                 privatePort: {
                                     authelia: 9091,
                                     'uptime-kuma': 3001
-                                }[config.container.name] ?? 80
+                                }[config.container.name] ?? 80,
+                                publicPort: undefined,
+                                type: 'tcp'
                             }
                         ]
                     } // Dev shortcut
@@ -90,11 +93,20 @@ class CaddyService {
                     return undefined;
                 }
 
+                // Prefer a docker-only port (not published to host); fall back to first port
+                const dockerOnlyPort = container.ports.find(p => !p.ip && !p.publicPort);
+                const port = dockerOnlyPort ?? container.ports[0];
+
+                if (!port?.privatePort) {
+                    this.fastifyContext.log.warn(`No privatePort found for standalone container ${config.container.name}. Skipping route.`);
+                    return undefined;
+                }
+
                 return {
                     urls: [config.standaloneContainerDomain] satisfies [string],
                     mode: 'standalone',
                     auth: config.auth,
-                    target: `${config.container.name}:${container.ports[0]?.privatePort}` // authelia is on 9091, so we still need to pull from docker-proxy
+                    target: `${config.container.name}:${port.privatePort}`
                 };
             }
             if (!config.container && config.project) {
