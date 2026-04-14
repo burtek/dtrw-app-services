@@ -1,10 +1,10 @@
-/* eslint-disable no-warning-comments */
 import { Pencil2Icon, Cross1Icon, CrossCircledIcon, ExclamationTriangleIcon, LockClosedIcon, Link2Icon, LockOpen1Icon, QuestionMarkIcon } from '@radix-ui/react-icons';
 import { Box, Button, Callout, Card, Flex, Badge as RadixBadge } from '@radix-ui/themes';
 import classNames from 'classnames';
 import type { Identifier } from 'dnd-core';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { toast } from 'react-toastify';
 
 import { Badge } from '../components/badge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
@@ -12,6 +12,7 @@ import { useGetContainersQuery } from '../containers/api-containers';
 import { useGetProjectsQuery } from '../projects/api-projects';
 import type { WithId, CaddyConfig } from '../types';
 
+import { useDeleteProjectMutation } from './api';
 import styles from './routing.module.scss';
 
 
@@ -38,15 +39,21 @@ const Component = ({ entry, openEdit, index, onDrag, onDrop }: Props) => {
         selectFromResult: ({ data }) => ({ projectContainers: data?.filter(c => !!project && c.projectId === project.id) })
     });
 
-    const isDeleting = false as boolean; // TODO: implement delete loading state
+    const [deleteRoute, { isLoading: isDeleting }] = useDeleteProjectMutation();
     const handleEdit = useCallback(
         () => {
             openEdit(entry.id);
         },
         [openEdit, entry.id]
     );
-    // eslint-disable-next-line -- TODO: implement delete loading state
-    const handleDelete = () => {};
+    const handleDelete = useCallback(async () => {
+        const response = await deleteRoute({ id: entry.id });
+        if (response.error) {
+            toast.error('Route delete failed');
+        } else {
+            toast.success('Route deleted');
+        }
+    }, [deleteRoute, entry.id]);
 
     const entryIssues = useMemo(() => {
         const issues: Array<{ error: boolean; text: string }> = [];
