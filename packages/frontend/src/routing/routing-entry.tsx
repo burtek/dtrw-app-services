@@ -10,9 +10,10 @@ import { Badge } from '../components/badge';
 import { DeleteConfirmButton } from '../components/deleteConfirmButton';
 import { useGetContainersQuery } from '../containers/api-containers';
 import { useGetProjectsQuery } from '../projects/api-projects';
+import { handleQueryError } from '../query-error-handler';
 import type { WithId, CaddyConfig } from '../types';
 
-import { useDeleteProjectMutation } from './api';
+import { useDeleteRouteMutation } from './api';
 import styles from './routing.module.scss';
 
 
@@ -39,7 +40,7 @@ const Component = ({ entry, openEdit, index, onDrag, onDrop }: Props) => {
         selectFromResult: ({ data }) => ({ projectContainers: data?.filter(c => !!project && c.projectId === project.id) })
     });
 
-    const [deleteRoute, { isLoading: isDeleting }] = useDeleteProjectMutation();
+    const [deleteRoute, { isLoading: isDeleting }] = useDeleteRouteMutation();
     const handleEdit = useCallback(
         () => {
             openEdit(entry.id);
@@ -49,7 +50,7 @@ const Component = ({ entry, openEdit, index, onDrag, onDrop }: Props) => {
     const handleDelete = useCallback(async () => {
         const response = await deleteRoute({ id: entry.id });
         if (response.error) {
-            toast.error('Route delete failed');
+            toast.error(`Route delete failed: ${handleQueryError(response.error)}`);
         } else {
             toast.success('Route deleted');
         }
