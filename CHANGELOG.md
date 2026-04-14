@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.1](https://github.com/burtek/dtrw-app-services/compare/v1.14.0...v1.14.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* prefer docker-only port for standalone containers in routing table ([#10](https://github.com/burtek/dtrw-app-services/issues/10)) ([1f8a91d](https://github.com/burtek/dtrw-app-services/commit/1f8a91d73a19fdcfdc7d290dbec0ee1209911642))
+
 ## [1.14.0](https://github.com/burtek/dtrw-app-services/compare/v1.13.6...v1.14.0) (2026-03-17)
 
 
