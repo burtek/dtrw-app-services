@@ -90,6 +90,7 @@ class CaddyService {
                     return undefined;
                 }
 
+                // Prefer a docker-only port (not published to host); fall back to first port
                 const dockerOnlyPort = container.ports.find(p => !p.ip && !p.publicPort);
                 const port = dockerOnlyPort ?? container.ports[0];
 
