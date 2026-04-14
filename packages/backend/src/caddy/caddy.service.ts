@@ -90,11 +90,14 @@ class CaddyService {
                     return undefined;
                 }
 
+                const dockerOnlyPort = container.ports.find(p => !p.ip && !p.publicPort);
+                const port = dockerOnlyPort ?? container.ports[0];
+
                 return {
                     urls: [config.standaloneContainerDomain] satisfies [string],
                     mode: 'standalone',
                     auth: config.auth,
-                    target: `${config.container.name}:${container.ports[0]?.privatePort}` // authelia is on 9091, so we still need to pull from docker-proxy
+                    target: `${config.container.name}:${port?.privatePort}`
                 };
             }
             if (!config.container && config.project) {
