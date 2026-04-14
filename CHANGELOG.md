@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.2](https://github.com/burtek/dtrw-app-services/compare/v1.14.1...v1.14.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* caddy route edit and delete ([#9](https://github.com/burtek/dtrw-app-services/issues/9)) ([b24fcf9](https://github.com/burtek/dtrw-app-services/commit/b24fcf91644a0bf744c61d005744dc87a623c360))
+
 ### [1.14.1](https://github.com/burtek/dtrw-app-services/compare/v1.14.0...v1.14.1) (2026-04-14)
 
 
