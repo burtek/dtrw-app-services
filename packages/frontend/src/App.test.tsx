@@ -19,4 +19,5 @@ test('App renders', async () => {
     expect(screen.getByText(/Containers/, { selector: 'h2' })).toBeInTheDocument();
     expect(screen.getByText(/Users/, { selector: 'h2' })).toBeInTheDocument();
     expect(screen.getByText(/User Groups/, { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Access Control/ })).toBeInTheDocument();
 });
