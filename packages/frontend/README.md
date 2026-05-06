@@ -84,7 +84,7 @@ A full-height editor for managing Caddy routing rules:
 | Redux Toolkit | 2.11 | Application state management |
 | React Hook Form | 7.71 | Form state and validation |
 | react-dnd | 16.0 | Drag-and-drop container assignment |
-| react-diff-viewer-continued | 3.4 | Caddyfile diff preview |
+| react-diff-viewer-continued | 4.2 | Caddyfile diff preview |
 | react-toastify | 11.0 | Toast notifications |
 | Vitest + Testing Library | 4.0 | Unit and component tests |
 

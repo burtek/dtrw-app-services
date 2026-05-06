@@ -154,7 +154,7 @@ export const caddyApi = createApi({
     })
 });
 
-export interface CaddyAPIJSON {
+export interface CaddyAPIJSON extends Record<string, unknown> {
     apps: Record<string, unknown>;
 }
 

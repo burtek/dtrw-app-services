@@ -472,7 +472,7 @@
     source-map "^0.5.7"
     stylis "4.2.0"
 
-"@emotion/cache@^11.13.5":
+"@emotion/cache@^11.13.5", "@emotion/cache@^11.14.0":
   version "11.14.0"
   resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-11.14.0.tgz#ee44b26986eeb93c8be82bb92f1f7a9b21b2ed76"
   integrity sha512-L/B1lc/TViYk4DcpGxtAVbx0ZyiKM5ktoIyafGkH6zg/tj+mA+NE//aPYKG0k8kCHSHVJrpLpcAlOBEXQ3SavA==
@@ -483,7 +483,7 @@
     "@emotion/weak-memoize" "^0.4.0"
     stylis "4.2.0"
 
-"@emotion/css@^11.11.2":
+"@emotion/css@^11.13.5":
   version "11.13.5"
   resolved "https://registry.yarnpkg.com/@emotion/css/-/css-11.13.5.tgz#db2d3be6780293640c082848e728a50544b9dfa4"
   integrity sha512-wQdD0Xhkn3Qy2VNcIzbLP9MR8TafI0MJb7BEAXKp+w4+XqErksWR4OXomuDzPsN4InLdGhVe6EYcn2ZIUCpB8w==
@@ -503,6 +503,20 @@
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.9.0.tgz#745969d649977776b43fc7648c556aaa462b4102"
   integrity sha512-30FAj7/EoJ5mwVPOWhAyCX+FPfMDrVecJAM+Iw9NRoSl4BBAQeqj4cApHHUXOVvIPgLVDsCFoz/hGD+5QQD1GQ==
+
+"@emotion/react@^11.14.0":
+  version "11.14.0"
+  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.14.0.tgz#cfaae35ebc67dd9ef4ea2e9acc6cd29e157dd05d"
+  integrity sha512-O000MLDBDdk/EohJPFUqvnp4qnHeYkVP5B0xEG0D/L7cOKP9kefu2DXn8dj74cQfsEzUqh+sr1RzFqiL1o+PpA==
+  dependencies:
+    "@babel/runtime" "^7.18.3"
+    "@emotion/babel-plugin" "^11.13.5"
+    "@emotion/cache" "^11.14.0"
+    "@emotion/serialize" "^1.3.3"
+    "@emotion/use-insertion-effect-with-fallbacks" "^1.2.0"
+    "@emotion/utils" "^1.4.2"
+    "@emotion/weak-memoize" "^0.4.0"
+    hoist-non-react-statics "^3.3.1"
 
 "@emotion/serialize@^1.3.3":
   version "1.3.3"
@@ -524,6 +538,11 @@
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.10.0.tgz#2af2f7c7e5150f497bdabd848ce7b218a27cf745"
   integrity sha512-dFoMUuQA20zvtVTuxZww6OHoJYgrzfKM1t52mVySDJnMSEa08ruEvdYQbhvyu6soU+NeLVd3yKfTfT0NeV6qGg==
+
+"@emotion/use-insertion-effect-with-fallbacks@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@emotion/use-insertion-effect-with-fallbacks/-/use-insertion-effect-with-fallbacks-1.2.0.tgz#8a8cb77b590e09affb960f4ff1e9a89e532738bf"
+  integrity sha512-yJMtVdH59sxi/aVJBpk9FQq+OR8ll5GT8oWd57UpeaKEVGab41JWaCFA7FRLoMLloOZF/c/wsPoe+bfGmRKgDg==
 
 "@emotion/utils@^1.4.2":
   version "1.4.2"
@@ -3847,10 +3866,10 @@ diff-sequences@^27.5.1:
   resolved "https://registry.yarnpkg.com/diff-sequences/-/diff-sequences-27.5.1.tgz#eaecc0d327fd68c8d9672a1e64ab8dccb2ef5327"
   integrity sha512-k1gCAXAsNgLwEL+Y8Wvl+M6oEFj5bgazfZULpS5CneoPPXRaCCW7dm+q21Ky2VEE5X+VeRDBVg1Pcvvsr4TtNQ==
 
-diff@^5.1.0:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.2.tgz#0a4742797281d09cfa699b79ea32d27723623bad"
-  integrity sha512-vtcDfH3TOjP8UekytvnHH1o1P4FcUdt4eQ1Y+Abap1tk/OB2MWQvcwS2ClCd1zuIhc3JKOx6p3kod8Vfys3E+A==
+diff@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-9.0.0.tgz#297c31cd7c280f13dfe335791ec2063bd4a73a6f"
+  integrity sha512-svtcdpS8CgJyqAjEQIXdb3OjhFVVYjzGAPO8WGCmRbrml64SPw/jJD4GoE98aR7r25A0XcgrK3F02yw9R/vhQw==
 
 dir-glob@^3.0.1:
   version "3.0.1"
@@ -5117,7 +5136,7 @@ hermes-parser@^0.25.1:
   dependencies:
     hermes-estree "0.25.1"
 
-hoist-non-react-statics@^3.3.2:
+hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
@@ -6638,16 +6657,17 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-diff-viewer-continued@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/react-diff-viewer-continued/-/react-diff-viewer-continued-3.4.0.tgz#0501ffb2b5ab740f88b9ae5f18771aa90d3803c2"
-  integrity sha512-kMZmUyb3Pv5L9vUtCfIGYsdOHs8mUojblGy1U1Sm0D7FhAOEsH9QhnngEIRo5hXWIPNGupNRJls1TJ6Eqx84eg==
+react-diff-viewer-continued@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/react-diff-viewer-continued/-/react-diff-viewer-continued-4.2.2.tgz#62308ffc22979711cfd4f7b6339e62af70feed0e"
+  integrity sha512-8wT0/smXGox70oXJ7SZkTYF1p1Uh7jNGXhN7ykqrqPven0sZ+wM2c62SG3ZqORx5aW75te+WhmUWo0E4NyoSvg==
   dependencies:
-    "@emotion/css" "^11.11.2"
-    classnames "^2.3.2"
-    diff "^5.1.0"
+    "@emotion/css" "^11.13.5"
+    "@emotion/react" "^11.14.0"
+    classnames "^2.5.1"
+    diff "^9.0.0"
+    js-yaml "^4.1.1"
     memoize-one "^6.0.0"
-    prop-types "^15.8.1"
 
 react-dnd-html5-backend@^16.0.1:
   version "16.0.1"
