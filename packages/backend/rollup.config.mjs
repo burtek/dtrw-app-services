@@ -78,8 +78,7 @@ export default defineConfig({
                         return JSON.stringify({ ...pkg, type: 'commonjs' }, null, 2);
                     }
                 },
-                ...copyFilesForLibrary('better-sqlite3', ['build', 'package.json']),
-                ...copyFilesForLibrary('bindings', ['package.json'])
+                ...copyFilesForLibrary('better-sqlite3', ['build', 'prebuilds', 'package.json'])
             ]
         })
     ]
@@ -100,6 +99,7 @@ function copyFilesForLibrary(library, files) {
 function importMetaDirname() {
     return {
         name: 'import-meta-dirname-current-module',
+        // eslint-disable-next-line no-unused-vars
         resolveImportMeta(property, { moduleId }) {
             if (property === 'dirname') {
                 return '__dirname';

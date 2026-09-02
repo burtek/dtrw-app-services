@@ -1,6 +1,6 @@
 import { integer, sqliteTable as table, text } from 'drizzle-orm/sqlite-core';
 
-import type { AccessControlPolicy } from 'src/_schemas/authelia/configuration.schema';
+import type { AccessControlPolicy } from '../../_schemas/authelia/configuration.schema';
 
 import { projects } from './projects';
 

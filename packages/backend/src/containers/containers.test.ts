@@ -2,9 +2,6 @@ import { setupAppWithDb } from 'tests/setup-app';
 
 import { ContainerType, containerTypes } from '../database/schemas';
 
-import containersController from './containers.controller';
-import containersService from './containers.service';
-
 
 describe('UsersController', async () => {
     const app = await setupAppWithDb();

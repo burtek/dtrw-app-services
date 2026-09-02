@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "lib": ["ESNext"],
-    "baseUrl": ".",
+    "rootDir": ".",
 
     "types": ["vitest/globals"],
 
@@ -23,7 +23,12 @@
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "ignoreDeprecations": "6.0",
+
+    "paths": {
+      "tests/*": ["./tests/*"]
+    }
   },
   "include": ["src", "tests"]
 }

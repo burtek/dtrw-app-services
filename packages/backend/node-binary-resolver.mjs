@@ -8,6 +8,7 @@ import { basename, dirname, resolve } from 'node:path';
  */
 export function nodeBinaryResolver() {
     const PREFIX = '\0node-binary-resolver:';
+    const SKIP = ['sshcrypto.node'];
 
     return {
         name: 'node-binary-resolver',
@@ -32,8 +33,8 @@ export function nodeBinaryResolver() {
             try {
                 await access(resolved); // throw if not accessible
             } catch (err) {
-                for (let i = 0, path = dirname(resolved); i < 5; i++, path = dirname(path)) {
-                    // console.log({ path, exists: existsSync(path) });
+                if (SKIP.some(s => resolved.endsWith(s))) {
+                    return '';
                 }
                 throw err;
             }
