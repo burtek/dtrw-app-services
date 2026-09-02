@@ -9,7 +9,8 @@ export const compileTemplate = (routes: Route[]) => render([
         dir('acme_dns', 'cloudflare', '{env.CLOUDFLARE_API_TOKEN}'),
         block('servers',
             dir('trusted_proxies', 'static', 'private_ranges')),
-        dir('admin', ':2019')),
+        block('admin :2019',
+            dir('origins', 'http://:2019', 'http://services_backend'))),
     ...routes.filter(route => route.mode === 'standalone')
         .flatMap<CaddyNode>(route => [
             { type: 'emptyline' },
