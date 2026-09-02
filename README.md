@@ -63,7 +63,7 @@ dtrw-app-services/
 | Service | Image | Purpose |
 |---|---|---|
 | `services_frontend` | `nginx:alpine` | Serves the built React SPA; handles HTML5 history routing |
-| `services_backend` | `node:24-alpine` | Runs the Fastify API server |
+| `services_backend` | `node:26-alpine` | Runs the Fastify API server |
 | `services_dproxy` | `tecnativa/docker-socket-proxy` | Exposes a filtered Docker socket to the backend (avoids mounting the raw socket) |
 
 ## Packages
@@ -82,7 +82,7 @@ See each package's own `README.md` for detailed documentation:
 | Layer | Technology | Version |
 |---|---|---|
 | Language | TypeScript | 5.9 |
-| Runtime | Node.js | 24.7+ |
+| Runtime | Node.js | 26.5+ |
 | Backend framework | Fastify | 5.7.3 |
 | Backend build | Rollup | 4.59 |
 | Frontend framework | React | 19.2 |
@@ -101,7 +101,7 @@ See each package's own `README.md` for detailed documentation:
 
 ### Prerequisites
 
-- Node.js ≥ 24.7
+- Node.js ≥ 26.5
 - Yarn ≥ 3
 - Docker & Docker Compose (for production)
 

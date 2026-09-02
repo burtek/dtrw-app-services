@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: node:24-alpine
+      image: node:26-alpine
 
     steps:
       - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '26'
           cache: 'yarn'
 
       - name: Install dependencies
