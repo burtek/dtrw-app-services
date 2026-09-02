@@ -29,7 +29,10 @@ class CaddyService {
             return {};
         }
 
-        const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/config/`, { signal });
+        const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/config/`, {
+            headers: { origin: 'http://services_backend' },
+            signal
+        });
         return await response.json();
     }
 
@@ -45,7 +48,10 @@ class CaddyService {
 
         const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/adapt`, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/caddyfile' },
+            headers: {
+                'Content-Type': 'text/caddyfile',
+                origin: 'http://services_backend'
+            },
             body: await this.getCaddyfile(),
             signal
         });
@@ -146,7 +152,9 @@ class CaddyService {
                     urls: [config.project.url, ...config.project.additionalUrls].map(url => new URL(url).hostname) as [string, ...string[]],
                     mode: 'project',
                     auth: config.auth,
-                    backend: `${backendContainer.name}:${backendDockerContainer.ports[0]?.privatePort}`,
+                    backend: backendDockerContainer.ports[0]?.privatePort
+                        ? `${backendContainer.name}:${backendDockerContainer.ports[0].privatePort}`
+                        : undefined,
                     frontend: `${frontendContainer.name}:${frontendDockerContainer.ports[0]?.privatePort}`
                 };
             }
@@ -201,7 +209,10 @@ class CaddyService {
 
         const response = await fetch(`${env.DOCKER_CADDY_ADMIN_HOST}/load`, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/caddyfile' },
+            headers: {
+                'Content-Type': 'text/caddyfile',
+                origin: 'http://services_backend'
+            },
             body: await this.getCaddyfile()
         });
 

@@ -25,11 +25,16 @@ export const compileTemplate = (routes: Route[]) => render([
             dir('uri', '/api/authz/forward-auth'),
             dir('copy_headers', 'Remote-User', 'Remote-Groups', 'Remote-Email', 'Remote-Name'))),
     { type: 'emptyline' },
-    block('(service)',
+    block('(serviceold)',
         dir('encode', 'zstd', 'gzip'),
         { type: 'emptyline' },
         block('handle_path /api/*',
             dir('reverse_proxy', '{args[1]}')),
+        { type: 'emptyline' },
+        block('handle',
+            dir('reverse_proxy', '{args[0]}'))),
+    block('(service)',
+        dir('encode', 'zstd', 'gzip'),
         { type: 'emptyline' },
         block('handle',
             dir('reverse_proxy', '{args[0]}'))),
@@ -64,7 +69,7 @@ interface ProjectRoute {
     urls: [string, ...string[]];
     mode: 'project';
     auth: CaddyConfigProject['auth'];
-    backend: string;
+    backend: string | undefined;
     frontend: string;
 }
 
@@ -96,13 +101,15 @@ function block(header: string | null, ...body: CaddyNode[]): Block {
 function projectBlock(cfg: {
     hosts: string[];
     frontend: string;
-    backend: string;
+    backend: string | undefined;
     auth: boolean;
 }): Block {
     return block(
         cfg.hosts.join(' '),
         ...cfg.auth ? [dir('import', 'withauth')] : [],
-        dir('import', 'service', cfg.frontend, cfg.backend)
+        cfg.backend
+            ? dir('import', 'serviceold', cfg.frontend, cfg.backend)
+            : dir('import', 'service', cfg.frontend)
     );
 }
 function standaloneBlock(cfg: {

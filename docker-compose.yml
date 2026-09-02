@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: nginx:alpine
+    image: nginx:1.31.4-alpine
     container_name: services_frontend
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
@@ -15,7 +15,7 @@ services:
       start_interval: 5s
 
   backend:
-    image: node:24-alpine
+    image: node:26.8.1-alpine
     container_name: services_backend
     depends_on:
       - docker_proxy
